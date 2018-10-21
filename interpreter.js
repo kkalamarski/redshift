@@ -4,17 +4,23 @@ const transpile = require("./lib/transpiler")
 const babel = require("@babel/core")
 
 const programm = `
-    let sum() 2 * 3;
-    let anotherSum() 8 + 6;
+    defmodule Math do
+        def sum() do
+            2 * 3
+        end
 
-    anotherSum();
+        def anotherSum() do
+            8 + 6
+            8 + 6
+        end
+    end
 `
 console.clear()
 const lexed = lex(programm)
-console.table(lexed)
+// console.table(lexed)
 const parsed = parse(lexed)
 
-console.log(JSON.stringify(parsed, null, 2))
+// console.log(JSON.stringify(parsed, null, 2))
 
 const { code } = babel.transformFromAst(parsed, null, {
   presets: ["@babel/preset-env"]

@@ -1,33 +1,36 @@
-const lex = require("./lib/lexer")
-const parse = require("./lib/parser")
-const transpile = require("./lib/transpiler")
+const Lexer = require("./lib/Lexer")
+const Parser = require("./lib/Parser")
 const babel = require("@babel/core")
 
-const programm = `
-    defmodule Math do
-        def sum() do
-            2 * 3
-        end
+const program = `
+def sum(a) do
+    a + a
+end
 
-        def anotherSum() do
-            8 + 6
-            8 + 6
-        end
-    end
+def sum(a, b) do
+    a + b
+end
+
+def div(a, b) do
+    a / b
+end
+
+sum(2)
+sum(-10, 6)
 `
-console.clear()
-const lexed = lex(programm)
-// console.table(lexed)
-const parsed = parse(lexed)
+const compile = (exscript, evaluate) => {
+  const lexer = new Lexer()
+  const parser = new Parser()
+  lexer.tokenize(exscript)
 
-// console.log(JSON.stringify(parsed, null, 2))
+  const ast = parser.parse(lexer.tokens)
+  const { code } = babel.transformFromAst(ast, null, {})
 
-const { code } = babel.transformFromAst(parsed, null, {
-  presets: ["@babel/preset-env"]
-})
+  if (evaluate) {
+    return eval(code)
+  }
 
-console.log(code)
+  return code
+}
 
-// const result = transpile(parsed)
-
-// console.log(programm, " => ", result, " => ", eval(result))
+module.exports = compile

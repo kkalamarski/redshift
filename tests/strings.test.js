@@ -32,4 +32,17 @@ describe("Strings", () => {
     const result = compile(code, true)
     expect(result).toBe("hello world!")
   })
+
+  it("should be possible to pass string to function as argumnet", () => {
+    const code = `
+        def greet(name) do
+            "Hello " <> name
+        end
+
+        greet("Chris")
+    `
+
+    const result = compile(code, true)
+    expect(result).toBe("Hello Chris")
+  })
 })

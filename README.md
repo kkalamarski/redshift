@@ -1,6 +1,6 @@
-# redshift
+# Redshift - functional programming language
 Redshift is a functional programming language compiled to Javascript.
-It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostrly just 'proof of concept'.
+It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just *proof of concept*.
 
 
 ## Supported Features

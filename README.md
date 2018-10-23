@@ -1,18 +1,21 @@
 # Redshift - functional programming language
-Redshift is a functional programming language compiled to Javascript.
-It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just *proof of concept*.
 
+Redshift is a functional programming language compiled to Javascript.
+It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just _proof of concept_.
 
 ## Supported Features
-* Defining and calling functions
-* Performing simple arithmetic operations
-* Defining constants
 
+- Defining and calling functions
+- Performing simple arithmetic operations
+- Defining constants
 
 ## Syntax
+
 ### Defining Functions
+
 Functions are defined by use of `def/do/end` keywords.
 The last expression will be returned.
+
 ```elixir
 def sum(a, b) do
   a + b
@@ -33,14 +36,18 @@ end
 ```
 
 ### Calling functions
+
 As for now the only way to call a function is to use parentheses
+
 ```elixir
 sum(1, 2)
 ```
 
 ### Defining constants
-Because of lack of mutations, redshift supports constants only. 
+
+Because of lack of mutations, redshift supports constants only.
 Constants are block scoped.
+
 ```elixir
 test_constant = 2
 result = 2 * 3
@@ -52,9 +59,24 @@ Constants can also be used inside functions
 def func() do
   a = 40
   b = 100
-  
+
   a + b
 end
 ```
 
+### Using string literals
 
+String literals are declared using double quotes `"`.
+
+```elixir
+hello_world = "Hello world!"
+```
+
+To concat two strings use concatenation operator `<>`.
+
+```elixir
+str1 = "Hello "
+str2 = "world!
+
+result = str1 <> str2
+```

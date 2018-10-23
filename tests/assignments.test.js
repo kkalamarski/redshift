@@ -22,6 +22,17 @@ describe("Assignments", () => {
     expect(result).toBe(12)
   })
 
+  it("should be possible to assign literal to variable", () => {
+    const code = `
+        test = 2
+        test2 = 5
+        test2 + test
+    `
+    const result = compile(code, true)
+
+    expect(result).toBe(7)
+  })
+
   it("should not be possible to mutate a variable", () => {
     const code = `
         test = 2 + 1

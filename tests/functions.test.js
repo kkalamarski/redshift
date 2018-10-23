@@ -1,4 +1,4 @@
-const compile = require("../interpreter")
+const compile = require("../redshift")
 
 describe("Functions", () => {
   it("should declare and execute a function", () => {

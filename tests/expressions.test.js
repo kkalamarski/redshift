@@ -1,4 +1,4 @@
-const compile = require("../interpreter")
+const compile = require("../redshift")
 
 describe("Expressions", () => {
   it("should parse an expression", () => {

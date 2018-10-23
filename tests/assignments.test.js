@@ -1,4 +1,4 @@
-const compile = require("../interpreter")
+const compile = require("../redshift")
 
 describe("Assignments", () => {
   it("should assign to variable", () => {

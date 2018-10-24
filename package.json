@@ -25,6 +25,7 @@
     "jest": "^23.6.0"
   },
   "dependencies": {
+    "commander": "^2.19.0",
     "split-string": "^6.0.0"
   },
   "engines": {

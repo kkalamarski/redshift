@@ -1,14 +1,15 @@
 {
   "name": "redshift",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "",
-  "main": "redshift.js",
+  "main": "index.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "start": "nodemon ./redshift.js",
-    "test": "jest"
+    "start": "nodemon ./parser/redshift.js",
+    "test": "jest",
+    "semantic-release": "semantic-release"
   },
   "keywords": [
     "programming",
@@ -22,12 +23,18 @@
     "@babel/parser": "^7.1.3",
     "@babel/preset-env": "^7.1.0",
     "nodemon": "^1.18.4",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "semantic-release": "^15.10.5"
   },
   "dependencies": {
+    "commander": "^2.19.0",
     "split-string": "^6.0.0"
   },
   "engines": {
     "node": ">=10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kkalamarski/redshift.git"
   }
 }

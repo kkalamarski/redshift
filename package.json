@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "nodemon ./redshift.js",
+    "start": "nodemon ./parser/redshift.js",
     "test": "jest"
   },
   "keywords": [

@@ -70,8 +70,8 @@ class Parser {
   }
 
   getType(value) {
-    if (isString(value)) return ["str", value]
     if (isNumber(value)) return ["num", value]
+    if (isString(value)) return ["str", value]
     if (isIndentifier(value)) return ["id", value]
   }
 
@@ -354,20 +354,6 @@ class Parser {
       body,
       sourceType: "module",
       directives: []
-    }
-  }
-
-  parseTokens(tokens) {
-    if (!tokens.length) return
-
-    if (tokens[0][1] === "def") {
-      const fn = tokens[1][1]
-      const name = fn.split("(")[0]
-      const args = this.mapFunctionArguments(fn)
-
-      this.functions[name] = {
-        arguments: args
-      }
     }
   }
 

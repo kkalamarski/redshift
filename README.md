@@ -1,5 +1,6 @@
 # Redshift - functional programming language
 
+[![CircleCI](https://circleci.com/gh/kkalamarski/redshift/tree/master.svg?style=svg)](https://circleci.com/gh/kkalamarski/redshift/tree/master)
 Redshift is a functional programming language compiled to Javascript.
 It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just _proof of concept_.
 

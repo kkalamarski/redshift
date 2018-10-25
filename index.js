@@ -7,15 +7,25 @@ const chalk = require("chalk")
 const build = (entry, options) => {
   console.clear()
   console.log(chalk.black.bgGreen("Starting Build"))
-  const javascript = bundle(entry)
-
   try {
+    const javascript = bundle(entry)
+    const defaultOutput = "./build/bundle.js"
+
     if (options.eval) {
+      console.log(chalk.black.bgGreen("Evaluating bundle"))
+
       console.log(eval(javascript))
     } else if (options.output) {
       fs.writeFileSync(options.output, javascript)
+      console.log(
+        chalk.black.bgGreen(`Successfully compiled to ${options.output}`),
+        options.output
+      )
     } else {
-      console.log(javascript)
+      fs.writeFileSync(defaultOutput, javascript)
+      console.log(
+        chalk.black.bgGreen(`Successfully compiled to ${defaultOutput}`)
+      )
     }
   } catch (e) {
     console.log(chalk.white.bgRed("Error"))

@@ -6,94 +6,96 @@ const babylon = require("babylon")
 const babel = require("@babel/core")
 const chalk = require("chalk")
 
-let ID = 0
+module.exports = entryFile => {
+  console.time(chalk.green("Code bundled in"))
+  let ID = 0
 
-function createAsset(filename, isJavaScript) {
-  const content = fs.readFileSync(filename, "utf-8")
-  let ast
+  function createAsset(filename, isJavaScript) {
+    const content = fs.readFileSync(filename, "utf-8")
+    let ast
 
-  if (isJavaScript) {
-    ast = babylon.parse(content, {
-      sourceType: "module"
-    })
-  } else {
-    ast = redshift(content, false, true)
-  }
-
-  let dependencies = []
-
-  traverse(ast, {
-    ImportDeclaration: ({ node }) => {
-      dependencies.push(node.source.value)
+    if (isJavaScript) {
+      ast = babylon.parse(content, {
+        sourceType: "module"
+      })
+    } else {
+      ast = redshift(content, false, true)
     }
-  })
 
-  const id = ID++
+    let dependencies = []
 
-  const { code } = babel.transformFromAst(ast, null, {
-    presets: ["@babel/env"]
-  })
+    traverse(ast, {
+      ImportDeclaration: ({ node }) => {
+        dependencies.push(node.source.value)
+      }
+    })
 
-  return {
-    id,
-    filename,
-    dependencies,
-    code
+    const id = ID++
+
+    const { code } = babel.transformFromAst(ast, null, {
+      presets: ["@babel/env"]
+    })
+
+    return {
+      id,
+      filename,
+      dependencies,
+      code
+    }
   }
-}
 
-function createGraph(entry) {
-  const mainAsset = createAsset(entry)
-  const queue = [mainAsset]
+  function createGraph(entry) {
+    const mainAsset = createAsset(entry)
+    const queue = [mainAsset]
 
-  for (const asset of queue) {
-    const dirname = path.dirname(asset.filename)
+    for (const asset of queue) {
+      const dirname = path.dirname(asset.filename)
 
-    asset.mapping = {}
+      asset.mapping = {}
 
-    asset.dependencies.forEach(dep => {
-      let child
-      if (dep.includes("core")) {
-        absolutePath = path.join(__dirname, "../", dep + ".js")
-        child = createAsset(absolutePath, true)
-      } else if (dep[0] === ".") {
-        absolutePath = path.join(dirname, dep)
-        child = createAsset(absolutePath)
-      } else {
-        const modPath = path.join(__dirname, "../node_modules", dep)
-        const package = require(path.join(modPath, "package.json"))
-        let filename = package.main
+      asset.dependencies.forEach(dep => {
+        let child
+        if (dep.includes("core")) {
+          absolutePath = path.join(__dirname, "../", dep + ".js")
+          child = createAsset(absolutePath, true)
+        } else if (dep[0] === ".") {
+          absolutePath = path.join(dirname, dep)
+          child = createAsset(absolutePath)
+        } else {
+          const modPath = path.join(__dirname, "../node_modules", dep)
+          const package = require(path.join(modPath, "package.json"))
+          let filename = package.main
 
-        if (!filename.includes(".js")) {
-          filename += ".js"
+          if (!filename.includes(".js")) {
+            filename += ".js"
+          }
+
+          absolutePath = path.join(__dirname, "../node_modules", dep, filename)
+          child = createAsset(absolutePath, true)
         }
 
-        absolutePath = path.join(__dirname, "../node_modules", dep, filename)
-        child = createAsset(absolutePath, true)
-      }
+        asset.mapping[dep] = child.id
+        queue.push(child)
+      })
+    }
 
-      asset.mapping[dep] = child.id
-      queue.push(child)
-    })
+    return queue
   }
 
-  return queue
-}
+  function bundle(graph) {
+    let modules = ""
 
-function bundle(graph) {
-  let modules = ""
-
-  graph.forEach(mod => {
-    console.log(chalk.green(`[${mod.id}]:`), mod.filename)
-    modules += `${mod.id}: [
+    graph.forEach(mod => {
+      console.log(chalk.green(`[${mod.id}]:`), mod.filename)
+      modules += `${mod.id}: [
         function(require, module, exports) { 
             ${mod.code} 
         },
         ${JSON.stringify(mod.mapping)}
     ],`
-  })
+    })
 
-  const result = `
+    const result = `
     (function(modules) {
 
         function require(id) {
@@ -117,13 +119,10 @@ function bundle(graph) {
     })({${modules}})
   `
 
-  return result
-}
+    return result
+  }
 
-module.exports = path => {
-  console.time(chalk.green("Code bundled in"))
-  const graph = createGraph(path)
-
+  const graph = createGraph(entryFile)
   const result = bundle(graph)
   console.timeEnd(chalk.green("Code bundled in"))
   return result

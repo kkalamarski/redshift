@@ -1,43 +1,6 @@
 #!/usr/bin/env node
 const program = require("commander")
-const fs = require("fs")
-const bundle = require("./bundler/index")
-const chalk = require("chalk")
-
-const build = (entry, options) => {
-  console.clear()
-  console.log(chalk.black.bgGreen("Starting Build"))
-  try {
-    const javascript = bundle(entry)
-    const defaultOutput = "./build/bundle.js"
-
-    if (options.eval) {
-      console.log(chalk.black.bgGreen("Evaluating bundle"))
-
-      console.log(eval(javascript))
-    } else if (options.output) {
-      fs.writeFileSync(options.output, javascript)
-      console.log(
-        chalk.black.bgGreen(`Successfully compiled to ${options.output}`),
-        options.output
-      )
-    } else {
-      fs.writeFileSync(defaultOutput, javascript)
-      console.log(
-        chalk.black.bgGreen(`Successfully compiled to ${defaultOutput}`)
-      )
-    }
-  } catch (e) {
-    console.log(chalk.white.bgRed("Error"))
-    console.log(e)
-  }
-}
-
-program
-  .version("0.0.1")
-  .command("build <entry>")
-  .option("-o, --output [optional]", "path to output file")
-  .option("-e, --eval", "evaluate the program without saving to filesystem")
-  .action(build)
+const build = require("./cli/build")(program)
+const watch = require("./cli/watch")(program)
 
 program.parse(process.argv)

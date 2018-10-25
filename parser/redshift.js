@@ -1,5 +1,5 @@
-const Lexer = require("./lib/Lexer")
-const Parser = require("./lib/Parser")
+const Lexer = require("./lib/lexer")
+const Parser = require("./lib/parser")
 const babel = require("@babel/core")
 
 const compile = (redshift, evaluate, compileToAST) => {

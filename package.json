@@ -1,6 +1,6 @@
 {
   "name": "redshiftlang",
-  "version": "0.0.0-development",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -8,8 +8,7 @@
   },
   "scripts": {
     "start": "nodemon ./parser/redshift.js",
-    "test": "jest",
-    "semantic-release": "semantic-release"
+    "test": "jest"
   },
   "keywords": [
     "programming",

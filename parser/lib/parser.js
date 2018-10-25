@@ -361,10 +361,13 @@ class Parser {
 
   Program(body) {
     return {
-      type: "Program",
-      body,
-      sourceType: "module",
-      directives: []
+      type: "File",
+      program: {
+        type: "Program",
+        body,
+        sourceType: "module",
+        directives: []
+      }
     }
   }
 

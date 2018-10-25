@@ -27,6 +27,7 @@
     "semantic-release": "^15.10.5"
   },
   "dependencies": {
+    "babel-traverse": "^6.26.0",
     "commander": "^2.19.0",
     "split-string": "^6.0.0"
   },

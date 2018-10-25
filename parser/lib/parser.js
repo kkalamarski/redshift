@@ -110,11 +110,9 @@ class Parser {
     const [mod, as, name] = buffer
 
     if (mod[0] === "id") {
-      return this.VariableDeclaration(
-        this.Identifier(name ? name[1] : mod[1]),
-        this.CallExpression(this.Identifier("require"), [
-          this.String("core/" + mod[1])
-        ])
+      return this.ImportDeclaration(
+        this.String("core/" + mod[1]),
+        this.Identifier(name ? name[1] : mod[1])
       )
     } else if (mod[0] === "str") {
       if (!as) throw SyntaxError("Missing 'as' keword in foreign import!")
@@ -122,9 +120,9 @@ class Parser {
       if (name[0] !== "id" || as[1] !== "as")
         throw SyntaxError("Unknown alias in import statement!")
 
-      return this.VariableDeclaration(
-        this.Identifier(name[1]),
-        this.CallExpression(this.Identifier("require"), [this.String(mod[1])])
+      return this.ImportDeclaration(
+        this.String(mod[1]),
+        this.Identifier(name[1])
       )
     } else {
       throw SyntaxError(`Invalid import name ${mod[1]}!`)
@@ -345,6 +343,19 @@ class Parser {
         }
       ],
       kind: "const"
+    }
+  }
+
+  ImportDeclaration(mod, local) {
+    return {
+      type: "ImportDeclaration",
+      specifiers: [
+        {
+          type: "ImportDefaultSpecifier",
+          local
+        }
+      ],
+      source: mod
     }
   }
 

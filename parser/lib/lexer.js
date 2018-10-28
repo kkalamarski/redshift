@@ -1,5 +1,5 @@
 const split = require("split-string")
-const keywords = ["def", "do", "end", "import"]
+const keywords = ["defmodule", "def", "do", "end", "import"]
 const operations = ["+", "-", "*", "/", "=", "<>"]
 
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)

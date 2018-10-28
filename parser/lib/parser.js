@@ -96,8 +96,40 @@ class Parser {
   parseKeyword() {
     const value = this.consume()[1]
 
+    if (value === "defmodule") return this.parseModule()
     if (value === "def") return this.parseFunction()
     if (value === "import") return this.parseImport()
+  }
+
+  parseModule() {
+    const moduleName = this.consume()[1]
+    const moduleDeclaration = this.VariableDeclaration(
+      this.Identifier(moduleName),
+      this.ObjectExpression([])
+    )
+    let functions = []
+
+    while (this.consume()[1] !== "end") {
+      const next = this.peek()
+
+      if (next[1] === "def") {
+        this.consume() // remove "def" from queue
+        functions.push(this.parseModuleMethod(moduleName))
+        this.consume() // remove "end" from queue
+      } else if (next[0] === "newline" || next[0] === "key") {
+        continue
+      } else {
+        throw new SyntaxError(
+          `Only function declarations are permitted inside a module! \n Received: ${next}`
+        )
+      }
+    }
+
+    const moduleExport = this.ExportDefaultDeclaration(
+      this.Identifier(moduleName)
+    )
+
+    return this.Block([].concat(moduleDeclaration, functions, moduleExport))
   }
 
   parseImport() {
@@ -137,6 +169,25 @@ class Parser {
       this.Identifier(name),
       params.map(param => this.Identifier(param)),
       this.peek()[1] === "do" ? this.parseBlock() : {}
+    )
+  }
+
+  parseModuleMethod(moduleName) {
+    const fn = this.consume()[1]
+    const { name, params } = this.getFunctionNameAndParams(fn)
+
+    return this.ExpressionStatement(
+      this.AssignmentExpression(
+        this.MemberExpression(
+          this.Identifier(moduleName),
+          this.Identifier(name)
+        ),
+        this.FunctionExpression(
+          null,
+          params.map(param => this.Identifier(param)),
+          this.peek()[1] === "do" ? this.parseBlock() : {}
+        )
+      )
     )
   }
 
@@ -293,6 +344,22 @@ class Parser {
     }
   }
 
+  ObjectExpression(properties) {
+    return {
+      type: "ObjectExpression",
+      properties
+    }
+  }
+
+  MemberExpression(object, property) {
+    return {
+      type: "MemberExpression",
+      object,
+      property,
+      computed: false
+    }
+  }
+
   Block(body) {
     return {
       type: "BlockStatement",
@@ -306,6 +373,17 @@ class Parser {
       id: name,
       params,
       body
+    }
+  }
+
+  FunctionExpression(id, params, body) {
+    return {
+      type: "FunctionExpression",
+      generator: false,
+      params,
+      id,
+      body,
+      expression: false
     }
   }
 
@@ -356,6 +434,13 @@ class Parser {
         }
       ],
       source: mod
+    }
+  }
+
+  ExportDefaultDeclaration(declaration) {
+    return {
+      type: "ExportDefaultDeclaration",
+      declaration
     }
   }
 

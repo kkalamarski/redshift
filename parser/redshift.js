@@ -1,19 +1,20 @@
 const Lexer = require("./lib/lexer")
-const Parser = require("./lib/parser")
+const parse = require("./lib/parser")
 const babel = require("@babel/core")
 
-const compile = (redshift, evaluate, compileToAST) => {
+const compile = (redshift, evaluate, compileToAST, es5) => {
   const lexer = new Lexer()
-  const parser = new Parser()
   lexer.tokenize(redshift)
 
-  const ast = parser.parse(lexer.tokens)
+  const ast = parse(lexer.tokens)
 
   if (compileToAST) {
     return ast
   }
 
-  const { code } = babel.transformFromAst(ast, null, {})
+  const { code } = babel.transformFromAst(ast, null, {
+    presets: es5 ? ["@babel/env"] : []
+  })
 
   if (evaluate) {
     return eval(code)

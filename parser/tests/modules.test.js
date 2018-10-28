@@ -63,4 +63,45 @@ describe("Declaring modules", () => {
 
     expect(result).toContain("export default User")
   })
+
+  it("should be possible to use module functions inside module", () => {
+    const code = `
+      defmodule User do
+        def get() do
+          1 + 3
+        end
+
+        def get(s) do
+          val = User.get()
+          val + s
+        end
+      end
+
+      User.get(6)
+    `
+
+    const result = compile(code, true, null, true)
+
+    expect(result).toContain("export default User")
+  })
+
+  it("should call the module function", () => {
+    const code = `
+      defmodule Example do
+        def get() do
+          1 + 3
+        end
+
+        def get(s) do
+          5 + s
+        end
+      end
+
+      Example.get(4)
+    `
+
+    const result = compile(code, true, null, true)
+
+    expect(result).toBe(9)
+  })
 })

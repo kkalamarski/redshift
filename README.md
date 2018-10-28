@@ -4,11 +4,33 @@
 Redshift is a functional programming language compiled to Javascript.
 It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just _proof of concept_.
 
-## Supported Features
+## Getting Started
 
-- Defining and calling functions
-- Performing simple arithmetic operations
-- Defining constants
+### Installation
+
+Install compiler via npm:
+
+```bash
+npm install -g redshiftland
+```
+
+### One time build
+
+```bash
+redshift build path/to/file.red
+```
+
+### Watching for changes
+
+```bash
+redshift watch path/to/file.red
+```
+
+Both options accept optional output argument (it defaults to `./build/bundle.js`):
+
+```bash
+redshift build path/to/file.red -o dist/directory/build.js
+```
 
 ## Syntax
 
@@ -113,3 +135,29 @@ File extension is required.
 import "./lib/Auth.rs" as Auth
 import "./js/User.js" as User
 ```
+
+### Modules
+
+Module is a namespace for the functions serving similiar purpose.
+Examples of built-in modules are:
+
+`Math` - contianing functions for arythmetic operations
+
+`IO` - containig functions for managind input and output
+
+To decalre custom module `defmodule / end` notation is used.
+
+```elixir
+defmodule User do
+
+  def get_user() do
+    # some logic
+  end
+
+  def delete_user() do
+    # some logic
+  end
+end
+```
+
+Module is always 'default' exported. That is why it is only possible to have one module per file.

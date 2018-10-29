@@ -22,11 +22,11 @@ const package = target =>
     {
       name: (t => t[t.length - 1])(target.split(path.sep)),
       version: "0.0.0",
-      description: "",
+      description: "Sample project for Redshift programming language.",
       main: "build/index.js",
       scripts: {
-        start: "nodemon ./parser/redshift.js",
-        test: "jest"
+        start: "redshift watch main.rh",
+        build: "redshift build main.rh"
       },
 
       dependencies: {

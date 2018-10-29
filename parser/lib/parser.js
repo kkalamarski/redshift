@@ -218,12 +218,14 @@ const parseBlock = () => {
       body.push(parseIdentifier(val))
     } else if (val[0] === "num" || val[0] === "str") {
       body.push(parseExpressionLine(val))
+    } else if (val[0] === "fn") {
+      body.push(parseFunctionCall(val))
     }
   }
 
   const expressions = body.filter(x => x)
   const last = expressions.pop()
-  const returning = AST.ReturnStatement(last.expression)
+  const returning = AST.ReturnStatement(last)
 
   return AST.Block([].concat(expressions, returning))
 }

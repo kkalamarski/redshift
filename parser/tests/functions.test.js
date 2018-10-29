@@ -53,4 +53,20 @@ describe("Functions", () => {
     const result = compile(code, true)
     expect(result).toBe(13)
   })
+
+  it("should be possible to return function call", () => {
+    const code = `
+      def test() do
+        4 + 6
+      end
+
+      def test(a) do
+        test()
+      end
+
+      test(10)
+    `
+    const result = compile(code, true)
+    expect(result).toBe(10)
+  })
 })

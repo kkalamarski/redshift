@@ -11,19 +11,26 @@ It implements syntax similiar to Elixir. It is created as a part of learning how
 Install compiler via npm:
 
 ```bash
-npm install -g redshiftland
+npm install -g redshiftlang
+```
+### Generating project files
+Redshift provides CLI that helps with scaffolding code.
+
+```bash
+redshift create <project_name>
+cd <project_name>
 ```
 
 ### One time build
 
 ```bash
-redshift build path/to/file.rh
+redshift build <path_to_file>.rh
 ```
 
 ### Watching for changes
 
 ```bash
-redshift watch path/to/file.rh
+redshift watch <path_to_file>.rh
 ```
 
 Both options accept optional output argument (it defaults to `./build/bundle.js`):

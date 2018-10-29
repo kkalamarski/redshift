@@ -2,7 +2,7 @@ const fs = require("fs")
 const chalk = require("chalk")
 const path = require("path")
 
-const main = target => `import "./src/App.red" as App
+const main = target => `import "./src/App.rh" as App
 
 App.main()
 `

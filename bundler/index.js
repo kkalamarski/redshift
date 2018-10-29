@@ -63,8 +63,8 @@ module.exports = entryFile => {
           child = createAsset(absolutePath)
         } else {
           const modPath = path.join(__dirname, "../node_modules", dep)
-          const package = require(path.join(modPath, "package.json"))
-          let filename = package.main
+          const pkg = require(path.join(modPath, "package.json"))
+          let filename = pkg.main
 
           if (!filename.includes(".js")) {
             filename += ".js"

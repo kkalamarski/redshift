@@ -73,9 +73,11 @@ const parseFunctionCall = val => {
     const modulename = parts[0]
     const { name, params } = getFunctionNameAndParams(parts[1])
 
-    return AST.CallExpression(
-      AST.MemberExpression(AST.Identifier(modulename), AST.Identifier(name)),
-      params.map(param => parseAnyType(getType(param)))
+    return AST.ExpressionStatement(
+      AST.CallExpression(
+        AST.MemberExpression(AST.Identifier(modulename), AST.Identifier(name)),
+        params.map(param => parseAnyType(getType(param)))
+      )
     )
   } else {
     const { name, params } = getFunctionNameAndParams(value[1])

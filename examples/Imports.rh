@@ -1,8 +1,8 @@
 import IO
-import "commander" as SplitString
 
 def say_hello(name) do
-    "Hello " <> name
+    text = "Hello " <> name
+    IO.puts(text)
 end
 
 say_hello("World!")

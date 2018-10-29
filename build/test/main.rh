@@ -1,3 +1,0 @@
-import "./src/App.red" as App
-
-App.main()

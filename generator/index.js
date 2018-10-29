@@ -7,8 +7,7 @@ const main = target => `import "./src/App.red" as App
 App.main()
 `
 
-const app = target => `
-import IO
+const app = target => `import IO
 
 defmodule App do
   def main() do
@@ -37,15 +36,20 @@ const package = target =>
     2
   )
 
+const gitignore = () => `node_modules
+bin
+`
+
 const generate = target => {
   fs.mkdirSync(target)
+  fs.writeFileSync(path.join(target, ".gitignore"), gitignore(), "utf-8")
   fs.writeFileSync(path.join(target, "main.rh"), main(target), "utf-8")
   fs.writeFileSync(path.join(target, "package.json"), package(target), "utf-8")
 
   fs.mkdirSync(path.join(target, "src"))
   fs.writeFileSync(path.join(target, "src/App.rh"), app(target), "utf-8")
 
-  fs.mkdirSync(path.join(target, "test"))
+  fs.mkdirSync(path.join(target, "bin"))
 }
 
 module.exports = generate

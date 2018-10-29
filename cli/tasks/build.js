@@ -7,7 +7,7 @@ const build = (entry, options) => {
   console.log(chalk.black.bgGreen("Starting Build"))
   try {
     const javascript = bundle(entry)
-    const defaultOutput = "./build/bundle.js"
+    const defaultOutput = "./bin/bundle.js"
 
     if (options.eval) {
       console.log(chalk.black.bgGreen("Evaluating bundle"))

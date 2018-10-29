@@ -13,7 +13,9 @@ Install compiler via npm:
 ```bash
 npm install -g redshiftlang
 ```
+
 ### Generating project files
+
 Redshift provides CLI that helps with scaffolding code.
 
 ```bash
@@ -33,7 +35,7 @@ redshift build <path_to_file>.rh
 redshift watch <path_to_file>.rh
 ```
 
-Both options accept optional output argument (it defaults to `./build/bundle.js`):
+Both options accept optional output argument (it defaults to `./bin/bundle.js`):
 
 ```bash
 redshift build path/to/file.red -o dist/directory/build.js

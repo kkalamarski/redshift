@@ -5,7 +5,7 @@ const operations = ["+", "-", "*", "/", "=", "<>"]
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
 const isString = t => /^".*"$/
 const isIndentifier = t => /^[$A-Z_][0-9A-Z_$]*$/i.test(t)
-const isFunction = t => /[a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?/.test(t)
+const isFunction = t => /[a-zA-z]*\.?[a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?/.test(t)
 
 class Lexer {
   constructor() {

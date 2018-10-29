@@ -71,9 +71,9 @@ describe("Declaring modules", () => {
           1 + 3
         end
 
-        def get(s) do
+        def get(arg) do
           val = User.get()
-          val + s
+          val + arg
         end
       end
 
@@ -82,7 +82,7 @@ describe("Declaring modules", () => {
 
     const result = compile(code, true, null, true)
 
-    expect(result).toContain("export default User")
+    expect(result).toBe(10)
   })
 
   it("should call the module function", () => {
@@ -92,8 +92,8 @@ describe("Declaring modules", () => {
           1 + 3
         end
 
-        def get(s) do
-          5 + s
+        def get(arg) do
+          5 + arg
         end
       end
 

@@ -9,6 +9,11 @@ let _tokens = []
 
 const peek = () => _tokens[_c]
 const consume = () => _tokens[_c++]
+const source = num =>
+  `${"\n```\n"}${_tokens
+    .slice(_c - num, _c + num)
+    .map(a => a[1])
+    .join(" ")}${"\n```"}`
 
 const parseTopLevelExpressions = () => {
   let expressions = []
@@ -46,11 +51,12 @@ const parseKeyword = () => {
 const parseIdentifier = val => {
   const value = val ? val : consume()
   const operator = consume()
+  const nextVal = peek()
 
   if (operator[1] === "=") {
     return AST.VariableDeclaration(
       AST.Identifier(value[1]),
-      parseExpressionLine()
+      nextVal[0] === "fn" ? parseFunctionCall() : parseExpressionLine()
     )
   } else if (["+", "-", "/", "*"].includes(operator[1])) {
     return makeBinaryExpression(AST.Identifier(value[1]), operator[1])
@@ -59,16 +65,28 @@ const parseIdentifier = val => {
   }
 }
 
-const parseFunctionCall = () => {
-  const value = consume()
-  const { name, params } = getFunctionNameAndParams(value[1])
+const parseFunctionCall = val => {
+  const value = val || consume()
 
-  return AST.ExpressionStatement(
-    AST.CallExpression(
-      AST.Identifier(name),
+  if (value[1].indexOf(".") > -1) {
+    const parts = value[1].split(".")
+    const modulename = parts[0]
+    const { name, params } = getFunctionNameAndParams(parts[1])
+
+    return AST.CallExpression(
+      AST.MemberExpression(AST.Identifier(modulename), AST.Identifier(name)),
       params.map(param => parseAnyType(getType(param)))
     )
-  )
+  } else {
+    const { name, params } = getFunctionNameAndParams(value[1])
+
+    return AST.ExpressionStatement(
+      AST.CallExpression(
+        AST.Identifier(name),
+        params.map(param => parseAnyType(getType(param)))
+      )
+    )
+  }
 }
 
 const getType = value => {
@@ -267,9 +285,12 @@ const parseAnyType = token => {
   if (token[0] === "id") return AST.Identifier(token[1])
   if (token[0] === "str") return AST.String(token[1])
   if (token[0] === "num") return AST.Number(token[1])
+  if (token[0] === "fn") return parseFunctionCall(token[1])
 
   throw new SyntaxError(
-    `Invalid token "${token[1]}" used as a part of expression.`
+    `Invalid token "${token[1]}" of type "${
+      token[0]
+    }" used as a part of expression.`
   )
 }
 
@@ -278,7 +299,9 @@ const identifierOrString = token => {
   if (token[0] === "str") return AST.String(token[1])
 
   throw new SyntaxError(
-    `Invalid token "${token[1]}" used as a part of expression.`
+    `Invalid token "${token[1]}" of type "${
+      token[2]
+    }" used as a part of expression.`
   )
 }
 
@@ -287,17 +310,27 @@ const identifierOrNumber = token => {
   if (token[0] === "id") return AST.Identifier(token[1])
 
   throw new SyntaxError(
-    `Invalid token "${token[1]}" used as a part of expression.`
+    `Invalid token "${token[1]}" of type "${
+      token[2]
+    }" used as a part of expression.`
   )
 }
 
 const mapFunctionArguments = name => {
-  return name
-    .split("(")[1]
-    .replace(")", "")
-    .split(",")
-    .map(a => a.trim())
-    .filter(a => a.length)
+  try {
+    return name
+      .split("(")[1]
+      .replace(")", "")
+      .split(",")
+      .map(a => a.trim())
+      .filter(a => a.length)
+  } catch (e) {
+    throw new SyntaxError(
+      `Unknown identifier ${name} when parsing function arguments near ${source(
+        5
+      )}`
+    )
+  }
 }
 
 module.exports = tokens => {

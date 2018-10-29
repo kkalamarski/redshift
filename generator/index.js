@@ -39,11 +39,11 @@ const package = target =>
 
 const generate = target => {
   fs.mkdirSync(target)
-  fs.writeFileSync(path.join(target, "main.red"), main(target), "utf-8")
+  fs.writeFileSync(path.join(target, "main.rh"), main(target), "utf-8")
   fs.writeFileSync(path.join(target, "package.json"), package(target), "utf-8")
 
   fs.mkdirSync(path.join(target, "src"))
-  fs.writeFileSync(path.join(target, "src/App.red"), app(target), "utf-8")
+  fs.writeFileSync(path.join(target, "src/App.rh"), app(target), "utf-8")
 
   fs.mkdirSync(path.join(target, "test"))
 }

@@ -17,13 +17,13 @@ npm install -g redshiftland
 ### One time build
 
 ```bash
-redshift build path/to/file.red
+redshift build path/to/file.rh
 ```
 
 ### Watching for changes
 
 ```bash
-redshift watch path/to/file.red
+redshift watch path/to/file.rh
 ```
 
 Both options accept optional output argument (it defaults to `./build/bundle.js`):
@@ -128,11 +128,11 @@ import "ramda" as R
 
 #### Internal file imports
 
-Load modules from another files (either `.rs` or `.js`)
+Load modules from another files (either `.rh` or `.js`)
 File extension is required.
 
 ```elixir
-import "./lib/Auth.rs" as Auth
+import "./lib/Auth.rh" as Auth
 import "./js/User.js" as User
 ```
 

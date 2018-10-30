@@ -1,11 +1,8 @@
 {
   "name": "redshiftlang",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "",
   "main": "build/index.js",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
     "test": "jest"
   },
@@ -40,7 +37,8 @@
     "node": ">=10.0"
   },
   "bin": {
-    "redshift": "./index.js"
+    "redshift": "./build/index.js",
+    "rh": "./build/index.js"
   },
   "repository": {
     "type": "git",

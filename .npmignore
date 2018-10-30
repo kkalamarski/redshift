@@ -4,3 +4,9 @@ core
 generator
 parser
 bin
+node_modules
+examples
+.github
+.circleci
+jest.config.js
+index.ts

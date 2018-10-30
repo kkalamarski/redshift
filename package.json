@@ -1,11 +1,14 @@
 {
   "name": "redshiftlang",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "",
   "main": "build/index.js",
   "scripts": {
     "test": "jest"
   },
+  "files": [
+    "build/**/*"
+  ],
   "keywords": [
     "programming",
     "language",

@@ -1,4 +1,4 @@
-const compile = require("../redshift")
+import compile from "../redshift"
 
 describe("Functions", () => {
   it("should declare and execute a function", () => {

@@ -1,4 +1,4 @@
-const compile = require("../redshift")
+import compile from "../redshift"
 
 describe("Assignments", () => {
   it("should assign to variable", () => {

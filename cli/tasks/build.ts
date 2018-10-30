@@ -1,6 +1,6 @@
-const fs = require("fs")
-const bundle = require("../../bundler/index")
-const chalk = require("chalk")
+import fs from "fs"
+import bundle from "../../bundler/index"
+import chalk from "chalk"
 
 const build = (entry, options) => {
   console.clear()
@@ -31,4 +31,4 @@ const build = (entry, options) => {
   }
 }
 
-module.exports = build
+export default build

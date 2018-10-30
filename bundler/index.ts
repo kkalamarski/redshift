@@ -1,16 +1,24 @@
-const fs = require("fs")
-const path = require("path")
-const redshift = require("../parser/redshift")
-const traverse = require("babel-traverse").default
-const babylon = require("babylon")
-const babel = require("@babel/core")
-const chalk = require("chalk")
+import fs from "fs"
+import path from "path"
+import redshift from "../parser/redshift"
+import traverse from "babel-traverse"
+import * as babylon from "babylon"
+import * as babel from "@babel/core"
+import chalk from "chalk"
 
-module.exports = entryFile => {
+interface Asset {
+  id: number
+  filename: string
+  dependencies: string[]
+  code: string
+  mapping?: any
+}
+
+export default (entryFile: string) => {
   console.time(chalk.green("Code bundled in"))
   let ID = 0
 
-  function createAsset(filename, isJavaScript) {
+  function createAsset(filename: string, isJavaScript?: boolean): Asset {
     const content = fs.readFileSync(filename, "utf-8")
     let ast
 
@@ -44,9 +52,10 @@ module.exports = entryFile => {
     }
   }
 
-  function createGraph(entry) {
-    const mainAsset = createAsset(entry)
+  function createGraph(entry: string) {
+    const mainAsset: Asset = createAsset(entry)
     const queue = [mainAsset]
+    let absolutePath
 
     for (const asset of queue) {
       const dirname = path.dirname(asset.filename)

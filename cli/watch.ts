@@ -1,9 +1,7 @@
-const fs = require("fs")
-const serve = require("./tasks/serve")
-const build = require("./tasks/build")
-const gaze = require("gaze")
+import build from "./tasks/build"
+import gaze from "gaze"
 
-const buildAndServe = (entry, options) => {
+const watch = (entry, options) => {
   build(entry, options)
   console.log("Waiting for file changes...")
 
@@ -13,13 +11,11 @@ const buildAndServe = (entry, options) => {
       build(entry, options)
     })
   })
-
-  serve()
 }
 
-module.exports = program =>
+export default program =>
   program
     .version("0.0.1")
-    .command("serve <entry>")
+    .command("watch <entry>")
     .option("-o, --output [optional]", "path to output file")
-    .action(buildAndServe)
+    .action(watch)

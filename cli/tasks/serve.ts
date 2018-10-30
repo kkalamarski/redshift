@@ -1,12 +1,13 @@
-const express = require("express")
-const path = require("path")
-const fs = require("fs")
+import express from "express"
+import path from "path"
+import fs from "fs"
+
 const app = express()
 const port = 3000
 const dir = process.cwd()
 const indexPath = path.join(dir, "index.html")
 
-module.exports = () => {
+export default () => {
   if (!fs.existsSync(indexPath)) {
     throw Error(`${indexPath} does not exist!`)
   }

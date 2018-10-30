@@ -1,4 +1,4 @@
-const bundle = require("./index")
+import bundle from "./index"
 
 describe("Bundler", () => {
   it("should bundle all files", () => {

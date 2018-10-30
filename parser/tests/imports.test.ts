@@ -1,4 +1,4 @@
-const compile = require("../redshift")
+import compile from "../redshift"
 
 describe("Import statements", () => {
   it("should create an internal import", () => {

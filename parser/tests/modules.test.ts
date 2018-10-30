@@ -1,4 +1,4 @@
-const compile = require("../redshift")
+import compile from "../redshift"
 
 describe("Declaring modules", () => {
   it("should be possible to declare new module", () => {
@@ -83,25 +83,5 @@ describe("Declaring modules", () => {
     const result = compile(code, true, null, true)
 
     expect(result).toBe(10)
-  })
-
-  it("should call the module function", () => {
-    const code = `
-      defmodule Example do
-        def get() do
-          1 + 3
-        end
-
-        def get(arg) do
-          5 + arg
-        end
-      end
-
-      Example.get(4)
-    `
-
-    const result = compile(code, true, null, true)
-
-    expect(result).toBe(9)
   })
 })

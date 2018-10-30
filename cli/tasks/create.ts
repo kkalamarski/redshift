@@ -1,8 +1,8 @@
-const fs = require("fs")
-const chalk = require("chalk")
-const path = require("path")
-const generate = require("../../generator")
-const exec = require("child_process").exec
+import fs from "fs"
+import chalk from "chalk"
+import path from "path"
+import generate from "../../generator"
+import { exec } from "child_process"
 
 const build = (entry, options) => {
   const target = path.join(process.cwd(), entry)
@@ -29,4 +29,4 @@ const build = (entry, options) => {
   }
 }
 
-module.exports = build
+export default build

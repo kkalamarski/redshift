@@ -1,4 +1,4 @@
-const compile = require("../redshift")
+import compile from "../redshift"
 
 describe("Expressions", () => {
   it("should parse an expression", () => {

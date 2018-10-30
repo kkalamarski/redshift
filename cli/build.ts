@@ -1,6 +1,6 @@
-const build = require("./tasks/build")
+import build from "./tasks/build"
 
-module.exports = program =>
+export default program =>
   program
     .version("0.0.1")
     .command("build <entry>")

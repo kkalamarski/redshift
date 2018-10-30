@@ -1,6 +1,6 @@
-const create = require("./tasks/create")
+import create from "./tasks/create"
 
-module.exports = program =>
+export default program =>
   program
     .version("0.0.1")
     .command("create <projectName>")

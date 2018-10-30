@@ -1,6 +1,5 @@
-const fs = require("fs")
-const chalk = require("chalk")
-const path = require("path")
+import fs from "fs"
+import path from "path"
 
 const main = target => `import "./src/App.rh" as App
 
@@ -34,7 +33,7 @@ const html = () => `<!DOCTYPE html>
 
 </html>`
 
-const package = target =>
+const pkg = target =>
   JSON.stringify(
     {
       name: (t => t[t.length - 1])(target.split(path.sep)),
@@ -48,7 +47,7 @@ const package = target =>
       },
 
       dependencies: {
-        redshiftlang: require("../package.json").version
+        redshiftlang: require("../../package.json").version
       }
     },
     null,
@@ -62,9 +61,9 @@ bin
 const generate = target => {
   fs.mkdirSync(target)
   fs.writeFileSync(path.join(target, ".gitignore"), gitignore(), "utf-8")
-  fs.writeFileSync(path.join(target, "index.html"), html(target), "utf-8")
+  fs.writeFileSync(path.join(target, "index.html"), html(), "utf-8")
   fs.writeFileSync(path.join(target, "main.rh"), main(target), "utf-8")
-  fs.writeFileSync(path.join(target, "package.json"), package(target), "utf-8")
+  fs.writeFileSync(path.join(target, "package.json"), pkg(target), "utf-8")
 
   fs.mkdirSync(path.join(target, "src"))
   fs.writeFileSync(path.join(target, "src/App.rh"), app(target), "utf-8")
@@ -72,4 +71,4 @@ const generate = target => {
   fs.mkdirSync(path.join(target, "bin"))
 }
 
-module.exports = generate
+export default generate

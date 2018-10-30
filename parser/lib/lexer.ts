@@ -1,4 +1,5 @@
-const split = require("split-string")
+import split from "split-string"
+
 const keywords = ["defmodule", "def", "do", "end", "import"]
 const operations = ["+", "-", "*", "/", "=", "<>"]
 
@@ -7,15 +8,12 @@ const isString = t => /^".*"$/
 const isIndentifier = t => /^[$A-Z_][0-9A-Z_$]*$/i.test(t)
 const isFunction = t => /[a-zA-z]*\.?[a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?/.test(t)
 
-class Lexer {
-  constructor() {
-    this.code = ""
-    this.buffer = ""
-    this.line = 0
-    this.position = 0
-
-    this.tokens = []
-  }
+export default class Lexer {
+  code = ""
+  buffer = ""
+  line = 0
+  position = 0
+  tokens = []
 
   tokenize(code) {
     this.code = code
@@ -63,5 +61,3 @@ class Lexer {
     }
   }
 }
-
-module.exports = Lexer

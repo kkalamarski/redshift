@@ -1,4 +1,4 @@
-import compile from "../redshift"
+import { evaluate } from "./../redshift"
 
 describe("Assignments", () => {
   it("should assign to variable", () => {
@@ -6,7 +6,7 @@ describe("Assignments", () => {
             test = 2 + 1
             test
           `
-    const result = compile(code, true)
+    const result = evaluate(code)
 
     expect(result).toBe(3)
   })
@@ -17,7 +17,7 @@ describe("Assignments", () => {
         test2 = test * 4
         test2
     `
-    const result = compile(code, true)
+    const result = evaluate(code)
 
     expect(result).toBe(12)
   })
@@ -28,7 +28,7 @@ describe("Assignments", () => {
         test2 = 5
         test2 + test
     `
-    const result = compile(code, true)
+    const result = evaluate(code)
 
     expect(result).toBe(7)
   })
@@ -41,7 +41,7 @@ describe("Assignments", () => {
     `
 
     expect(() => {
-      compile(code, true)
+      evaluate(code)
     }).toThrow()
   })
 })

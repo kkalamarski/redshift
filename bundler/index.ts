@@ -1,6 +1,6 @@
 import fs from "fs"
 import path from "path"
-import redshift from "../parser/redshift"
+import { getAstFromCode, compileAstToCode } from "../parser/redshift"
 import traverse from "babel-traverse"
 import * as babylon from "babylon"
 import * as babel from "@babel/core"
@@ -27,7 +27,7 @@ export default (entryFile: string) => {
         sourceType: "module"
       })
     } else {
-      ast = redshift(content, false, true)
+      ast = getAstFromCode(content)
     }
 
     let dependencies = []
@@ -40,9 +40,7 @@ export default (entryFile: string) => {
 
     const id = ID++
 
-    const { code } = babel.transformFromAst(ast, null, {
-      presets: ["@babel/env"]
-    })
+    const code = compileAstToCode(ast, true)
 
     return {
       id,

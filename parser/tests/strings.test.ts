@@ -1,4 +1,4 @@
-import compile from "../redshift"
+import { evaluate } from "../redshift"
 
 describe("Strings", () => {
   it("should parse string", () => {
@@ -6,7 +6,7 @@ describe("Strings", () => {
         test = "a string"
         test
     `
-    const result = compile(code, true)
+    const result = evaluate(code)
 
     expect(result).toBe("a string")
   })
@@ -17,7 +17,7 @@ describe("Strings", () => {
         str
       `
 
-    const result = compile(code, true)
+    const result = evaluate(code)
     expect(result).toBe("hello world!")
   })
 
@@ -29,7 +29,7 @@ describe("Strings", () => {
         result
       `
 
-    const result = compile(code, true)
+    const result = evaluate(code)
     expect(result).toBe("hello world!")
   })
 
@@ -42,7 +42,7 @@ describe("Strings", () => {
         greet("Chris")
     `
 
-    const result = compile(code, true)
+    const result = evaluate(code)
     expect(result).toBe("Hello Chris")
   })
 })

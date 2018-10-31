@@ -16,8 +16,10 @@ import {
   File,
   Program,
   ExportDefaultDeclaration,
-  ImportDeclaration
+  ImportDeclaration,
+  RestElement
 } from "./parser/ast"
+import { buildModuleMethods } from "./parser/functions"
 
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
 const isString = t => /^".*"$/
@@ -25,6 +27,8 @@ const isIndentifier = t => /^[$A-Z_][0-9A-Z_$]*$/i.test(t)
 
 let _c = 0
 let _tokens = []
+
+let _modules: any = {}
 
 const peek = () => _tokens[_c]
 const consume = () => _tokens[_c++]
@@ -57,13 +61,18 @@ const parseTopLevelExpressions = () => {
     }
   } while (peek())
 
+  const globalModule = declareModule("_global")
+  const functions = getRegisteredMethods("_global")
+
+  expressions = [].concat(globalModule, functions, expressions)
+
   return new File(new Program(expressions.filter(x => x)))
 }
 
 const parseKeyword = () => {
   const value = consume()[1]
 
-  if (value === "def") return parseFunction()
+  if (value === "def") return parseModuleMethod("_global")
   if (value === "import") return parseImport()
 }
 
@@ -127,28 +136,32 @@ const parseNumber = () => {
   }
 }
 
-const makeBinaryExpression = (value, operator) => {
+const makeBinaryExpression = (value, operator): ExpressionStatement => {
   const right = consume()
   return new ExpressionStatement(
     new BinaryExpression(value, operator, identifierOrNumber(right))
   )
 }
 
+const declareModule = name =>
+  new VariableDeclaration(new Identifier(name), new ObjectExpression([]))
+
 const parseModule = () => {
   consume() // remove defmodule
   const moduleName = consume()[1]
-  const moduleDeclaration = new VariableDeclaration(
-    new Identifier(moduleName),
-    new ObjectExpression([])
-  )
-  let functions = []
+
+  if (!_modules[moduleName]) {
+    _modules[moduleName] = {}
+  }
+
+  const moduleDeclaration = declareModule(moduleName)
 
   while (consume()[1] !== "end") {
     const next = peek()
 
     if (next[1] === "def") {
       consume() // remove "def" from queue
-      functions.push(parseModuleMethod(moduleName))
+      parseModuleMethod(moduleName)
       consume() // remove "end" from queue
     } else if (next[0] === "newline" || next[0] === "key") {
       continue
@@ -159,6 +172,7 @@ const parseModule = () => {
     }
   }
 
+  const functions = getRegisteredMethods(moduleName)
   const moduleExport = new ExportDefaultDeclaration(new Identifier(moduleName))
 
   return [].concat(moduleDeclaration, functions, moduleExport)
@@ -204,30 +218,47 @@ const parseFunction = () => {
   )
 }
 
-const parseModuleMethod = moduleName => {
-  const fn = consume()[1]
-  const { name, params } = getFunctionNameAndParams(fn)
+const registerMethod = (moduleName, functionName, params, body) => {
+  if (!_modules[moduleName]) {
+    _modules[moduleName] = {}
+  }
 
-  return new ExpressionStatement(
-    new AssignmentExpression(
-      new MemberExpression(new Identifier(moduleName), new Identifier(name)),
-      new FunctionExpression(
-        null,
-        params.map(param => new Identifier(param)),
-        peek()[1] === "do" ? parseBlock() : {}
-      )
-    )
-  )
+  if (!_modules[moduleName][functionName]) {
+    _modules[moduleName][functionName] = []
+  }
+
+  _modules[moduleName][functionName].push({
+    params,
+    body
+  })
+}
+
+const getRegisteredMethods = (moduleName: string): ExpressionStatement[] => {
+  const mod = _modules[moduleName]
+
+  if (!_modules || !_modules[moduleName]) return []
+
+  const [declarations, assignments] = buildModuleMethods(mod, moduleName)
+  
+  return [].concat(declarations, assignments)
+}
+
+const parseModuleMethod = moduleName => {
+  const [_, fnDeclaration] = consume()
+  const { name, params } = getFunctionNameAndParams(fnDeclaration)
+
+  const body = peek()[1] === "do" ? parseBlock() : {}
+
+  registerMethod(moduleName, name, params, body)
 }
 
 const getFunctionNameAndParams = token => {
-  const args = mapFunctionArguments(token)
+  const params = mapFunctionArguments(token)
   const name = token.split("(")[0]
-  const nameWithArity = name + "_a" + args.length
 
   return {
-    name: nameWithArity,
-    params: args
+    name,
+    params
   }
 }
 
@@ -368,6 +399,7 @@ const mapFunctionArguments = name => {
 export default tokens => {
   _c = 0
   _tokens = tokens
+  _modules = {}
 
   return parseTopLevelExpressions()
 }

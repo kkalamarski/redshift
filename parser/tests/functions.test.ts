@@ -1,4 +1,4 @@
-import compile from "../redshift"
+import { evaluate } from "./../redshift"
 
 describe("Functions", () => {
   it("should declare and execute a function", () => {
@@ -9,7 +9,7 @@ describe("Functions", () => {
 
         test()
     `
-    const result = compile(code, true)
+    const result = evaluate(code)
 
     expect(result).toBe(6)
   })
@@ -23,7 +23,7 @@ describe("Functions", () => {
 
         test()
     `
-    const result = compile(code, true)
+    const result = evaluate(code)
 
     expect(result).toBe(6)
   })
@@ -37,7 +37,7 @@ describe("Functions", () => {
       test(1, 2)
     `
 
-    const result = compile(code, true)
+    const result = evaluate(code)
     expect(result).toBe(3)
   })
 
@@ -50,23 +50,23 @@ describe("Functions", () => {
 
       test(5)
     `
-    const result = compile(code, true)
+    const result = evaluate(code)
     expect(result).toBe(13)
   })
 
   it("should be possible to return function call", () => {
     const code = `
       def test() do
-        4 + 6
+        test(5)
       end
 
       def test(a) do
-        test()
+        a * a
       end
 
       test(10)
     `
-    const result = compile(code, true)
-    expect(result).toBe(10)
+    const result = evaluate(code)
+    expect(result).toBe(100)
   })
 })

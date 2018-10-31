@@ -1,6 +1,6 @@
 const IO = {
-  puts_a1: a => console.log(a),
-  inspect_a1: a => console.dir(a)
+  puts: a => console.log(a),
+  inspect: a => console.dir(a)
 }
 
 export default IO

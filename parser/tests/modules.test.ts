@@ -1,4 +1,4 @@
-import compile from "../redshift"
+import { compile, evaluate } from "../redshift"
 
 describe("Declaring modules", () => {
   it("should be possible to declare new module", () => {
@@ -24,7 +24,7 @@ describe("Declaring modules", () => {
 
     const result = compile(code)
 
-    expect(result).toContain("User.get_a0 =")
+    expect(result).toContain("User.get =")
   })
 
   it("should be possible to declare multiple functions in a module", () => {
@@ -42,8 +42,7 @@ describe("Declaring modules", () => {
 
     const result = compile(code)
 
-    expect(result).toContain("User.get_a0 =")
-    expect(result).toContain("User.get_a1 =")
+    expect(result).toContain("User.get =")
   })
 
   it("should export the module", () => {
@@ -80,8 +79,36 @@ describe("Declaring modules", () => {
       User.get(6)
     `
 
-    const result = compile(code, true, null, true)
+    const result = evaluate(code, true)
 
     expect(result).toBe(10)
+  })
+
+  it("should be possible to perform pattern matching", () => {
+    const code = `
+      defmodule SomeModule do
+        def get("hello world") do
+          "it is string hello world"
+        end
+
+        def get(6) do
+          "it is 6"
+        end
+
+        def get(arg) do
+          "unknown argument"
+        end
+
+        def get(arg1, arg2, 3) do
+          "two unknown arguments"
+        end
+      end
+
+      SomeModule.get(6)
+    `
+
+    const result = evaluate(code, true)
+
+    expect(result).toBe("it is 6")
   })
 })

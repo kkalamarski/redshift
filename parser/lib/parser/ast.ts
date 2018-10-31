@@ -45,13 +45,16 @@ export class MemberExpression {
   public type: string = "MemberExpression"
   public computed: boolean = false
 
-  constructor(public object, public property) {}
+  constructor(
+    public object: Identifier,
+    public property: Identifier | NumberLiteral | StringLiteral
+  ) {}
 }
 
 export class Block {
   public type: string = "BlockStatement"
 
-  constructor(public body) {}
+  constructor(public body: any[]) {}
 }
 
 export class FunctionDeclaration {
@@ -126,6 +129,34 @@ export class ExportDefaultDeclaration {
   public type: string = "ExportDefaultDeclaration"
 
   constructor(public declaration) {}
+}
+
+export class RestElement {
+  public type: string = "RestElement"
+
+  constructor(public argument: Identifier) {}
+}
+
+export class IfStatement {
+  public type: string = "IfStatement"
+
+  constructor(
+    public test,
+    public consequent: Block,
+    public alternate: Block = null
+  ) {}
+}
+
+export class LogicalExpression {
+  public type: string = "LogicalExpression"
+
+  constructor(public left, public operator: string, public right) {}
+}
+
+export class ArrayPattern {
+  public type: string = "ArrayPattern"
+
+  constructor(public elements: Identifier[]) {}
 }
 
 export class Program {

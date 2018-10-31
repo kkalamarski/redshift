@@ -20,6 +20,7 @@ import {
   RestElement
 } from "./parser/ast"
 import { buildModuleMethods } from "./parser/functions"
+import Lexer from "./lexer"
 
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
 const isString = t => /^".*"$/
@@ -120,9 +121,8 @@ const parseFunctionCall = (val?): ExpressionStatement => {
 }
 
 const getType = value => {
-  if (isNumber(value)) return ["num", value]
-  if (isString(value)) return ["str", value]
-  if (isIndentifier(value)) return ["id", value]
+  const lexer = new Lexer()
+  return [lexer.getTokenType(value), value]
 }
 
 const parseNumber = () => {
@@ -239,7 +239,7 @@ const getRegisteredMethods = (moduleName: string): ExpressionStatement[] => {
   if (!_modules || !_modules[moduleName]) return []
 
   const [declarations, assignments] = buildModuleMethods(mod, moduleName)
-  
+
   return [].concat(declarations, assignments)
 }
 
@@ -345,15 +345,15 @@ const actionOrder = buffer => {
 }
 
 const parseAnyType = token => {
-  if (token[0] === "id") return new Identifier(token[1])
-  if (token[0] === "str") return new StringLiteral(token[1])
-  if (token[0] === "num") return new NumberLiteral(token[1])
-  if (token[0] === "fn") return parseFunctionCall(token[1])
+  const [type, value] = token
+
+  if (type === "id") return new Identifier(value)
+  if (type === "str") return new StringLiteral(value)
+  if (type === "num") return new NumberLiteral(value)
+  if (type === "fn") return parseFunctionCall(value)
 
   throw new SyntaxError(
-    `Invalid token "${token[1]}" of type "${
-      token[0]
-    }" used as a part of expression.`
+    `Invalid token "${value}" of type "${type}" used as a part of expression.`
   )
 }
 

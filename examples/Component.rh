@@ -1,0 +1,19 @@
+import WebComponent
+
+defmodule Component do
+    def init() do 
+        WebComponent.init(
+            "custom-element",
+            Component.template, 
+            Component.state
+        )
+    end
+
+    def template(model) do
+        "hello world!"
+    end
+
+    def state() do
+
+    end
+end

@@ -2,18 +2,16 @@ import WebComponent
 
 defmodule Component do
     def init() do 
+        state = 1 + 3
+
         WebComponent.init(
             "custom-element",
             Component.template, 
-            Component.state
+            state
         )
     end
 
     def template(model) do
-        "hello world!"
-    end
-
-    def state() do
-
+        "hello world! ${model.name}"
     end
 end

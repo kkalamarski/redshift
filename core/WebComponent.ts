@@ -1,17 +1,22 @@
-import { define, html } from "hybrids"
+import * as hybrids from "hybrids"
 
 const WebComponent = {
   init: (tag, view, update) => {
-    const model = update()
+    const model = { name: "Chris" }
 
     const Component = {
       ...model,
-      render: state => html`
-        <h1>Hello World from web component!</h1>
+      render: state => hybrids.html`
+        <style>
+          h1 { text-align: center }
+        </style>
+        <h1>Hello ${state.name} from web component!</h1>
       `
     }
 
-    define(tag, Component)
+    console.log(Component)
+
+    return hybrids.define(tag, Component)
   }
 }
 

@@ -1,8 +1,6 @@
-import { evaluate } from "../redshift"
-import { compile } from "./../redshift"
-import { tokenize } from "../lib/lexer"
+import { tokenize, TokenType } from "../lib/lexer"
 
-describe.skip("Lists", () => {
+describe("Lists", () => {
   it("should be possible to use List literal", () => {
     const code = `
       names = [
@@ -15,6 +13,9 @@ describe.skip("Lists", () => {
     `
 
     const result = tokenize(code)
-    expect(JSON.stringify(result, null, 2)).toBe(3)
+
+    expect(result.filter(t => t[0] === TokenType.ListOpen).length).toBe(1)
+    expect(result.filter(t => t[0] === TokenType.ListClose).length).toBe(1)
+    expect(result.filter(t => t[0] === TokenType.String).length).toBe(3)
   })
 })

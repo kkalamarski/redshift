@@ -3,12 +3,12 @@ export enum TokenType {
   Operator = "Operator",
   Number = "Number",
   Identifier = "Identifier",
+  MemberIdentifier = "MemberIdentifier",
   Function = "Function",
   String = "String",
   BlockString = "BlockString",
   Token = "Token",
   Newline = "Newline",
-  Comma = "Comma",
 
   // Operators
   Plus = "Plus",
@@ -23,6 +23,9 @@ export enum TokenType {
   FatArrow = "FatArrow",
 
   // Tokens
+  Dot = "Dot",
+  Comma = "Comma",
+
   ListOpen = "ListOpen",
   ListClose = "ListClose",
 
@@ -71,6 +74,7 @@ export const TokenDefinitions: TokenDefiniftion[] = [
 
   // Tokens
   new TokenDefiniftion(TokenType.ListOpen, /^\[/),
+  new TokenDefiniftion(TokenType.Dot, /^\./),
   new TokenDefiniftion(TokenType.ListClose, /^\]/),
   new TokenDefiniftion(TokenType.TupleOpen, /^\{/),
   new TokenDefiniftion(TokenType.TupleClose, /^\}/),
@@ -86,6 +90,10 @@ export const TokenDefinitions: TokenDefiniftion[] = [
   new TokenDefiniftion(TokenType.Import, /^import/),
   new TokenDefiniftion(TokenType.As, /^as/),
   new TokenDefiniftion(TokenType.Fn, /^fn/),
+  new TokenDefiniftion(
+    TokenType.MemberIdentifier,
+    /^[$A-Z_][0-9A-Z_$]*\.[$A-Z_][0-9A-Z_$]+/i
+  ),
   new TokenDefiniftion(TokenType.Identifier, /^[$A-Z_][0-9A-Z_$]*/i)
 ]
 

@@ -23,7 +23,7 @@ const createLogicalStatement = params => {
   const [head, ...tail] = params
 
   const current = new BinaryExpression(
-    new MemberExpression(new Identifier("params"), new NumberLiteral(head[2])),
+    new MemberExpression(new Identifier("params"), new NumberLiteral(head[3])),
     "===",
     parseAnyType(head)
   )
@@ -64,8 +64,10 @@ const redeclareParamsInsideClause = params =>
     ? new VariableDeclaration(
         new ArrayPattern(
           params.map(
-            ([type, value, id]) =>
-              new Identifier(type === TokenType.Identifier ? value : `_${id}`)
+            ([type, value], index) =>
+              new Identifier(
+                type === TokenType.Identifier ? value : `_${type}_${index}`
+              )
           )
         ),
         new Identifier("params")
@@ -75,8 +77,9 @@ const redeclareParamsInsideClause = params =>
 const buildClause = ({ params, body: block }) => {
   const paramDeclaration = redeclareParamsInsideClause(params)
   const body = new Block([].concat(paramDeclaration, block.body))
+  const args = params.map((param, index) => param.concat(index))
 
-  return new IfStatement(buildPattenrMatching(params), body)
+  return new IfStatement(buildPattenrMatching(args), body)
 }
 
 export const buildModuleMethods = (mod: any, modName: string): any[] => {

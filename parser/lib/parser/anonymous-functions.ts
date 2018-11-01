@@ -11,9 +11,7 @@ import { isArythmeticOperator } from "./../lexer"
 
 export const getParamsFromBuffer = (buffer: Token[]) => {
   const close = buffer.findIndex(token => token[0] === TokenType.ParamsClose)
-  return buffer
-    .slice(0, close)
-    .filter(param => param[0] === TokenType.Identifier)
+  return buffer.slice(0, close).filter(param => param[0] !== TokenType.Comma)
 }
 
 export const getBodyFromBuffer = (buffer: Token[]) => {
@@ -40,12 +38,12 @@ export const buildAnonymousFunction = (buffer: Token[]) => {
     new ArrowFunctionExpression(
       null,
       params.map(param => new Identifier(param[1])),
-      parseBuffer(body)
+      parseFunctionFromBuffer(body)
     )
   )
 }
 
-const parseBuffer = (buffer: Token[]) => {
+export const parseFunctionFromBuffer = (buffer: Token[]) => {
   const [left, op, ...rest] = buffer
 
   if (op[0] === TokenType.ParamsOpen) {

@@ -16,7 +16,10 @@ import {
   ImportDeclaration
 } from "./parser/ast"
 import { buildModuleMethods, buildFunctionCall } from "./parser/functions"
-import { buildAnonymousFunction } from "./parser/anonymous-functions"
+import {
+  buildAnonymousFunction,
+  parseFunctionFromBuffer
+} from "./parser/anonymous-functions"
 import {
   TokenType,
   isKeyword,
@@ -48,12 +51,11 @@ const parseTopLevelExpressions = () => {
       }
     } else if (type === TokenType.Identifier) {
       expressions.push(parseIdentifier())
-
-      // }
-      // else if (type === TokenType.Function) {
-      //   expressions.push(parseFunctionCall())
     } else if (type === TokenType.Number) {
       expressions.push(parseNumber())
+    } else if (type === TokenType.MemberIdentifier) {
+      const buffer = getBufferUntil(TokenType.Newline)
+      expressions.push(parseFunctionFromBuffer(buffer))
     } else {
       consume()
     }
@@ -89,6 +91,9 @@ const parseIdentifier = (val?) => {
     if (next && next[0] === TokenType.Fn) {
       const buffer = getBufferUntil(TokenType.End)
       right = buildAnonymousFunction(buffer)
+    } else if (next && next[0] === TokenType.MemberIdentifier) {
+      const buffer = getBufferUntil(TokenType.Newline)
+      right = parseFunctionFromBuffer(buffer)
     } else if (next && next[0] === TokenType.Identifier) {
       right = parseIdentifier()
     } else {
@@ -184,13 +189,12 @@ const parseModule = () => {
 
   const moduleDeclaration = declareModule(moduleName)
 
-  while (consume()[0] !== TokenType.End) {
-    const [type, value, position] = peek()
+  while (true) {
+    const [type, value, position] = consume()
+    if (type === TokenType.End) break
 
     if (type === TokenType.Def) {
-      consume() // remove "def" from queue
       parseModuleMethod(moduleName)
-      consume() // remove "end" from queue
     } else if (type === TokenType.Newline || isKeyword([type])) {
       continue
     } else {
@@ -423,16 +427,23 @@ const parseExpressionLine = (val?): ExpressionStatement => {
 //   }
 // }
 
-export const parseAnyType = token => {
-  const [kind, value] = token
+const parseMemberExpression = (token: Token) => {
+  const [mod, fn] = token[1].split(".")
 
-  if (kind === TokenType.Identifier) return new Identifier(value)
-  if (kind === TokenType.String) return new StringLiteral(value)
-  if (kind === TokenType.Number) return new NumberLiteral(value)
-  if (kind === TokenType.Function) return parseFunctionCall(token)
+  return new MemberExpression(new Identifier(mod), new Identifier(fn))
+}
+
+export const parseAnyType = (token: Token) => {
+  const [type, value] = token
+
+  if (type === TokenType.Identifier) return new Identifier(value)
+  if (type === TokenType.String) return new StringLiteral(value)
+  if (type === TokenType.Number) return new NumberLiteral(value)
+  if (type === TokenType.Function) return parseFunctionCall(token)
+  if (type === TokenType.MemberIdentifier) return parseMemberExpression(token)
 
   throw new SyntaxError(
-    `Invalid token "${value}" of type "${kind}" used as a part of expression.`
+    `Invalid token "${value}" of type "${type}" used as a part of expression.`
   )
 }
 

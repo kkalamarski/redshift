@@ -9,7 +9,7 @@ describe("Functions", () => {
 
         test()
     `
-    const result = evaluate(code)
+    const result = compile(code)
 
     expect(result).toBe(6)
   })
@@ -64,9 +64,9 @@ describe("Functions", () => {
         a * a
       end
 
-      test(10)
+      test()
     `
-    const result = evaluate(code)
-    expect(result).toBe(100)
+    const result = compile(code)
+    expect(result).toBe(25)
   })
 })

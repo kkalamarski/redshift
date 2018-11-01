@@ -1,4 +1,4 @@
-import { BinaryExpression } from "./ast"
+import { BinaryExpression, ExpressionStatement } from "./ast"
 import { parseAnyType } from "../parser"
 
 export const parseExpression = buffer => {
@@ -8,8 +8,8 @@ export const parseExpression = buffer => {
 
   if (op) {
     let right = parseAnyType(_right)
-    return new BinaryExpression(left, op[1], right)
+    return new ExpressionStatement(new BinaryExpression(left, op[1], right))
   } else {
-    return left
+    return new ExpressionStatement(left)
   }
 }

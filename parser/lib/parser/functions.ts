@@ -13,9 +13,10 @@ import {
   LogicalExpression,
   VariableDeclaration,
   ArrayPattern,
-  FunctionDeclaration
+  FunctionDeclaration,
+  CallExpression
 } from "./ast"
-import { getTokenType, TokenKind } from "./../lexer"
+import { TokenType } from "./../lexer"
 import { parseAnyType } from "../parser"
 
 const createLogicalStatement = params => {
@@ -37,7 +38,7 @@ const createLogicalStatement = params => {
 const buildPattenrMatching = params => {
   const length = params.length
   const nonIdParams = params.filter(
-    ([type, value, id]) => type !== TokenKind.Identifier
+    ([type, value, id]) => type !== TokenType.Identifier
   )
 
   const arityCheck = new BinaryExpression(
@@ -64,7 +65,7 @@ const redeclareParamsInsideClause = params =>
         new ArrayPattern(
           params.map(
             ([type, value, id]) =>
-              new Identifier(type === TokenKind.Identifier ? value : `_${id}`)
+              new Identifier(type === TokenType.Identifier ? value : `_${id}`)
           )
         ),
         new Identifier("params")
@@ -72,12 +73,10 @@ const redeclareParamsInsideClause = params =>
     : []
 
 const buildClause = ({ params, body: block }) => {
-  const pattern = params.map((param, id) => [getTokenType(param), param, id])
-
-  const paramDeclaration = redeclareParamsInsideClause(pattern)
+  const paramDeclaration = redeclareParamsInsideClause(params)
   const body = new Block([].concat(paramDeclaration, block.body))
 
-  return new IfStatement(buildPattenrMatching(pattern), body)
+  return new IfStatement(buildPattenrMatching(params), body)
 }
 
 export const buildModuleMethods = (mod: any, modName: string): any[] => {
@@ -113,6 +112,15 @@ export const getFunctionNameAndParams = token => {
     name,
     params
   }
+}
+
+export const buildFunctionCall = (name, params) => {
+  return new ExpressionStatement(
+    new CallExpression(
+      new Identifier(name),
+      params.map(param => parseAnyType(param))
+    )
+  )
 }
 
 const mapFunctionArguments = name => {

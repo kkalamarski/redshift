@@ -1,5 +1,4 @@
 import {
-  AssignmentExpression,
   BinaryExpression,
   Block,
   CallExpression,
@@ -7,8 +6,6 @@ import {
   MemberExpression,
   ObjectExpression,
   ReturnStatement,
-  FunctionDeclaration,
-  FunctionExpression,
   NumberLiteral,
   StringLiteral,
   Identifier,
@@ -16,19 +13,21 @@ import {
   File,
   Program,
   ExportDefaultDeclaration,
-  ImportDeclaration,
-  RestElement
+  ImportDeclaration
 } from "./parser/ast"
 import {
   buildModuleMethods,
-  getFunctionNameAndParams
+  getFunctionNameAndParams,
+  buildFunctionCall
 } from "./parser/functions"
 import { buildAnonymousFunction } from "./parser/anonymous-functions"
-import { getTokenType, TokenKind, Keyword } from "./lexer"
-
-const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
-const isString = t => /^".*"$/
-const isIndentifier = t => /^[$A-Z_][0-9A-Z_$]*$/i.test(t)
+import {
+  TokenType,
+  isKeyword,
+  isValidParameter,
+  isArythmeticOperator
+} from "./lexer"
+import { parseExpression } from "./parser/expressions"
 
 let _c = 0
 let _tokens = []
@@ -42,20 +41,24 @@ const parseTopLevelExpressions = () => {
   let expressions = []
 
   do {
-    const token = peek()
-    const type = token[0]
-    const value = token[1]
+    const [type, _value, _position] = peek()
 
-    if (type === TokenKind.Keyword) {
-      if (value === Keyword.defmodule)
+    if (isKeyword([type])) {
+      if (type === TokenType.DefModule) {
         expressions = [].concat(expressions, parseModule())
-      else expressions.push(parseKeyword())
-    } else if (type === TokenKind.Function) {
-      expressions.push(parseFunctionCall())
-    } else if (type === TokenKind.Identifier) {
+      } else {
+        expressions.push(parseKeyword())
+      }
+    } else if (type === TokenType.Identifier) {
       expressions.push(parseIdentifier())
-    } else if (type === TokenKind.Number) {
-      expressions.push(parseNumber())
+
+      // }
+      // else if (type === TokenType.Function) {
+      //   expressions.push(parseFunctionCall())
+      // } else if (type === TokenType.Identifier) {
+      //   expressions.push(parseIdentifier())
+      // } else if (type === TokenType.Number) {
+      //   expressions.push(parseNumber())
     } else {
       consume()
     }
@@ -70,37 +73,42 @@ const parseTopLevelExpressions = () => {
 }
 
 const parseKeyword = () => {
-  const value = consume()[1]
+  const [type, _value] = consume()
 
-  if (value === Keyword.def) return parseModuleMethod("_global")
-  if (value === Keyword.import) return parseImport()
+  if (type === TokenType.Def) return parseModuleMethod("_global")
+  if (type === TokenType.Import) return parseImport()
 }
 
 const parseIdentifier = (val?) => {
-  const value = val ? val : consume()
-  const operator = consume()
-  const nextVal = peek()
+  const [type, value] = val ? val : consume()
+  const [operator_type, operator_value] = peek()
+  const nextVal = peek(1)
 
-  if (operator[1] === "=") {
-    return new VariableDeclaration(
-      new Identifier(value[1]),
-      nextVal[0] === TokenKind.Function
-        ? parseFunctionCall()
-        : parseExpressionLine()
-    )
-  } else if (["+", "-", "/", "*"].includes(operator[1])) {
-    return makeBinaryExpression(new Identifier(value[1]), operator[1])
+  if (operator_type === TokenType.ParamsOpen) {
+    const params = getParams()
+    // todo function call
+    console.log("function call for", value)
+    return buildFunctionCall(value, params)
+  } else if (operator_type === TokenType.Equals) {
+    // return new VariableDeclaration(
+    //   new Identifier(value[1]),
+    //   nextVal[0] === TokenType.Function
+    //     ? parseFunctionCall()
+    //     : parseExpressionLine()
+    // )
+  } else if (isArythmeticOperator([operator_type])) {
+    return makeBinaryExpression(new Identifier(value), operator_value)
   } else {
-    return new ExpressionStatement(new Identifier(value[1]))
+    return new ExpressionStatement(new Identifier(value))
   }
 }
 
-const getBufferUntilKeywordEnd = () => {
+const getBufferUntil = (token: TokenType) => {
   let buffer = []
   while (true) {
     const nextToken = consume()
     const [type, value] = nextToken
-    if (type === TokenKind.Keyword && value === Keyword.end) break
+    if (type === token) break
 
     buffer.push(nextToken)
   }
@@ -110,10 +118,10 @@ const getBufferUntilKeywordEnd = () => {
 
 const parseFunctionCall = (val?): ExpressionStatement => {
   const value = val || consume()
-  const nextVal = peek()
+  const [type, _value] = peek()
 
-  if (nextVal[1] === "->") {
-    const buffer = getBufferUntilKeywordEnd()
+  if (type === TokenType.ThinArrow) {
+    const buffer = getBufferUntil(TokenType.End)
     buffer.unshift(value)
     return buildAnonymousFunction(buffer)
   } else if (value[1].indexOf(".") > -1) {
@@ -124,7 +132,7 @@ const parseFunctionCall = (val?): ExpressionStatement => {
     return new ExpressionStatement(
       new CallExpression(
         new MemberExpression(new Identifier(modulename), new Identifier(name)),
-        params.map(param => parseAnyType(getType(param)))
+        [] //params.map(param => parseAnyType(getType(param)))
       )
     )
   } else {
@@ -133,13 +141,11 @@ const parseFunctionCall = (val?): ExpressionStatement => {
     return new ExpressionStatement(
       new CallExpression(
         new Identifier(name),
-        params.map(param => parseAnyType(getType(param)))
+        [] //params.map(param => parseAnyType(getType(param)))
       )
     )
   }
 }
-
-const getType = value => [getTokenType(value), value]
 
 const parseNumber = () => {
   const value = consume()
@@ -172,18 +178,18 @@ const parseModule = () => {
 
   const moduleDeclaration = declareModule(moduleName)
 
-  while (consume()[1] !== Keyword.end) {
-    const next = peek()
+  while (consume()[0] !== TokenType.End) {
+    const [type, value, position] = peek()
 
-    if (next[1] === Keyword.def) {
+    if (type === TokenType.Def) {
       consume() // remove "def" from queue
       parseModuleMethod(moduleName)
       consume() // remove "end" from queue
-    } else if (next[0] === TokenKind.Newline || next[0] === TokenKind.Keyword) {
+    } else if (type === TokenType.Newline || isKeyword([type])) {
       continue
     } else {
       throw new SyntaxError(
-        `Only function declarations are permitted inside a module! \n Received: ${next}`
+        `Only function declarations are permitted inside a module! \n Received: ${value}`
       )
     }
   }
@@ -197,21 +203,21 @@ const parseModule = () => {
 const parseImport = () => {
   const buffer = []
 
-  while (peek()[0] !== TokenKind.Newline) {
+  while (peek()[0] !== TokenType.Newline) {
     buffer.push(consume())
   }
 
   const [mod, as, name] = buffer
 
-  if (mod[0] === TokenKind.Identifier) {
+  if (mod[0] === TokenType.Identifier) {
     return new ImportDeclaration(
       new StringLiteral("core/" + mod[1]),
       new Identifier(name ? name[1] : mod[1])
     )
-  } else if (mod[0] === TokenKind.String) {
+  } else if (mod[0] === TokenType.String) {
     if (!as) throw SyntaxError("Missing 'as' keword in foreign import!")
     if (!name) throw SyntaxError("Missing import alias in foreign import!")
-    if (name[0] !== TokenKind.Identifier || as[1] !== "as")
+    if (name[0] !== TokenType.Identifier || as[1] !== "as")
       throw SyntaxError("Unknown alias in import statement!")
 
     return new ImportDeclaration(
@@ -223,7 +229,12 @@ const parseImport = () => {
   }
 }
 
-const registerMethod = (moduleName, functionName, params, body) => {
+const registerMethod = (
+  moduleName: string,
+  functionName: string,
+  params: any[],
+  body: Block
+) => {
   if (!_modules[moduleName]) {
     _modules[moduleName] = {}
   }
@@ -248,41 +259,99 @@ const getRegisteredMethods = (moduleName: string): ExpressionStatement[] => {
   return [].concat(declarations, assignments)
 }
 
-const parseModuleMethod = moduleName => {
-  const [_, fnDeclaration] = consume()
-  const { name, params } = getFunctionNameAndParams(fnDeclaration)
+const getParams = () => {
+  const [type, _, position] = consume()
 
-  const body = peek()[1] === Keyword.do ? parseBlock() : {}
+  if (type === TokenType.ParamsOpen) {
+    let params = []
+    while (true) {
+      const next = consume()
 
-  registerMethod(moduleName, name, params, body)
-}
+      if (next[0] === TokenType.ParamsClose) break
+      if (next[0] === TokenType.Comma || next[0] === TokenType.Newline) continue
 
-const parseBlock = () => {
-  consume() // remove do
-  const body = []
+      if (!isValidParameter(next)) {
+        throw new SyntaxError(
+          `Unexpected token ${next[1]} when declaring function parameters at ${
+            next[2]
+          }`
+        )
+      }
 
-  while (true) {
-    const token = consume()
-    const [type] = token
-
-    if (type === TokenKind.Identifier) {
-      body.push(parseIdentifier(token))
-    } else if (type === TokenKind.Number || type === TokenKind.String) {
-      body.push(parseExpressionLine(token))
-    } else if (type === TokenKind.Function) {
-      body.push(parseFunctionCall(token))
+      params.push(next)
     }
 
-    const [_, keyword] = peek()
-    if (keyword === Keyword.end) break
+    return params
+  } else {
+    throw new SyntaxError(`Expected parameters definition at ${position}`)
+  }
+}
+
+const getBlock = () => {
+  const [type, value, position] = consume()
+
+  if (type === TokenType.Do) {
+    let body = []
+    while (true) {
+      const [nextType, nextValue] = consume()
+
+      if (nextType === TokenType.End) break
+
+      const buffer = getBufferUntil(TokenType.Newline)
+      body.push(parseExpression(buffer))
+    }
+
+    const expressions = body.filter(x => x)
+    const last = expressions.pop()
+    const returning = new ReturnStatement(last)
+
+    return new Block([].concat(expressions, returning))
+  } else {
+    throw new SyntaxError(
+      `Expected block declaration but got ${value} at ${position}`
+    )
+  }
+}
+
+const parseModuleMethod = moduleName => {
+  const [type, name, position] = consume()
+  let params, block
+  if (type === TokenType.Identifier) {
+    params = getParams()
+    block = getBlock()
+  } else {
+    throw new SyntaxError(`${name} is not a valid function name at ${position}`)
   }
 
-  const expressions = body.filter(x => x)
-  const last = expressions.pop()
-  const returning = new ReturnStatement(last)
-
-  return new Block([].concat(expressions, returning))
+  registerMethod(moduleName, name, params, block)
 }
+
+// const parseBlock = () => {
+//   consume() // remove do
+//   const body = []
+
+//   while (true) {
+//     const token = consume()
+//     const [type] = token
+
+//     if (type === TokenType.Identifier) {
+//       body.push(parseIdentifier(token))
+//     } else if (type === TokenType.Number || type === TokenType.String) {
+//       body.push(parseExpressionLine(token))
+//     } else if (type === TokenType.Function) {
+//       body.push(parseFunctionCall(token))
+//     }
+
+//     const [peek_type] = peek()
+//     if (peek_type === TokenType.End) break
+//   }
+
+//   const expressions = body.filter(x => x)
+//   const last = expressions.pop()
+//   const returning = new ReturnStatement(last)
+
+//   return new Block([].concat(expressions, returning))
+// }
 
 const parseExpressionLine = (val?): ExpressionStatement => {
   const buffer = []
@@ -292,7 +361,7 @@ const parseExpressionLine = (val?): ExpressionStatement => {
     buffer.push(current)
     current = consume()
 
-    if (current[0] === TokenKind.Newline) break
+    if (current[0] === TokenType.Newline) break
   }
 
   if (!buffer.length) {
@@ -302,50 +371,50 @@ const parseExpressionLine = (val?): ExpressionStatement => {
   return parseExpression(buffer)
 }
 
-const parseExpression = (buffer): ExpressionStatement => {
-  if (buffer.length === 1) {
-    return new ExpressionStatement(parseAnyType(buffer[0]))
-  }
+// const parseExpression = (buffer): ExpressionStatement => {
+//   if (buffer.length === 1) {
+//     return new ExpressionStatement(parseAnyType(buffer[0]))
+//   }
 
-  const operator = buffer[1][1]
+//   const operator = buffer[1][1]
 
-  if (operator === "<>") {
-    return stringOperations(buffer)
-  } else {
-    return new ExpressionStatement(actionOrder(buffer))
-  }
-}
+//   if (operator === "<>") {
+//     return stringOperations(buffer)
+//   } else {
+//     return new ExpressionStatement(actionOrder(buffer))
+//   }
+// }
 
-const stringOperations = buffer => {
-  return new ExpressionStatement(
-    new BinaryExpression(
-      identifierOrString(buffer[0]),
-      "+",
-      identifierOrString(buffer[2])
-    )
-  )
-}
+// const stringOperations = buffer => {
+//   return new ExpressionStatement(
+//     new BinaryExpression(
+//       identifierOrString(buffer[0]),
+//       "+",
+//       identifierOrString(buffer[2])
+//     )
+//   )
+// }
 
-const actionOrder = buffer => {
-  if (buffer.length === 1) {
-    return new NumberLiteral(buffer[0][1])
-  } else if (buffer.length === 3) {
-    const left = identifierOrNumber(buffer[0])
-    const right = identifierOrNumber(buffer[2])
+// const actionOrder = buffer => {
+//   if (buffer.length === 1) {
+//     return new NumberLiteral(buffer[0][1])
+//   } else if (buffer.length === 3) {
+//     const left = identifierOrNumber(buffer[0])
+//     const right = identifierOrNumber(buffer[2])
 
-    return new BinaryExpression(left, buffer[1][1], right)
-  } else {
-    throw new SyntaxError(`Complex calculations are not supported yet.`)
-  }
-}
+//     return new BinaryExpression(left, buffer[1][1], right)
+//   } else {
+//     throw new SyntaxError(`Complex calculations are not supported yet.`)
+//   }
+// }
 
 export const parseAnyType = token => {
   const [kind, value] = token
 
-  if (kind === TokenKind.Identifier) return new Identifier(value)
-  if (kind === TokenKind.String) return new StringLiteral(value)
-  if (kind === TokenKind.Number) return new NumberLiteral(value)
-  if (kind === TokenKind.Function) return parseFunctionCall(token)
+  if (kind === TokenType.Identifier) return new Identifier(value)
+  if (kind === TokenType.String) return new StringLiteral(value)
+  if (kind === TokenType.Number) return new NumberLiteral(value)
+  if (kind === TokenType.Function) return parseFunctionCall(token)
 
   throw new SyntaxError(
     `Invalid token "${value}" of type "${kind}" used as a part of expression.`
@@ -353,8 +422,8 @@ export const parseAnyType = token => {
 }
 
 const identifierOrString = token => {
-  if (token[0] === TokenKind.Identifier) return new Identifier(token[1])
-  if (token[0] === TokenKind.String) return new StringLiteral(token[1])
+  if (token[0] === TokenType.Identifier) return new Identifier(token[1])
+  if (token[0] === TokenType.String) return new StringLiteral(token[1])
 
   throw new SyntaxError(
     `Invalid token "${token[1]}" of type "${
@@ -364,8 +433,8 @@ const identifierOrString = token => {
 }
 
 const identifierOrNumber = token => {
-  if (token[0] === TokenKind.Number) return new NumberLiteral(token[1])
-  if (token[0] === TokenKind.Identifier) return new Identifier(token[1])
+  if (token[0] === TokenType.Number) return new NumberLiteral(token[1])
+  if (token[0] === TokenType.Identifier) return new Identifier(token[1])
 
   throw new SyntaxError(
     `Invalid token "${token[1]}" of type "${

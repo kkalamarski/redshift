@@ -2,12 +2,12 @@ import { evaluate } from "../redshift"
 import { compile } from "./../redshift"
 import { tokenize } from "../lib/lexer"
 
-describe("Lists", () => {
+describe.skip("Lists", () => {
   it("should be possible to use List literal", () => {
     const code = `
       names = [
-        "mark", 
-        "tom", 
+        "mark",
+        "tom",
         "jane"
       ]
 

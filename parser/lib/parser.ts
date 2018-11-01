@@ -15,11 +15,7 @@ import {
   ExportDefaultDeclaration,
   ImportDeclaration
 } from "./parser/ast"
-import {
-  buildModuleMethods,
-  getFunctionNameAndParams,
-  buildFunctionCall
-} from "./parser/functions"
+import { buildModuleMethods, buildFunctionCall } from "./parser/functions"
 import { buildAnonymousFunction } from "./parser/anonymous-functions"
 import {
   TokenType,
@@ -55,10 +51,8 @@ const parseTopLevelExpressions = () => {
       // }
       // else if (type === TokenType.Function) {
       //   expressions.push(parseFunctionCall())
-      // } else if (type === TokenType.Identifier) {
-      //   expressions.push(parseIdentifier())
-      // } else if (type === TokenType.Number) {
-      //   expressions.push(parseNumber())
+    } else if (type === TokenType.Number) {
+      expressions.push(parseNumber())
     } else {
       consume()
     }
@@ -82,19 +76,26 @@ const parseKeyword = () => {
 const parseIdentifier = (val?) => {
   const [type, value] = val ? val : consume()
   const [operator_type, operator_value] = peek()
-  const nextVal = peek(1)
+  const [next_type] = peek(1)
 
   if (operator_type === TokenType.ParamsOpen) {
     const params = getParams()
     return buildFunctionCall(value, params)
   } else if (operator_type === TokenType.Equals) {
-    const eq = consume()
-    const buffer = getBufferUntil(TokenType.Newline)
+    consume() // remove =
+    let right
 
-    return new VariableDeclaration(
-      new Identifier(value),
-      parseExpression(buffer)
-    )
+    if (next_type === TokenType.Fn) {
+      const buffer = getBufferUntil(TokenType.End)
+      right = buildAnonymousFunction(buffer)
+    } else if (next_type === TokenType.Identifier) {
+      right = parseIdentifier()
+    } else {
+      const buffer = getBufferUntil(TokenType.Newline)
+      right = parseExpression(buffer)
+    }
+
+    return new VariableDeclaration(new Identifier(value), right)
   } else if (isArythmeticOperator([operator_type])) {
     const op = consume()
     return makeBinaryExpression(new Identifier(value), op[1])
@@ -107,6 +108,7 @@ const getBufferUntil = (token: TokenType) => {
   let buffer = []
   while (true) {
     const nextToken = consume()
+    if (!nextToken) return buffer
     const [type] = nextToken
     if (type === token) break
 
@@ -127,7 +129,6 @@ const parseFunctionCall = (val?): ExpressionStatement => {
   } else if (value[1].indexOf(".") > -1) {
     const parts = value[1].split(".")
     const modulename = parts[0]
-    const { name, params } = getFunctionNameAndParams(parts[1])
 
     return new ExpressionStatement(
       new CallExpression(
@@ -136,8 +137,6 @@ const parseFunctionCall = (val?): ExpressionStatement => {
       )
     )
   } else {
-    const { name, params } = getFunctionNameAndParams(value[1])
-
     return new ExpressionStatement(
       new CallExpression(
         new Identifier(name),
@@ -201,11 +200,7 @@ const parseModule = () => {
 }
 
 const parseImport = () => {
-  const buffer = []
-
-  while (peek()[0] !== TokenType.Newline) {
-    buffer.push(consume())
-  }
+  const buffer = getBufferUntil(TokenType.Newline)
 
   const [mod, as, name] = buffer
 
@@ -307,6 +302,9 @@ const getBlock = () => {
       ) {
         const buffer = getBufferUntil(TokenType.Newline)
         body.push(parseExpression([token, ...buffer]))
+      } else if (nextType === TokenType.Fn) {
+        const buffer = getBufferUntil(TokenType.End)
+        body.push(buildAnonymousFunction([token, ...buffer]))
       }
     }
 

@@ -104,16 +104,6 @@ export const buildModuleMethods = (mod: any, modName: string): any[] => {
   return [fnDeclarations, moduleAssignments]
 }
 
-export const getFunctionNameAndParams = token => {
-  const params = mapFunctionArguments(token)
-  const name = token.split("(")[0]
-
-  return {
-    name,
-    params
-  }
-}
-
 export const buildFunctionCall = (name, params) => {
   return new ExpressionStatement(
     new CallExpression(
@@ -121,19 +111,4 @@ export const buildFunctionCall = (name, params) => {
       params.map(param => parseAnyType(param))
     )
   )
-}
-
-const mapFunctionArguments = name => {
-  try {
-    return name
-      .split("(")[1]
-      .replace(")", "")
-      .split(",")
-      .map(a => a.trim())
-      .filter(a => a.length)
-  } catch (e) {
-    throw new SyntaxError(
-      `Unknown identifier ${name} when parsing function arguments`
-    )
-  }
 }

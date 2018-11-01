@@ -1,6 +1,6 @@
 import { evaluate, compile } from "../redshift"
 
-describe.skip("Anonymous functions", () => {
+describe("Anonymous functions", () => {
   it("should be possible to declare annonymous function", () => {
     const code = `
       multiply = fn(a, b) -> a * b end

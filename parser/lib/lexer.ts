@@ -89,7 +89,7 @@ export const TokenDefinitions: TokenDefiniftion[] = [
   new TokenDefiniftion(TokenType.Identifier, /^[$A-Z_][0-9A-Z_$]*/i)
 ]
 
-type Token = [TokenType, string?, string?]
+export type Token = [TokenType, string?, string?]
 
 export const isKeyword = (token: Token): boolean => {
   const [type, _value, _position] = token

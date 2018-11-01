@@ -1,4 +1,4 @@
-import { evaluate } from "./../redshift"
+import { evaluate, compile } from "./../redshift"
 
 describe("Functions", () => {
   it("should declare and execute a function", () => {

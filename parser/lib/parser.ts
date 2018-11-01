@@ -86,18 +86,18 @@ const parseIdentifier = (val?) => {
 
   if (operator_type === TokenType.ParamsOpen) {
     const params = getParams()
-    // todo function call
-    console.log("function call for", value)
     return buildFunctionCall(value, params)
   } else if (operator_type === TokenType.Equals) {
-    // return new VariableDeclaration(
-    //   new Identifier(value[1]),
-    //   nextVal[0] === TokenType.Function
-    //     ? parseFunctionCall()
-    //     : parseExpressionLine()
-    // )
+    const eq = consume()
+    const buffer = getBufferUntil(TokenType.Newline)
+
+    return new VariableDeclaration(
+      new Identifier(value),
+      parseExpression(buffer)
+    )
   } else if (isArythmeticOperator([operator_type])) {
-    return makeBinaryExpression(new Identifier(value), operator_value)
+    const op = consume()
+    return makeBinaryExpression(new Identifier(value), op[1])
   } else {
     return new ExpressionStatement(new Identifier(value))
   }
@@ -107,7 +107,7 @@ const getBufferUntil = (token: TokenType) => {
   let buffer = []
   while (true) {
     const nextToken = consume()
-    const [type, value] = nextToken
+    const [type] = nextToken
     if (type === token) break
 
     buffer.push(nextToken)
@@ -147,8 +147,8 @@ const parseFunctionCall = (val?): ExpressionStatement => {
   }
 }
 
-const parseNumber = () => {
-  const value = consume()
+const parseNumber = (val?) => {
+  const value = val || consume()
   const operator = consume()
 
   if (["+", "-", "/", "*"].includes(operator[1])) {
@@ -293,12 +293,21 @@ const getBlock = () => {
   if (type === TokenType.Do) {
     let body = []
     while (true) {
-      const [nextType, nextValue] = consume()
+      const token = consume()
+      const [nextType, nextValue] = token
 
       if (nextType === TokenType.End) break
 
-      const buffer = getBufferUntil(TokenType.Newline)
-      body.push(parseExpression(buffer))
+      if (nextType === TokenType.Identifier) {
+        body.push(parseIdentifier(token))
+        continue
+      } else if (
+        nextType === TokenType.Number ||
+        nextType === TokenType.String
+      ) {
+        const buffer = getBufferUntil(TokenType.Newline)
+        body.push(parseExpression([token, ...buffer]))
+      }
     }
 
     const expressions = body.filter(x => x)
@@ -316,6 +325,7 @@ const getBlock = () => {
 const parseModuleMethod = moduleName => {
   const [type, name, position] = consume()
   let params, block
+
   if (type === TokenType.Identifier) {
     params = getParams()
     block = getBlock()
@@ -433,13 +443,12 @@ const identifierOrString = token => {
 }
 
 const identifierOrNumber = token => {
-  if (token[0] === TokenType.Number) return new NumberLiteral(token[1])
-  if (token[0] === TokenType.Identifier) return new Identifier(token[1])
+  const [type, value, position] = token
+  if (type === TokenType.Number) return new NumberLiteral(value)
+  if (type === TokenType.Identifier) return new Identifier(value)
 
   throw new SyntaxError(
-    `Invalid token "${token[1]}" of type "${
-      token[2]
-    }" used as a part of expression.`
+    `Invalid token "${value}" of type "${type}" used as a part of expression at ${position}.`
   )
 }
 

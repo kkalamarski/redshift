@@ -3,7 +3,6 @@ import { parseAnyType } from "../parser"
 
 export const parseExpression = buffer => {
   const [_left, op, _right, ...rest] = buffer
-
   let left = parseAnyType(_left)
 
   if (op) {

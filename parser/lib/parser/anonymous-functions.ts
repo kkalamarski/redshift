@@ -4,7 +4,7 @@ import {
   Block,
   Identifier
 } from "./ast"
-import { getFunctionNameAndParams, buildFunctionCall } from "./functions"
+import { buildFunctionCall } from "./functions"
 import { parseExpression } from "./expressions"
 import { TokenType, Token } from "../lexer"
 import { isArythmeticOperator } from "./../lexer"

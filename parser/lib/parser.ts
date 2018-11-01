@@ -21,7 +21,8 @@ import {
   TokenType,
   isKeyword,
   isValidParameter,
-  isArythmeticOperator
+  isArythmeticOperator,
+  Token
 } from "./lexer"
 import { parseExpression } from "./parser/expressions"
 
@@ -76,7 +77,7 @@ const parseKeyword = () => {
 const parseIdentifier = (val?) => {
   const [type, value] = val ? val : consume()
   const [operator_type, operator_value] = peek()
-  const [next_type] = peek(1)
+  const next = peek(1)
 
   if (operator_type === TokenType.ParamsOpen) {
     const params = getParams()
@@ -85,10 +86,10 @@ const parseIdentifier = (val?) => {
     consume() // remove =
     let right
 
-    if (next_type === TokenType.Fn) {
+    if (next && next[0] === TokenType.Fn) {
       const buffer = getBufferUntil(TokenType.End)
       right = buildAnonymousFunction(buffer)
-    } else if (next_type === TokenType.Identifier) {
+    } else if (next && next[0] === TokenType.Identifier) {
       right = parseIdentifier()
     } else {
       const buffer = getBufferUntil(TokenType.Newline)
@@ -98,7 +99,7 @@ const parseIdentifier = (val?) => {
     return new VariableDeclaration(new Identifier(value), right)
   } else if (isArythmeticOperator([operator_type])) {
     const op = consume()
-    return makeBinaryExpression(new Identifier(value), op[1])
+    return makeBinaryExpression(new Identifier(value), op)
   } else {
     return new ExpressionStatement(new Identifier(value))
   }
@@ -151,14 +152,20 @@ const parseNumber = (val?) => {
   const operator = consume()
 
   if (["+", "-", "/", "*"].includes(operator[1])) {
-    return makeBinaryExpression(new NumberLiteral(value[1]), operator[1])
+    return makeBinaryExpression(new NumberLiteral(value[1]), operator)
   } else {
     return new NumberLiteral(value[1])
   }
 }
 
-const makeBinaryExpression = (value, operator): ExpressionStatement => {
+const makeBinaryExpression = (value, op: Token): ExpressionStatement => {
   const right = consume()
+  let operator = op[1]
+
+  if (op[0] === TokenType.StringConcat) {
+    operator = "+"
+  }
+
   return new ExpressionStatement(
     new BinaryExpression(value, operator, identifierOrNumber(right))
   )

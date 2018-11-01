@@ -123,7 +123,8 @@ export const isArythmeticOperator = (token: Token): boolean => {
     type === TokenType.Minus ||
     type === TokenType.Division ||
     type === TokenType.Multiplication ||
-    type === TokenType.Power
+    type === TokenType.Power ||
+    type === TokenType.StringConcat
   )
 }
 

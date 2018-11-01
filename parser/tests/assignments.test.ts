@@ -1,4 +1,4 @@
-import { evaluate } from "./../redshift"
+import { evaluate, compile } from "./../redshift"
 
 describe("Assignments", () => {
   it("should assign to variable", () => {

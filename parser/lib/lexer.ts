@@ -1,63 +1,77 @@
 import split from "split-string"
 
-const keywords = ["defmodule", "def", "do", "end", "import", "fn"]
-const operations = ["+", "-", "*", "/", "=", "<>", "->"]
+export const TokenKind = {
+  Keyword: Symbol("Keyword"),
+  Operator: Symbol("Operator"),
+  Number: Symbol("Number"),
+  Identifier: Symbol("Identifier"),
+  Function: Symbol("Function"),
+  String: Symbol("String"),
+  Token: Symbol("Token"),
+  Newline: Symbol("Newline")
+}
+
+export const Keyword = {
+  defmodule: Symbol("defmodule"),
+  def: Symbol("def"),
+  do: Symbol("do"),
+  end: Symbol("end"),
+  import: Symbol("import"),
+  fn: Symbol("fn")
+}
+
+const keywords = Object.keys(Keyword)
+const operations = ["+", "-", "*", "/", "=", "<>", "->", "=>"]
+const tokens = ["[", "]", "{", "}", "%{"]
 
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
 const isString = t => /^".*"$/
 const isIndentifier = t => /^[$A-Z_][0-9A-Z_$]*$/i.test(t)
 const isFunction = t => /[a-zA-z]*\.?[a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?/.test(t)
 
-export default class Lexer {
-  code = ""
-  buffer = ""
-  line = 0
-  position = 0
-  tokens = []
+export const tokenize = code => {
+  const lines = code.split("\n")
+  const tokens = lines.reduce(
+    (acc, line, i) => acc.concat(parseLine(line, i)),
+    []
+  )
+  return tokens
+}
 
-  tokenize(code) {
-    this.code = code
-    const lines = code.split("\n")
-    const tokens = lines.reduce(
-      (acc, line, i) => acc.concat(this.parseLine(line, i)),
-      []
-    )
+export const parseLine = (line, row) => {
+  const tokens = split(line.trim(), {
+    separator: " ",
+    quotes: true,
+    brackets: true
+  })
 
-    this.tokens = tokens
-    return this
-  }
+  return tokens
+    .filter(t => t.length)
+    .map(s => {
+      const type = this.getTokenType(s)
+      const value = type === TokenKind.Keyword ? Keyword[s] : s
 
-  parseLine(line, row) {
-    this.line = row
-    const tokens = split(line.trim(), {
-      separator: " ",
-      quotes: true,
-      brackets: true
+      return [type, value]
     })
+    .concat([[TokenKind.Newline, "\n"]])
+}
 
-    return tokens
-      .filter(t => t.length)
-      .map(s => [this.getTokenType(s), s])
-      .concat([["newline", "\n"]])
-  }
+export const getTokenType = (token: string) => {
+  if (keywords.includes(token)) return TokenKind.Keyword
+  if (operations.includes(token)) return TokenKind.Operator
+  if (isNumber(token)) return TokenKind.Number
+  if (isIndentifier(token)) return TokenKind.Identifier
+  if (isFunction(token)) return TokenKind.Function
+  if (isString(token)) return TokenKind.String
 
-  getTokenType(token) {
-    if (keywords.includes(token)) return "key"
-    if (operations.includes(token)) return "op"
-    if (isNumber(token)) return "num"
-    if (isIndentifier(token)) return "id"
-    if (isFunction(token)) return "fn"
-    if (isString(token)) return "str"
+  throw new SyntaxError(
+    `Unknown identifier "${token}" in ${this.line}:${this.position}`
+  )
+}
 
-    throw new SyntaxError(
-      `Unknown identifier "${token}" in ${this.line}:${this.position}`
-    )
-  }
-
-  createToken(type, value) {
-    return {
-      type,
-      value
-    }
+export const createToken = (type, value) => {
+  return {
+    type,
+    value
   }
 }

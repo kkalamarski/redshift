@@ -24,7 +24,7 @@ import {
   getFunctionNameAndParams
 } from "./parser/functions"
 import { buildAnonymousFunction } from "./parser/anonymous-functions"
-import Lexer from "./lexer"
+import { getTokenType, TokenKind, Keyword } from "./lexer"
 
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
 const isString = t => /^".*"$/
@@ -46,15 +46,15 @@ const parseTopLevelExpressions = () => {
     const type = token[0]
     const value = token[1]
 
-    if (type === "key") {
-      if (value === "defmodule")
+    if (type === TokenKind.Keyword) {
+      if (value === Keyword.defmodule)
         expressions = [].concat(expressions, parseModule())
       else expressions.push(parseKeyword())
-    } else if (type === "fn") {
+    } else if (type === TokenKind.Function) {
       expressions.push(parseFunctionCall())
-    } else if (type === "id") {
+    } else if (type === TokenKind.Identifier) {
       expressions.push(parseIdentifier())
-    } else if (type === "num") {
+    } else if (type === TokenKind.Number) {
       expressions.push(parseNumber())
     } else {
       consume()
@@ -72,8 +72,8 @@ const parseTopLevelExpressions = () => {
 const parseKeyword = () => {
   const value = consume()[1]
 
-  if (value === "def") return parseModuleMethod("_global")
-  if (value === "import") return parseImport()
+  if (value === Keyword.def) return parseModuleMethod("_global")
+  if (value === Keyword.import) return parseImport()
 }
 
 const parseIdentifier = (val?) => {
@@ -84,7 +84,9 @@ const parseIdentifier = (val?) => {
   if (operator[1] === "=") {
     return new VariableDeclaration(
       new Identifier(value[1]),
-      nextVal[0] === "fn" ? parseFunctionCall() : parseExpressionLine()
+      nextVal[0] === TokenKind.Function
+        ? parseFunctionCall()
+        : parseExpressionLine()
     )
   } else if (["+", "-", "/", "*"].includes(operator[1])) {
     return makeBinaryExpression(new Identifier(value[1]), operator[1])
@@ -98,7 +100,7 @@ const getBufferUntilKeywordEnd = () => {
   while (true) {
     const nextToken = consume()
     const [type, value] = nextToken
-    if (type === "key" && value === "end") break
+    if (type === TokenKind.Keyword && value === Keyword.end) break
 
     buffer.push(nextToken)
   }
@@ -137,11 +139,7 @@ const parseFunctionCall = (val?): ExpressionStatement => {
   }
 }
 
-const getType = value => {
-  const lexer = new Lexer()
-
-  return [lexer.getTokenType(value), value]
-}
+const getType = value => [getTokenType(value), value]
 
 const parseNumber = () => {
   const value = consume()
@@ -174,14 +172,14 @@ const parseModule = () => {
 
   const moduleDeclaration = declareModule(moduleName)
 
-  while (consume()[1] !== "end") {
+  while (consume()[1] !== Keyword.end) {
     const next = peek()
 
-    if (next[1] === "def") {
+    if (next[1] === Keyword.def) {
       consume() // remove "def" from queue
       parseModuleMethod(moduleName)
       consume() // remove "end" from queue
-    } else if (next[0] === "newline" || next[0] === "key") {
+    } else if (next[0] === TokenKind.Newline || next[0] === TokenKind.Keyword) {
       continue
     } else {
       throw new SyntaxError(
@@ -199,21 +197,21 @@ const parseModule = () => {
 const parseImport = () => {
   const buffer = []
 
-  while (peek()[0] !== "newline") {
+  while (peek()[0] !== TokenKind.Newline) {
     buffer.push(consume())
   }
 
   const [mod, as, name] = buffer
 
-  if (mod[0] === "id") {
+  if (mod[0] === TokenKind.Identifier) {
     return new ImportDeclaration(
       new StringLiteral("core/" + mod[1]),
       new Identifier(name ? name[1] : mod[1])
     )
-  } else if (mod[0] === "str") {
+  } else if (mod[0] === TokenKind.String) {
     if (!as) throw SyntaxError("Missing 'as' keword in foreign import!")
     if (!name) throw SyntaxError("Missing import alias in foreign import!")
-    if (name[0] !== "id" || as[1] !== "as")
+    if (name[0] !== TokenKind.Identifier || as[1] !== "as")
       throw SyntaxError("Unknown alias in import statement!")
 
     return new ImportDeclaration(
@@ -254,7 +252,7 @@ const parseModuleMethod = moduleName => {
   const [_, fnDeclaration] = consume()
   const { name, params } = getFunctionNameAndParams(fnDeclaration)
 
-  const body = peek()[1] === "do" ? parseBlock() : {}
+  const body = peek()[1] === Keyword.do ? parseBlock() : {}
 
   registerMethod(moduleName, name, params, body)
 }
@@ -267,16 +265,16 @@ const parseBlock = () => {
     const token = consume()
     const [type] = token
 
-    if (type === "id") {
+    if (type === TokenKind.Identifier) {
       body.push(parseIdentifier(token))
-    } else if (type === "num" || type === "str") {
+    } else if (type === TokenKind.Number || type === TokenKind.String) {
       body.push(parseExpressionLine(token))
-    } else if (type === "fn") {
+    } else if (type === TokenKind.Function) {
       body.push(parseFunctionCall(token))
     }
 
     const [_, keyword] = peek()
-    if (keyword === "end") break
+    if (keyword === Keyword.end) break
   }
 
   const expressions = body.filter(x => x)
@@ -294,7 +292,7 @@ const parseExpressionLine = (val?): ExpressionStatement => {
     buffer.push(current)
     current = consume()
 
-    if (current[0] === "newline") break
+    if (current[0] === TokenKind.Newline) break
   }
 
   if (!buffer.length) {
@@ -342,21 +340,21 @@ const actionOrder = buffer => {
 }
 
 export const parseAnyType = token => {
-  if (token[0] === "id") return new Identifier(token[1])
-  if (token[0] === "str") return new StringLiteral(token[1])
-  if (token[0] === "num") return new NumberLiteral(token[1])
-  if (token[0] === "fn") return parseFunctionCall(token)
+  const [kind, value] = token
+
+  if (kind === TokenKind.Identifier) return new Identifier(value)
+  if (kind === TokenKind.String) return new StringLiteral(value)
+  if (kind === TokenKind.Number) return new NumberLiteral(value)
+  if (kind === TokenKind.Function) return parseFunctionCall(token)
 
   throw new SyntaxError(
-    `Invalid token "${token[1]}" of type "${
-      token[0]
-    }" used as a part of expression.`
+    `Invalid token "${value}" of type "${kind}" used as a part of expression.`
   )
 }
 
 const identifierOrString = token => {
-  if (token[0] === "id") return new Identifier(token[1])
-  if (token[0] === "str") return new StringLiteral(token[1])
+  if (token[0] === TokenKind.Identifier) return new Identifier(token[1])
+  if (token[0] === TokenKind.String) return new StringLiteral(token[1])
 
   throw new SyntaxError(
     `Invalid token "${token[1]}" of type "${
@@ -366,8 +364,8 @@ const identifierOrString = token => {
 }
 
 const identifierOrNumber = token => {
-  if (token[0] === "num") return new NumberLiteral(token[1])
-  if (token[0] === "id") return new Identifier(token[1])
+  if (token[0] === TokenKind.Number) return new NumberLiteral(token[1])
+  if (token[0] === TokenKind.Identifier) return new Identifier(token[1])
 
   throw new SyntaxError(
     `Invalid token "${token[1]}" of type "${

@@ -15,18 +15,8 @@ import {
   ArrayPattern,
   FunctionDeclaration
 } from "./ast"
-import Lexer from "../../lib/lexer"
-
-const parseAnyType = token => {
-  if (token[0] === "str") return new StringLiteral(token[1])
-  if (token[0] === "num") return new NumberLiteral(token[1])
-
-  throw new SyntaxError(
-    `Invalid token "${token[1]}" of type "${
-      token[0]
-    }" used as a part of expression.`
-  )
-}
+import { getTokenType, TokenKind } from "./../lexer"
+import { parseAnyType } from "../parser"
 
 const createLogicalStatement = params => {
   const [head, ...tail] = params
@@ -46,7 +36,9 @@ const createLogicalStatement = params => {
 
 const buildPattenrMatching = params => {
   const length = params.length
-  const nonIdParams = params.filter(([type, value, id]) => type !== "id")
+  const nonIdParams = params.filter(
+    ([type, value, id]) => type !== TokenKind.Identifier
+  )
 
   const arityCheck = new BinaryExpression(
     new MemberExpression(new Identifier("params"), new Identifier("length")),
@@ -72,7 +64,7 @@ const redeclareParamsInsideClause = params =>
         new ArrayPattern(
           params.map(
             ([type, value, id]) =>
-              new Identifier(type === "id" ? value : `_${id}`)
+              new Identifier(type === TokenKind.Identifier ? value : `_${id}`)
           )
         ),
         new Identifier("params")
@@ -80,12 +72,7 @@ const redeclareParamsInsideClause = params =>
     : []
 
 const buildClause = ({ params, body: block }) => {
-  const lexer = new Lexer()
-  const pattern = params.map((param, id) => [
-    lexer.getTokenType(param),
-    param,
-    id
-  ])
+  const pattern = params.map((param, id) => [getTokenType(param), param, id])
 
   const paramDeclaration = redeclareParamsInsideClause(pattern)
   const body = new Block([].concat(paramDeclaration, block.body))

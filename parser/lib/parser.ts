@@ -19,7 +19,12 @@ import {
   ImportDeclaration,
   RestElement
 } from "./parser/ast"
-import { buildModuleMethods } from "./parser/functions"
+import {
+  buildModuleMethods,
+  getFunctionNameAndParams
+} from "./parser/functions"
+import { buildAnonymousFunction } from "./parser/anonymous-functions"
+import Lexer from "./lexer"
 
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
 const isString = t => /^".*"$/
@@ -30,13 +35,8 @@ let _tokens = []
 
 let _modules: any = {}
 
-const peek = () => _tokens[_c]
+const peek = (pos = 0) => _tokens[_c + pos]
 const consume = () => _tokens[_c++]
-const source = num =>
-  `${"\n```\n"}${_tokens
-    .slice(_c - num, _c + num)
-    .map(a => a[1])
-    .join(" ")}${"\n```"}`
 
 const parseTopLevelExpressions = () => {
   let expressions = []
@@ -93,10 +93,28 @@ const parseIdentifier = (val?) => {
   }
 }
 
+const getBufferUntilKeywordEnd = () => {
+  let buffer = []
+  while (true) {
+    const nextToken = consume()
+    const [type, value] = nextToken
+    if (type === "key" && value === "end") break
+
+    buffer.push(nextToken)
+  }
+
+  return buffer
+}
+
 const parseFunctionCall = (val?): ExpressionStatement => {
   const value = val || consume()
+  const nextVal = peek()
 
-  if (value[1].indexOf(".") > -1) {
+  if (nextVal[1] === "->") {
+    const buffer = getBufferUntilKeywordEnd()
+    buffer.unshift(value)
+    return buildAnonymousFunction(buffer)
+  } else if (value[1].indexOf(".") > -1) {
     const parts = value[1].split(".")
     const modulename = parts[0]
     const { name, params } = getFunctionNameAndParams(parts[1])
@@ -120,9 +138,9 @@ const parseFunctionCall = (val?): ExpressionStatement => {
 }
 
 const getType = value => {
-  if (isNumber(value)) return ["num", value]
-  if (isString(value)) return ["str", value]
-  if (isIndentifier(value)) return ["id", value]
+  const lexer = new Lexer()
+
+  return [lexer.getTokenType(value), value]
 }
 
 const parseNumber = () => {
@@ -207,17 +225,6 @@ const parseImport = () => {
   }
 }
 
-const parseFunction = () => {
-  const fn = consume()[1]
-  const { name, params } = getFunctionNameAndParams(fn)
-
-  return new FunctionDeclaration(
-    new Identifier(name),
-    params.map(param => new Identifier(param)),
-    peek()[1] === "do" ? parseBlock() : {}
-  )
-}
-
 const registerMethod = (moduleName, functionName, params, body) => {
   if (!_modules[moduleName]) {
     _modules[moduleName] = {}
@@ -239,7 +246,7 @@ const getRegisteredMethods = (moduleName: string): ExpressionStatement[] => {
   if (!_modules || !_modules[moduleName]) return []
 
   const [declarations, assignments] = buildModuleMethods(mod, moduleName)
-  
+
   return [].concat(declarations, assignments)
 }
 
@@ -250,16 +257,6 @@ const parseModuleMethod = moduleName => {
   const body = peek()[1] === "do" ? parseBlock() : {}
 
   registerMethod(moduleName, name, params, body)
-}
-
-const getFunctionNameAndParams = token => {
-  const params = mapFunctionArguments(token)
-  const name = token.split("(")[0]
-
-  return {
-    name,
-    params
-  }
 }
 
 const parseBlock = () => {
@@ -344,11 +341,11 @@ const actionOrder = buffer => {
   }
 }
 
-const parseAnyType = token => {
+export const parseAnyType = token => {
   if (token[0] === "id") return new Identifier(token[1])
   if (token[0] === "str") return new StringLiteral(token[1])
   if (token[0] === "num") return new NumberLiteral(token[1])
-  if (token[0] === "fn") return parseFunctionCall(token[1])
+  if (token[0] === "fn") return parseFunctionCall(token)
 
   throw new SyntaxError(
     `Invalid token "${token[1]}" of type "${
@@ -377,23 +374,6 @@ const identifierOrNumber = token => {
       token[2]
     }" used as a part of expression.`
   )
-}
-
-const mapFunctionArguments = name => {
-  try {
-    return name
-      .split("(")[1]
-      .replace(")", "")
-      .split(",")
-      .map(a => a.trim())
-      .filter(a => a.length)
-  } catch (e) {
-    throw new SyntaxError(
-      `Unknown identifier ${name} when parsing function arguments near ${source(
-        5
-      )}`
-    )
-  }
 }
 
 export default tokens => {

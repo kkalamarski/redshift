@@ -71,6 +71,14 @@ export class FunctionExpression {
   constructor(public id, public params, public body) {}
 }
 
+export class ArrowFunctionExpression {
+  public type: string = "ArrowFunctionExpression"
+  public generator: boolean = false
+  public expression: boolean = true
+
+  constructor(public id, public params, public body) {}
+}
+
 export class NumberLiteral {
   public type: string = "NumericLiteral"
   public value: number

@@ -1,7 +1,7 @@
 import split from "split-string"
 
-const keywords = ["defmodule", "def", "do", "end", "import"]
-const operations = ["+", "-", "*", "/", "=", "<>"]
+const keywords = ["defmodule", "def", "do", "end", "import", "fn"]
+const operations = ["+", "-", "*", "/", "=", "<>", "->"]
 
 const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
 const isString = t => /^".*"$/

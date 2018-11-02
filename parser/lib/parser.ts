@@ -23,11 +23,12 @@ import {
   TokenType,
   isKeyword,
   isValidParameter,
-  isArythmeticOperator,
+  isOperator,
   Token
 } from "./lexer"
 import { parseExpression } from "./parser/expressions"
 import { parseIdentifierOrNumber } from "./parser/tokens"
+import { parseList } from "./parser/lists"
 
 let _c = 0
 let _tokens = []
@@ -53,6 +54,9 @@ const parseTopLevelExpressions = () => {
       expressions.push(parseIdentifier())
     } else if (type === TokenType.Number) {
       expressions.push(parseNumber())
+    } else if (type === TokenType.ListOpen) {
+      const buffer = getBufferUntil(TokenType.ListClose)
+      expressions.push(new ExpressionStatement(parseList(buffer)))
     } else if (type === TokenType.MemberIdentifier) {
       const buffer = getBufferUntil(TokenType.Newline)
       expressions.push(parseFunctionFromBuffer(buffer))
@@ -94,6 +98,9 @@ const parseIdentifier = (val?) => {
     } else if (next && next[0] === TokenType.MemberIdentifier) {
       const buffer = getBufferUntil(TokenType.Newline)
       right = parseFunctionFromBuffer(buffer)
+    } else if (next && next[0] === TokenType.ListOpen) {
+      const buffer = getBufferUntil(TokenType.ListClose)
+      right = parseList(buffer)
     } else if (next && next[0] === TokenType.Identifier) {
       right = parseIdentifier()
     } else {
@@ -102,9 +109,9 @@ const parseIdentifier = (val?) => {
     }
 
     return new VariableDeclaration(new Identifier(value), right)
-  } else if (isArythmeticOperator([operator_type])) {
-    const op = consume()
-    return makeBinaryExpression(new Identifier(value), op)
+  } else if (isOperator([operator_type])) {
+    const buffer = getBufferUntil(TokenType.Newline)
+    return parseExpression([[type, value], ...buffer])
   } else {
     return new ExpressionStatement(new Identifier(value))
   }

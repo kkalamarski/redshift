@@ -7,9 +7,15 @@ export const getAstFromCode = (redshiftCode: string) => {
 }
 
 export const compileAstToCode = (ast: any, es5?: boolean) => {
-  const { code } = babel.transformFromAst(ast, null, {
-    presets: es5 ? ["@babel/env"] : []
-  })
+  const { code } = babel.transformFromAst(
+    ast,
+    {
+      minified: true
+    },
+    {
+      presets: es5 ? ["@babel/env"] : []
+    }
+  )
 
   return code
 }

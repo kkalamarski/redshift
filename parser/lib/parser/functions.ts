@@ -13,26 +13,17 @@ import {
   LogicalExpression,
   VariableDeclaration,
   ArrayPattern,
-  FunctionDeclaration
+  FunctionDeclaration,
+  CallExpression
 } from "./ast"
-import Lexer from "../../lib/lexer"
-
-const parseAnyType = token => {
-  if (token[0] === "str") return new StringLiteral(token[1])
-  if (token[0] === "num") return new NumberLiteral(token[1])
-
-  throw new SyntaxError(
-    `Invalid token "${token[1]}" of type "${
-      token[0]
-    }" used as a part of expression.`
-  )
-}
+import { TokenType } from "./../lexer"
+import { parseAnyType } from "./tokens"
 
 const createLogicalStatement = params => {
   const [head, ...tail] = params
 
   const current = new BinaryExpression(
-    new MemberExpression(new Identifier("params"), new NumberLiteral(head[2])),
+    new MemberExpression(new Identifier("params"), new NumberLiteral(head[3])),
     "===",
     parseAnyType(head)
   )
@@ -46,7 +37,9 @@ const createLogicalStatement = params => {
 
 const buildPattenrMatching = params => {
   const length = params.length
-  const nonIdParams = params.filter(([type, value, id]) => type !== "id")
+  const nonIdParams = params.filter(
+    ([type, value, id]) => type !== TokenType.Identifier
+  )
 
   const arityCheck = new BinaryExpression(
     new MemberExpression(new Identifier("params"), new Identifier("length")),
@@ -71,8 +64,10 @@ const redeclareParamsInsideClause = params =>
     ? new VariableDeclaration(
         new ArrayPattern(
           params.map(
-            ([type, value, id]) =>
-              new Identifier(type === "id" ? value : `_${id}`)
+            ([type, value], index) =>
+              new Identifier(
+                type === TokenType.Identifier ? value : `_${type}_${index}`
+              )
           )
         ),
         new Identifier("params")
@@ -80,17 +75,11 @@ const redeclareParamsInsideClause = params =>
     : []
 
 const buildClause = ({ params, body: block }) => {
-  const lexer = new Lexer()
-  const pattern = params.map((param, id) => [
-    lexer.getTokenType(param),
-    param,
-    id
-  ])
-
-  const paramDeclaration = redeclareParamsInsideClause(pattern)
+  const paramDeclaration = redeclareParamsInsideClause(params)
   const body = new Block([].concat(paramDeclaration, block.body))
+  const args = params.map((param, index) => param.concat(index))
 
-  return new IfStatement(buildPattenrMatching(pattern), body)
+  return new IfStatement(buildPattenrMatching(args), body)
 }
 
 export const buildModuleMethods = (mod: any, modName: string): any[] => {
@@ -118,27 +107,11 @@ export const buildModuleMethods = (mod: any, modName: string): any[] => {
   return [fnDeclarations, moduleAssignments]
 }
 
-export const getFunctionNameAndParams = token => {
-  const params = mapFunctionArguments(token)
-  const name = token.split("(")[0]
-
-  return {
-    name,
-    params
-  }
-}
-
-const mapFunctionArguments = name => {
-  try {
-    return name
-      .split("(")[1]
-      .replace(")", "")
-      .split(",")
-      .map(a => a.trim())
-      .filter(a => a.length)
-  } catch (e) {
-    throw new SyntaxError(
-      `Unknown identifier ${name} when parsing function arguments`
+export const buildFunctionCall = (name, params) => {
+  return new ExpressionStatement(
+    new CallExpression(
+      new Identifier(name),
+      params.map(param => parseAnyType(param))
     )
-  }
+  )
 }

@@ -1,12 +1,9 @@
-import Lexer from "./lib/lexer"
 import parse from "./lib/parser"
+import { tokenize } from "./lib/lexer"
 import * as babel from "@babel/core"
 
 export const getAstFromCode = (redshiftCode: string) => {
-  const lexer = new Lexer()
-  lexer.tokenize(redshiftCode)
-
-  return parse(lexer.tokens)
+  return parse(tokenize(redshiftCode))
 }
 
 export const compileAstToCode = (ast: any, es5?: boolean) => {

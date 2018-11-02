@@ -17,7 +17,7 @@ import {
   CallExpression
 } from "./ast"
 import { TokenType } from "./../lexer"
-import { parseAnyType } from "../parser"
+import { parseAnyType } from "./tokens"
 
 const createLogicalStatement = params => {
   const [head, ...tail] = params

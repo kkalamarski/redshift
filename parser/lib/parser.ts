@@ -1,7 +1,6 @@
 import {
   BinaryExpression,
   Block,
-  CallExpression,
   ExpressionStatement,
   MemberExpression,
   ObjectExpression,
@@ -28,6 +27,7 @@ import {
   Token
 } from "./lexer"
 import { parseExpression } from "./parser/expressions"
+import { parseIdentifierOrNumber } from "./parser/tokens"
 
 let _c = 0
 let _tokens = []
@@ -124,34 +124,6 @@ const getBufferUntil = (token: TokenType) => {
   return buffer
 }
 
-const parseFunctionCall = (val?): ExpressionStatement => {
-  const value = val || consume()
-  const [type, _value] = peek()
-
-  if (type === TokenType.ThinArrow) {
-    const buffer = getBufferUntil(TokenType.End)
-    buffer.unshift(value)
-    return buildAnonymousFunction(buffer)
-  } else if (value[1].indexOf(".") > -1) {
-    const parts = value[1].split(".")
-    const modulename = parts[0]
-
-    return new ExpressionStatement(
-      new CallExpression(
-        new MemberExpression(new Identifier(modulename), new Identifier(name)),
-        [] //params.map(param => parseAnyType(getType(param)))
-      )
-    )
-  } else {
-    return new ExpressionStatement(
-      new CallExpression(
-        new Identifier(name),
-        [] //params.map(param => parseAnyType(getType(param)))
-      )
-    )
-  }
-}
-
 const parseNumber = (val?) => {
   const value = val || consume()
   const operator = consume()
@@ -172,7 +144,7 @@ const makeBinaryExpression = (value, op: Token): ExpressionStatement => {
   }
 
   return new ExpressionStatement(
-    new BinaryExpression(value, operator, identifierOrNumber(right))
+    new BinaryExpression(value, operator, parseIdentifierOrNumber(right))
   )
 }
 
@@ -343,129 +315,6 @@ const parseModuleMethod = moduleName => {
   }
 
   registerMethod(moduleName, name, params, block)
-}
-
-// const parseBlock = () => {
-//   consume() // remove do
-//   const body = []
-
-//   while (true) {
-//     const token = consume()
-//     const [type] = token
-
-//     if (type === TokenType.Identifier) {
-//       body.push(parseIdentifier(token))
-//     } else if (type === TokenType.Number || type === TokenType.String) {
-//       body.push(parseExpressionLine(token))
-//     } else if (type === TokenType.Function) {
-//       body.push(parseFunctionCall(token))
-//     }
-
-//     const [peek_type] = peek()
-//     if (peek_type === TokenType.End) break
-//   }
-
-//   const expressions = body.filter(x => x)
-//   const last = expressions.pop()
-//   const returning = new ReturnStatement(last)
-
-//   return new Block([].concat(expressions, returning))
-// }
-
-const parseExpressionLine = (val?): ExpressionStatement => {
-  const buffer = []
-  let current = val ? val : consume()
-
-  while (true) {
-    buffer.push(current)
-    current = consume()
-
-    if (current[0] === TokenType.Newline) break
-  }
-
-  if (!buffer.length) {
-    return null
-  }
-
-  return parseExpression(buffer)
-}
-
-// const parseExpression = (buffer): ExpressionStatement => {
-//   if (buffer.length === 1) {
-//     return new ExpressionStatement(parseAnyType(buffer[0]))
-//   }
-
-//   const operator = buffer[1][1]
-
-//   if (operator === "<>") {
-//     return stringOperations(buffer)
-//   } else {
-//     return new ExpressionStatement(actionOrder(buffer))
-//   }
-// }
-
-// const stringOperations = buffer => {
-//   return new ExpressionStatement(
-//     new BinaryExpression(
-//       identifierOrString(buffer[0]),
-//       "+",
-//       identifierOrString(buffer[2])
-//     )
-//   )
-// }
-
-// const actionOrder = buffer => {
-//   if (buffer.length === 1) {
-//     return new NumberLiteral(buffer[0][1])
-//   } else if (buffer.length === 3) {
-//     const left = identifierOrNumber(buffer[0])
-//     const right = identifierOrNumber(buffer[2])
-
-//     return new BinaryExpression(left, buffer[1][1], right)
-//   } else {
-//     throw new SyntaxError(`Complex calculations are not supported yet.`)
-//   }
-// }
-
-const parseMemberExpression = (token: Token) => {
-  const [mod, fn] = token[1].split(".")
-
-  return new MemberExpression(new Identifier(mod), new Identifier(fn))
-}
-
-export const parseAnyType = (token: Token) => {
-  const [type, value] = token
-
-  if (type === TokenType.Identifier) return new Identifier(value)
-  if (type === TokenType.String) return new StringLiteral(value)
-  if (type === TokenType.Number) return new NumberLiteral(value)
-  if (type === TokenType.Function) return parseFunctionCall(token)
-  if (type === TokenType.MemberIdentifier) return parseMemberExpression(token)
-
-  throw new SyntaxError(
-    `Invalid token "${value}" of type "${type}" used as a part of expression.`
-  )
-}
-
-const identifierOrString = token => {
-  if (token[0] === TokenType.Identifier) return new Identifier(token[1])
-  if (token[0] === TokenType.String) return new StringLiteral(token[1])
-
-  throw new SyntaxError(
-    `Invalid token "${token[1]}" of type "${
-      token[2]
-    }" used as a part of expression.`
-  )
-}
-
-const identifierOrNumber = token => {
-  const [type, value, position] = token
-  if (type === TokenType.Number) return new NumberLiteral(value)
-  if (type === TokenType.Identifier) return new Identifier(value)
-
-  throw new SyntaxError(
-    `Invalid token "${value}" of type "${type}" used as a part of expression at ${position}.`
-  )
 }
 
 export default tokens => {

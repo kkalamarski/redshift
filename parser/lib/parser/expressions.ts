@@ -1,5 +1,5 @@
 import { BinaryExpression, ExpressionStatement } from "./ast"
-import { parseAnyType } from "../parser"
+import { parseAnyType } from "./tokens"
 import { TokenType } from "../lexer"
 
 export const parseExpression = buffer => {

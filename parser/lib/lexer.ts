@@ -1,63 +1,180 @@
-import split from "split-string"
+export enum TokenType {
+  Keyword = "Keyword",
+  Operator = "Operator",
+  Number = "Number",
+  Identifier = "Identifier",
+  MemberIdentifier = "MemberIdentifier",
+  Function = "Function",
+  String = "String",
+  BlockString = "BlockString",
+  Token = "Token",
+  Newline = "Newline",
 
-const keywords = ["defmodule", "def", "do", "end", "import"]
-const operations = ["+", "-", "*", "/", "=", "<>"]
+  // Operators
+  Plus = "Plus",
+  Minus = "Minus",
+  Division = "Division",
+  Multiplication = "Multiplication",
+  Equals = "Equals",
+  StringConcat = "StringConcat",
+  ListConcat = "ListConcat",
+  Power = "Power",
+  ThinArrow = "ThinArrow",
+  FatArrow = "FatArrow",
 
-const isNumber = t => /^\d+(\.\d{1,2})?$/.test(t)
-const isString = t => /^".*"$/
-const isIndentifier = t => /^[$A-Z_][0-9A-Z_$]*$/i.test(t)
-const isFunction = t => /[a-zA-z]*\.?[a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?/.test(t)
+  // Tokens
+  Dot = "Dot",
+  Comma = "Comma",
 
-export default class Lexer {
-  code = ""
-  buffer = ""
-  line = 0
-  position = 0
-  tokens = []
+  ListOpen = "ListOpen",
+  ListClose = "ListClose",
 
-  tokenize(code) {
-    this.code = code
-    const lines = code.split("\n")
-    const tokens = lines.reduce(
-      (acc, line, i) => acc.concat(this.parseLine(line, i)),
-      []
-    )
+  ParamsOpen = "ParamsOpen",
+  ParamsClose = "ParamsClose",
 
-    this.tokens = tokens
-    return this
-  }
+  TupleOpen = "TupleOpen",
+  TupleClose = "TupleClose",
 
-  parseLine(line, row) {
-    this.line = row
-    const tokens = split(line.trim(), {
-      separator: " ",
-      quotes: true,
-      brackets: true
-    })
+  MapOpen = "MapOpen",
+  MapClose = "MapClose",
 
-    return tokens
-      .filter(t => t.length)
-      .map(s => [this.getTokenType(s), s])
-      .concat([["newline", "\n"]])
-  }
+  // Keywords
+  DefModule = "DefModule",
+  Def = "Def",
+  Do = "Do",
+  End = "End",
+  Import = "Import",
+  As = "As",
+  Fn = "Fn"
+}
 
-  getTokenType(token) {
-    if (keywords.includes(token)) return "key"
-    if (operations.includes(token)) return "op"
-    if (isNumber(token)) return "num"
-    if (isIndentifier(token)) return "id"
-    if (isFunction(token)) return "fn"
-    if (isString(token)) return "str"
+class TokenDefiniftion {
+  constructor(public tokenType, public regex) {}
+}
 
-    throw new SyntaxError(
-      `Unknown identifier "${token}" in ${this.line}:${this.position}`
-    )
-  }
+export const TokenDefinitions: TokenDefiniftion[] = [
+  new TokenDefiniftion(TokenType.Number, /^\d+(\.\d+)?/),
+  new TokenDefiniftion(TokenType.Newline, /^[\r?\n]+/),
+  new TokenDefiniftion(TokenType.BlockString, /^"""[^']*"""/),
+  new TokenDefiniftion(TokenType.String, /^"[^"]*"/),
+  new TokenDefiniftion(TokenType.String, /^'[^']*'/),
+  new TokenDefiniftion(TokenType.Comma, /^\,/),
 
-  createToken(type, value) {
-    return {
-      type,
-      value
+  // Operators
+  new TokenDefiniftion(TokenType.StringConcat, /^\<\>/),
+  new TokenDefiniftion(TokenType.ListConcat, /^\+\+/),
+  new TokenDefiniftion(TokenType.Power, /^\*\*/),
+  new TokenDefiniftion(TokenType.ThinArrow, /^\-\>/),
+  new TokenDefiniftion(TokenType.FatArrow, /^\=\>/),
+  new TokenDefiniftion(TokenType.Plus, /^\+/),
+  new TokenDefiniftion(TokenType.Minus, /^\-/),
+  new TokenDefiniftion(TokenType.Division, /^\//),
+  new TokenDefiniftion(TokenType.Multiplication, /^\*/),
+  new TokenDefiniftion(TokenType.Equals, /^\=/),
+
+  // Tokens
+  new TokenDefiniftion(TokenType.ListOpen, /^\[/),
+  new TokenDefiniftion(TokenType.Dot, /^\./),
+  new TokenDefiniftion(TokenType.ListClose, /^\]/),
+  new TokenDefiniftion(TokenType.TupleOpen, /^\{/),
+  new TokenDefiniftion(TokenType.TupleClose, /^\}/),
+  new TokenDefiniftion(TokenType.MapClose, /^\%\{/),
+  new TokenDefiniftion(TokenType.ParamsOpen, /^\(/),
+  new TokenDefiniftion(TokenType.ParamsClose, /^\)/),
+
+  // Keywords
+  new TokenDefiniftion(TokenType.DefModule, /^defmodule/),
+  new TokenDefiniftion(TokenType.Def, /^def/),
+  new TokenDefiniftion(TokenType.Do, /^do/),
+  new TokenDefiniftion(TokenType.End, /^end/),
+  new TokenDefiniftion(TokenType.Import, /^import/),
+  new TokenDefiniftion(TokenType.As, /^as/),
+  new TokenDefiniftion(TokenType.Fn, /^fn/),
+  new TokenDefiniftion(
+    TokenType.MemberIdentifier,
+    /^[$A-Z_][0-9A-Z_$]*\.[$A-Z_][0-9A-Z_$]+/i
+  ),
+  new TokenDefiniftion(TokenType.Identifier, /^[$A-Z_][0-9A-Z_$]*/i)
+]
+
+export type Token = [TokenType, string?, string?]
+
+export const isKeyword = (token: Token): boolean => {
+  const [type, _value, _position] = token
+
+  return (
+    type === TokenType.DefModule ||
+    type === TokenType.Def ||
+    type === TokenType.Do ||
+    type === TokenType.End ||
+    type === TokenType.Import ||
+    type === TokenType.As ||
+    type === TokenType.Fn
+  )
+}
+
+export const isValidParameter = (token: Token): boolean => {
+  const [type, _value, _position] = token
+
+  return (
+    type === TokenType.Identifier ||
+    type === TokenType.Number ||
+    type === TokenType.String
+  )
+}
+
+export const isArythmeticOperator = (token: Token): boolean => {
+  const [type, _value, _position] = token
+
+  return (
+    type === TokenType.Plus ||
+    type === TokenType.Minus ||
+    type === TokenType.Division ||
+    type === TokenType.Multiplication ||
+    type === TokenType.Power ||
+    type === TokenType.StringConcat
+  )
+}
+
+export const tokenize = (code: string) => {
+  let tokens = []
+  let remaining: string = code
+  let line = 1
+  let col = 1
+
+  while (!!remaining) {
+    const match = TokenDefinitions.find(def => def.regex.test(remaining))
+
+    if (match) {
+      const value = remaining.match(match.regex)[0]
+      tokens.push([match.tokenType, value, `${line}:${col}`])
+
+      if (match.tokenType === TokenType.Newline) {
+        line++
+        col = 1
+      } else {
+        col += value.length
+      }
+
+      remaining = remaining.substring(value.length)
+    } else {
+      col++
+      remaining = remaining.substring(1)
     }
   }
+
+  return tokens
 }
+
+// export const getTokenType = (token: string) => {
+//   if (keywords.includes(token)) return TokenType.Keyword
+//   if (operations.includes(token)) return TokenType.Operator
+//   if (isNumber(token)) return TokenType.Number
+//   if (isIndentifier(token)) return TokenType.Identifier
+//   if (isFunction(token)) return TokenType.Function
+//   if (isString(token)) return TokenType.String
+
+//   throw new SyntaxError(
+//     `Unknown identifier "${token}" in ${this.line}:${this.position}`
+//   )
+// }

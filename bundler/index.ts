@@ -1,4 +1,4 @@
-import fs from "fs"
+import fs, { lstat } from "fs"
 import path from "path"
 import { getAstFromCode, compileAstToCode } from "../parser/redshift"
 import traverse from "babel-traverse"
@@ -35,6 +35,11 @@ export default (entryFile: string) => {
     traverse(ast, {
       ImportDeclaration: ({ node }) => {
         dependencies.push(node.source.value)
+      },
+      CallExpression: ({ node }) => {
+        if (node.callee.name === "require") {
+          dependencies.push(node.arguments[0].value)
+        }
       }
     })
 
@@ -64,12 +69,27 @@ export default (entryFile: string) => {
         let child
         if (dep.includes("core")) {
           absolutePath = path.join(__dirname, "../", dep + ".js")
-          child = createAsset(absolutePath, true)
         } else if (dep[0] === ".") {
           absolutePath = path.join(dirname, dep)
-          child = createAsset(absolutePath)
+
+          if (
+            !fs.existsSync(absolutePath) ||
+            fs.lstatSync(absolutePath).isDirectory()
+          ) {
+            if (
+              path.extname(absolutePath) !== ".rh" ||
+              path.extname(absolutePath) !== ".js"
+            ) {
+              if (fs.existsSync(`${absolutePath}.rh`)) absolutePath += ".rh"
+              else if (fs.existsSync(`${absolutePath}.js`))
+                absolutePath += ".js"
+              else if (fs.existsSync(`${absolutePath}/index.js`))
+                absolutePath += "/index.js"
+              else throw new Error(`File ${absolutePath} couldnt be found!`)
+            }
+          }
         } else {
-          const modPath = path.join(__dirname, "../node_modules", dep)
+          const modPath = path.join(__dirname, "../../node_modules", dep)
           const pkg = require(path.join(modPath, "package.json"))
           let filename = pkg.main
 
@@ -77,12 +97,25 @@ export default (entryFile: string) => {
             filename += ".js"
           }
 
-          absolutePath = path.join(__dirname, "../node_modules", dep, filename)
-          child = createAsset(absolutePath, true)
+          absolutePath = path.join(
+            __dirname,
+            "../../node_modules",
+            dep,
+            filename
+          )
         }
 
+        let existingModule = queue.find(item => item.filename === absolutePath)
+        if (existingModule) child = existingModule
+        else
+          child = createAsset(
+            absolutePath,
+            path.extname(absolutePath) === ".js"
+          )
+
         asset.mapping[dep] = child.id
-        queue.push(child)
+
+        if (!existingModule) queue.push(child)
       })
     }
 
@@ -103,8 +136,10 @@ export default (entryFile: string) => {
     })
 
     const result = `
-    (function(modules) {
-
+    global = typeof global == "undefined"? {} : global;
+    process = { env: { NODE_ENV: 'dev' } };
+    
+      (function(modules) {
         function require(id) {
             var mod = modules[id];
             var fn = mod[0];

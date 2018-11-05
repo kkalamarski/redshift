@@ -1,0 +1,22 @@
+import WebComponent
+import State
+
+defmodule Component do
+    def init() do 
+        update_state = fn(state) -> Component.update(state) end
+        update_template = fn(render, state) -> Component.template(render, state) end
+
+        WebComponent.of("hello-name", update_state, update_template)
+    end
+
+    def update(state) do
+        state_with_name = state.set("name", "Chris")
+        new_state = state_with_name.set("age", 25)
+
+        new_state
+    end
+
+    def template(render, model) do
+        render<"hello world! ${model.name}">
+    end
+end

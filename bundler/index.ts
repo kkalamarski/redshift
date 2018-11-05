@@ -89,7 +89,7 @@ export default (entryFile: string) => {
             }
           }
         } else {
-          const modPath = path.join(__dirname, "../../node_modules", dep)
+          const modPath = path.join(process.cwd(), "node_modules", dep)
           const pkg = require(path.join(modPath, "package.json"))
           let filename = pkg.main
 
@@ -97,12 +97,7 @@ export default (entryFile: string) => {
             filename += ".js"
           }
 
-          absolutePath = path.join(
-            __dirname,
-            "../../node_modules",
-            dep,
-            filename
-          )
+          absolutePath = path.join(process.cwd(), "node_modules", dep, filename)
         }
 
         let existingModule = queue.find(item => item.filename === absolutePath)

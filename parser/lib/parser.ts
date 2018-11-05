@@ -108,7 +108,7 @@ export default class Parser {
     const next = this.peek(1)
 
     if (operator_type === TokenType.EndOfFile) {
-      return new ExpressionStatement(new Identifier(value))
+      return new Identifier(value)
     }
 
     if (operator_type === TokenType.ParamsOpen) {

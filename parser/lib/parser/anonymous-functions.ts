@@ -40,7 +40,7 @@ export const buildAnonymousFunction = (buffer: Token[]) => {
     new ArrowFunctionExpression(
       null,
       params.map(param => new Identifier(param[1])),
-      parseFunctionFromBuffer(body)
+      new ReturnStatement(parseFunctionFromBuffer(body))
     )
   )
 }
@@ -52,15 +52,11 @@ export const parseFunctionFromBuffer = (buffer: Token[]) => {
     const params = getParamsFromBuffer(rest)
 
     if (left[0] === TokenType.Identifier) {
-      return new ReturnStatement(
-        buildFunctionCall(new Identifier(left[1]), params)
-      )
+      return buildFunctionCall(new Identifier(left[1]), params)
     } else if (left[0] === TokenType.MemberIdentifier) {
-      return new ReturnStatement(
-        buildFunctionCall(parseMemberExpression(left), params)
-      )
+      return buildFunctionCall(parseMemberExpression(left), params)
     }
   } else {
-    return new ReturnStatement(parseExpression(buffer))
+    return parseExpression(buffer)
   }
 }

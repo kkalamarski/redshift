@@ -107,11 +107,11 @@ export const buildModuleMethods = (mod: any, modName: string): any[] => {
   return [fnDeclarations, moduleAssignments]
 }
 
-export const buildFunctionCall = (name, params) => {
+export const buildFunctionCall = (
+  name: Identifier | MemberExpression,
+  params
+) => {
   return new ExpressionStatement(
-    new CallExpression(
-      new Identifier(name),
-      params.map(param => parseAnyType(param))
-    )
+    new CallExpression(name, params.map(param => parseAnyType(param)))
   )
 }

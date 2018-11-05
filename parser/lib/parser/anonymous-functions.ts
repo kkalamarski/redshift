@@ -8,6 +8,7 @@ import { buildFunctionCall } from "./functions"
 import { parseExpression } from "./expressions"
 import { TokenType, Token } from "../lexer"
 import { isOperator } from "./../lexer"
+import { parseMemberExpression } from "./tokens"
 
 export const getParamsFromBuffer = (buffer: Token[]) => {
   const close = buffer.findIndex(token => token[0] === TokenType.ParamsClose)
@@ -48,7 +49,12 @@ export const parseFunctionFromBuffer = (buffer: Token[]) => {
 
   if (op && op[0] === TokenType.ParamsOpen) {
     const params = getParamsFromBuffer(rest)
-    return buildFunctionCall(left[1], params)
+
+    if (left[0] === TokenType.Identifier) {
+      return buildFunctionCall(new Identifier(left[1]), params)
+    } else if (left[0] === TokenType.MemberIdentifier) {
+      return buildFunctionCall(parseMemberExpression(left), params)
+    }
   } else {
     return parseExpression(buffer)
   }

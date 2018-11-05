@@ -327,6 +327,10 @@ export default class Parser {
         if (nextType === TokenType.Identifier) {
           body.push(this.parseIdentifier(token))
           continue
+        } else if (nextType === TokenType.MemberIdentifier) {
+          const buffer = this.getBufferUntil(TokenType.Newline)
+          body.push(parseFunctionFromBuffer([token, ...buffer]))
+          continue
         } else if (
           nextType === TokenType.Number ||
           nextType === TokenType.String

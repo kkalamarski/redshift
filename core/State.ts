@@ -14,5 +14,7 @@ export default class State {
     return this
   }
 
+  public get = key => this.value[key]
+
   public flatten = () => this.value
 }

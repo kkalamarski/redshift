@@ -4,6 +4,12 @@
 Redshift is a functional programming language compiled to Javascript.
 It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just _proof of concept_.
 
+## Key concepts
+
+- no mutations
+- no `classes`, no `this`
+- all functions must return
+
 ## Getting Started
 
 ### Installation
@@ -22,6 +28,8 @@ Redshift provides CLI that helps with scaffolding code.
 redshift create <project_name>
 cd <project_name>
 ```
+
+Once generated you can yse npm scripts to run your application.
 
 ### One time build
 
@@ -67,12 +75,46 @@ def sum(a, b) do
 end
 ```
 
-### Function calls
+### Pattern matching
 
-As for now the only way to call a function is to use parentheses
+Redshift lets you use pattern matching in function declarations.
 
 ```elixir
-sum(1, 2)
+def error("syntax") do
+  IO.puts("You used wrong syntax!")
+end
+
+def error("type") do
+  IO.puts("Trying to assign different type")
+end
+
+def error("range") do
+  IO.puts("Given value is out of range")
+end
+
+def error(type) do
+  IO.puts(type <> " error occured!")
+end
+
+error("syntax") # You used wrong syntax!
+error("Unknown") # Unknown error occured!
+```
+
+### Function expressions
+
+Redshift lets you define function expressions by using `fn/->/end` syntax.
+
+```elixir
+double = fn(a) -> a * 2 end
+```
+
+Function expressions **do not** support pattern matching.
+To pass them as an argument to another function, they must be first stored in a variable. This is by design and improves code readability.
+
+```elixir
+say_hello = fn(name) -> "Hello " <> name end
+
+List.map(names, say_hello)
 ```
 
 ### Constants
@@ -94,23 +136,6 @@ def func() do
 
   a + b
 end
-```
-
-### String literals
-
-String literals are declared using double quotes `"`.
-
-```elixir
-hello_world = "Hello world!"
-```
-
-To concat two strings use concatenation operator `<>`.
-
-```elixir
-str1 = "Hello "
-str2 = "world!"
-
-result = str1 <> str2
 ```
 
 ### Imports
@@ -143,6 +168,55 @@ File extension is required.
 ```elixir
 import "./lib/Auth.rh" as Auth
 import "./js/User.js" as User
+```
+
+### String literals
+
+String literals are declared using double quotes `"`.
+
+```elixir
+hello_world = "Hello world!"
+```
+
+To concat two strings use concatenation operator `<>`.
+
+```elixir
+str1 = "Hello "
+str2 = "world!"
+
+result = str1 <> str2
+```
+
+### List Literals
+
+Lists are declared using square parentheses `[]`.
+
+```elixir
+names = ["tom", "mark", "andrew"]
+```
+
+To concat two lists use concatenation operator `++`.
+
+```elixir
+names = ["tom", "mark", "adam"]
+other_names = ["anna", "kasia", "ewelina"]
+
+all = names ++ other_names
+```
+
+To perform more advanced operations like mapping, reducing, filtering and searching use List module
+
+```elixir
+import List
+
+numbers = [1, 2, 3]
+double = fn(num) -> num * 2 end
+
+doubled = List.map(numbers, double)
+
+## Head | Tail
+head = List.head(numbers) # 1
+tail = List.tail(numbers) # [2, 3]
 ```
 
 ### Modules

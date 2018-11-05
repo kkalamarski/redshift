@@ -7,7 +7,7 @@ import {
 import { buildFunctionCall } from "./functions"
 import { parseExpression } from "./expressions"
 import { TokenType, Token } from "../lexer"
-import { isArythmeticOperator } from "./../lexer"
+import { isOperator } from "./../lexer"
 
 export const getParamsFromBuffer = (buffer: Token[]) => {
   const close = buffer.findIndex(token => token[0] === TokenType.ParamsClose)
@@ -49,7 +49,7 @@ export const parseFunctionFromBuffer = (buffer: Token[]) => {
   if (op[0] === TokenType.ParamsOpen) {
     const params = getParamsFromBuffer(rest)
     return buildFunctionCall(left[1], params)
-  } else if (isArythmeticOperator(op)) {
+  } else if (isOperator(op)) {
     return parseExpression(buffer)
   }
 }

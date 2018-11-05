@@ -46,7 +46,7 @@ export class MemberExpression {
   public computed: boolean = false
 
   constructor(
-    public object: Identifier,
+    public object: Identifier | ArrayExpression,
     public property: Identifier | NumberLiteral | StringLiteral
   ) {}
 }
@@ -165,6 +165,12 @@ export class ArrayPattern {
   public type: string = "ArrayPattern"
 
   constructor(public elements: Identifier[]) {}
+}
+
+export class ArrayExpression {
+  public type: string = "ArrayExpression"
+
+  constructor(public elements: any[]) {}
 }
 
 export class Program {

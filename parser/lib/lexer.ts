@@ -123,7 +123,7 @@ export const isValidParameter = (token: Token): boolean => {
   )
 }
 
-export const isArythmeticOperator = (token: Token): boolean => {
+export const isOperator = (token: Token): boolean => {
   const [type, _value, _position] = token
 
   return (
@@ -132,7 +132,8 @@ export const isArythmeticOperator = (token: Token): boolean => {
     type === TokenType.Division ||
     type === TokenType.Multiplication ||
     type === TokenType.Power ||
-    type === TokenType.StringConcat
+    type === TokenType.StringConcat ||
+    type === TokenType.ListConcat
   )
 }
 

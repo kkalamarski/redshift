@@ -20,7 +20,7 @@ describe("Web Components", () => {
       
         def template(render, state) do 
           name = state.get("name")
-
+      
           render ~ "Hello, my name is {name}"
         end
       end

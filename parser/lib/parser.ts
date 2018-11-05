@@ -113,7 +113,7 @@ export default class Parser {
 
     if (operator_type === TokenType.ParamsOpen) {
       const params = this.getParams()
-      return buildFunctionCall(value, params)
+      return buildFunctionCall(new Identifier(value), params)
     }
 
     if (operator_type === TokenType.Tilde && next[0] === TokenType.String) {

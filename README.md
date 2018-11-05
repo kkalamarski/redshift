@@ -4,6 +4,12 @@
 Redshift is a functional programming language compiled to Javascript.
 It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just _proof of concept_.
 
+## Key concepts
+
+- no mutations
+- no `classes`, no `this`
+- all functions must return
+
 ## Getting Started
 
 ### Installation
@@ -92,6 +98,23 @@ end
 
 error("syntax") # You used wrong syntax!
 error("Unknown") # Unknown error occured!
+```
+
+### Function expressions
+
+Redshift lets you define function expressions by using `fn/->/end` syntax.
+
+```elixir
+double = fn(a) -> a * 2 end
+```
+
+Function expressions **do not** support pattern matching.
+To pass them as an argument to another function, they must be first stored in a variable. This is by design and improves code readability.
+
+```elixir
+say_hello = fn(name) -> "Hello " <> name end
+
+List.map(names, say_hello)
 ```
 
 ### Constants

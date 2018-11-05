@@ -2,7 +2,8 @@ import {
   ExpressionStatement,
   ArrowFunctionExpression,
   Block,
-  Identifier
+  Identifier,
+  ReturnStatement
 } from "./ast"
 import { buildFunctionCall } from "./functions"
 import { parseExpression } from "./expressions"
@@ -51,11 +52,15 @@ export const parseFunctionFromBuffer = (buffer: Token[]) => {
     const params = getParamsFromBuffer(rest)
 
     if (left[0] === TokenType.Identifier) {
-      return buildFunctionCall(new Identifier(left[1]), params)
+      return new ReturnStatement(
+        buildFunctionCall(new Identifier(left[1]), params)
+      )
     } else if (left[0] === TokenType.MemberIdentifier) {
-      return buildFunctionCall(parseMemberExpression(left), params)
+      return new ReturnStatement(
+        buildFunctionCall(parseMemberExpression(left), params)
+      )
     }
   } else {
-    return parseExpression(buffer)
+    return new ReturnStatement(parseExpression(buffer))
   }
 }

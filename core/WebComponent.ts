@@ -3,7 +3,7 @@ import * as hybrids from "hybrids"
 
 export default class WebComponent {
   private element
-  private state = State.of(null)
+  private state = State.of({})
   private template = state => ""
   private constructor(private tag: string) {}
 
@@ -21,17 +21,17 @@ export default class WebComponent {
     return component.register()
   }
 
-  private setState = update => {
+  public setState = update => {
     this.state = update(this.state)
     return this
   }
 
-  private setTemplate = template => {
+  public setTemplate = template => {
     this.template = state => template(hybrids.html, state)
     return this
   }
 
-  private register = () => {
+  public register = () => {
     const state = this.state.flatten()
 
     const Component = {

@@ -46,10 +46,10 @@ export const buildAnonymousFunction = (buffer: Token[]) => {
 export const parseFunctionFromBuffer = (buffer: Token[]) => {
   const [left, op, ...rest] = buffer
 
-  if (op[0] === TokenType.ParamsOpen) {
+  if (op && op[0] === TokenType.ParamsOpen) {
     const params = getParamsFromBuffer(rest)
     return buildFunctionCall(left[1], params)
-  } else if (isOperator(op)) {
+  } else {
     return parseExpression(buffer)
   }
 }

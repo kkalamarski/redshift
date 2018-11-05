@@ -1,23 +1,45 @@
+import State from "./State"
 import * as hybrids from "hybrids"
 
-const WebComponent = {
-  init: (tag, view, update) => {
-    const model = { name: "Chris" }
+export default class WebComponent {
+  private element
+  private state = State.of(null)
+  private template = state => ""
+  private constructor(private tag: string) {}
 
-    const Component = {
-      ...model,
-      render: state => hybrids.html`
-        <style>
-          h1 { text-align: center }
-        </style>
-        <h1>Hello ${state.name} from web component!</h1>
-      `
+  public static of = (tag: string, update, template) => {
+    let component = new WebComponent(tag)
+
+    if (update) {
+      component = component.setState(update)
     }
 
-    console.log(Component)
+    if (template) {
+      component = component.setTemplate(template)
+    }
 
-    return hybrids.define(tag, Component)
+    return component.register()
+  }
+
+  private setState = update => {
+    this.state = update(this.state)
+    return this
+  }
+
+  private setTemplate = template => {
+    this.template = state => template(hybrids.html, state)
+    return this
+  }
+
+  private register = () => {
+    const state = this.state.flatten()
+
+    const Component = {
+      ...state,
+      render: this.template
+    }
+
+    this.element = hybrids.define(this.tag, Component)
+    return this
   }
 }
-
-export default WebComponent

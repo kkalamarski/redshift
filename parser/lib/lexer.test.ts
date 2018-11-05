@@ -64,15 +64,11 @@ describe("Lexer", () => {
     const code = `
       "dobule quoted text"
       'single quoted text'
-      """
-        block text
-      """
     `
 
     const [nl_1, double, nl_2, single, nl_3, block] = tokenize(code)
     expect(double[0]).toBe(TokenType.String)
     expect(single[0]).toBe(TokenType.String)
-    expect(block[0]).toBe(TokenType.BlockString)
   })
 
   it("should match identifiers", () => {

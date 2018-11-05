@@ -21,6 +21,7 @@ export enum TokenType {
   Power = "Power",
   ThinArrow = "ThinArrow",
   FatArrow = "FatArrow",
+  Tilde = "Tilde",
 
   // Tokens
   Dot = "Dot",
@@ -38,6 +39,8 @@ export enum TokenType {
   MapOpen = "MapOpen",
   MapClose = "MapClose",
 
+  TemplateOperator = "Template",
+
   // Keywords
   DefModule = "DefModule",
   Def = "Def",
@@ -45,7 +48,9 @@ export enum TokenType {
   End = "End",
   Import = "Import",
   As = "As",
-  Fn = "Fn"
+  Fn = "Fn",
+
+  EndOfFile = "EndOfFile"
 }
 
 class TokenDefiniftion {
@@ -55,7 +60,7 @@ class TokenDefiniftion {
 export const TokenDefinitions: TokenDefiniftion[] = [
   new TokenDefiniftion(TokenType.Number, /^\d+(\.\d+)?/),
   new TokenDefiniftion(TokenType.Newline, /^[\r?\n]+/),
-  new TokenDefiniftion(TokenType.BlockString, /^"""[^']*"""/),
+  new TokenDefiniftion(TokenType.TemplateOperator, /^\!\!/),
   new TokenDefiniftion(TokenType.String, /^"[^"]*"/),
   new TokenDefiniftion(TokenType.String, /^'[^']*'/),
   new TokenDefiniftion(TokenType.Comma, /^\,/),
@@ -71,6 +76,7 @@ export const TokenDefinitions: TokenDefiniftion[] = [
   new TokenDefiniftion(TokenType.Division, /^\//),
   new TokenDefiniftion(TokenType.Multiplication, /^\*/),
   new TokenDefiniftion(TokenType.Equals, /^\=/),
+  new TokenDefiniftion(TokenType.Tilde, /^~/),
 
   // Tokens
   new TokenDefiniftion(TokenType.ListOpen, /^\[/),
@@ -164,6 +170,7 @@ export const tokenize = (code: string) => {
     }
   }
 
+  tokens.push([TokenType.EndOfFile, "", ""])
   return tokens
 }
 

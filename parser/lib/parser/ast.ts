@@ -97,6 +97,35 @@ export class StringLiteral {
   }
 }
 
+export class TemplateLiteral {
+  public type: string = "TemplateLiteral"
+
+  constructor(public expressions, public quasis) {}
+}
+
+export class TemplateLiteralValue {
+  public cooked: string
+
+  constructor(public raw: string) {
+    this.cooked = raw
+  }
+}
+
+export class TemplateElement {
+  public type: string = "TemplateElement"
+  public value: TemplateLiteralValue
+
+  constructor(value, public tail = false) {
+    this.value = new TemplateLiteralValue(value)
+  }
+}
+
+export class TaggedTemplateExpression {
+  public type: string = "TaggedTemplateExpression"
+
+  constructor(public tag, public quasi) {}
+}
+
 export class Identifier {
   public type: string = "Identifier"
 

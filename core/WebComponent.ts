@@ -27,7 +27,7 @@ export default class WebComponent {
   }
 
   public setTemplate = template => {
-    this.template = state => template(hybrids.html, state)
+    this.template = state => template(hybrids.html, State.of(state))
     return this
   }
 

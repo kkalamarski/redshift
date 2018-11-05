@@ -1,18 +1,14 @@
 import { Token } from "../lexer"
 import { tokenize } from "./../lexer"
-import {
-  TemplateLiteral,
-  TemplateElement,
-  TemplateLiteralValue,
-  Identifier
-} from "./ast"
+import { TemplateLiteral, TemplateElement } from "./ast"
 import Parser from "../parser"
+import Maybe from "./../../../core/Maybe"
 
 export const parseString = (string: Token): TemplateLiteral => {
   const [_type, value] = string
 
-  const expressions = value
-    .match(/{[^}]*}/gi)
+  const expressions = Maybe.of(value.match(/{[^}]*}/gi))
+    .valueOrElse([])
     .map(str => str.replace("{", "").replace("}", ""))
     .map(str => tokenize(str))
     .map(tokens => {

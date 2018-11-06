@@ -117,8 +117,14 @@ export default class Parser {
     }
 
     if (operator_type === TokenType.Tilde && next[0] === TokenType.String) {
+      this.consume() // remove tilde
+      const taggedTemplate = this.consume() // string
+
       return new ExpressionStatement(
-        new TaggedTemplateExpression(new Identifier(value), parseString(next))
+        new TaggedTemplateExpression(
+          new Identifier(value),
+          parseString(taggedTemplate)
+        )
       )
     }
 

@@ -1,0 +1,5 @@
+import "./src/App.rh" as App
+import "./src/Hello.rh" as Hello
+
+Hello.main()
+App.main()

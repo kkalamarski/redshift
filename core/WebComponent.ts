@@ -2,23 +2,19 @@ import State from "./State"
 import * as hybrids from "hybrids"
 
 export default class WebComponent {
-  private element
+  public element = null
   private state = State.of({})
-  private template = state => ""
+  private template = (renderer, state) => ""
   private constructor(private tag: string) {}
 
-  public static of = (tag: string, update, template) => {
+  public static of = (tag: string, update, template = ``) => {
     let component = new WebComponent(tag)
 
     if (update) {
       component = component.setState(update)
     }
 
-    if (template) {
-      component = component.setTemplate(template)
-    }
-
-    return component.register()
+    return component.register(template)
   }
 
   public setState = update => {
@@ -27,16 +23,16 @@ export default class WebComponent {
   }
 
   public setTemplate = template => {
-    this.template = state => template(hybrids.html, State.of(state))
+    this.template = template
     return this
   }
 
-  public register = () => {
+  public register = template => {
     const state = this.state.flatten()
 
     const Component = {
       ...state,
-      render: this.template
+      render: host => template(hybrids.html, State.of(host))
     }
 
     this.element = hybrids.define(this.tag, Component)

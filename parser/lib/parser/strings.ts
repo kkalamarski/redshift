@@ -7,9 +7,9 @@ import Maybe from "./../../../core/Maybe"
 export const parseString = (string: Token): TemplateLiteral => {
   const [_type, value] = string
 
-  const expressions = Maybe.of(value.match(/{[^}]*}/gi))
+  const expressions = Maybe.of(value.match(/{{[^}]*}}/gi))
     .valueOrElse([])
-    .map(str => str.replace("{", "").replace("}", ""))
+    .map(str => str.replace("{{", "").replace("}}", ""))
     .map(str => tokenize(str))
     .map(tokens => {
       const parser = new Parser(tokens)
@@ -18,8 +18,8 @@ export const parseString = (string: Token): TemplateLiteral => {
     })
 
   const text = value
-    .replace('"', "")
-    .replace(/{[^}]*}/gi, "---||---")
+    .replace(/"/g, "")
+    .replace(/{{[^}}]*}}/gi, "---||---")
     .split("---||---")
     .map(el => new TemplateElement(el))
 

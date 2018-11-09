@@ -1,6 +1,5 @@
 import {
   BinaryExpression,
-  ExpressionStatement,
   CallExpression,
   MemberExpression,
   ArrayExpression,
@@ -37,5 +36,5 @@ export const parseBuffer = buffer => {
 }
 
 export const parseExpression = buffer => {
-  return new ExpressionStatement(parseBuffer(buffer))
+  return parseBuffer(buffer)
 }

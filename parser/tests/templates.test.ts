@@ -6,7 +6,7 @@ describe("Templates", () => {
     const code = `
       template = "super template"
 
-      render ~ "hello from {template}"
+      render ~ "hello from {{template}}"
     `
 
     const result = compile(code)
@@ -16,11 +16,21 @@ describe("Templates", () => {
 
   it("should parse template literals with functions", () => {
     const code = `
-      render ~ "onclick={fn() -> template end}"
+      render ~ "onclick={{fn() -> template end}}"
     `
 
     const result = compile(code)
 
     expect(result).toContain("render`onclick=${() => template")
+  })
+
+  it("should parse template literals with functions", () => {
+    const code = `
+      render ~ "onclick={{WebComponents.mutate(fn(test) -> 4 end)}}"
+    `
+
+    const result = compile(code)
+
+    expect(result).toContain("test => 4)")
   })
 })

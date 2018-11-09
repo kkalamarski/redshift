@@ -68,4 +68,18 @@ describe("Lists", () => {
 
     expect(result.length).toBe(9)
   })
+
+  it("should be possible to return list literal in function return", () => {
+    const code = `
+    get_numbers = fn() -> [1, 2, 3] end
+
+    def get_names(name) do
+      [name, "mark", "adam"]
+    end
+
+    `
+    const result = compile(code)
+
+    expect(result).toContain("const get_numbers = () => [1, 2, 3]")
+  })
 })

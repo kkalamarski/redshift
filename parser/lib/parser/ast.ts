@@ -41,6 +41,17 @@ export class ObjectExpression {
   constructor(public properties) {}
 }
 
+export class Property {
+  public type: string = "ObjectProperty"
+
+  method = false
+  shorthand = false
+  computed = false
+  kind = "init"
+
+  constructor(public key, public value) {}
+}
+
 export class MemberExpression {
   public type: string = "MemberExpression"
   public computed: boolean = false

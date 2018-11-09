@@ -9,7 +9,8 @@ import { buildFunctionCall } from "./functions"
 import { parseExpression } from "./expressions"
 import { TokenType, Token } from "../lexer"
 import { isOperator } from "./../lexer"
-import { parseMemberExpression } from "./tokens"
+import { parseAnyType } from "./tokens"
+import { parseList } from "./lists"
 
 export const getParamsFromBuffer = (buffer: Token[]) => {
   const close = buffer.findIndex(token => token[0] === TokenType.ParamsClose)
@@ -23,7 +24,6 @@ export const getBodyFromBuffer = (buffer: Token[]) => {
 
 export const buildAnonymousFunction = (buffer: Token[]) => {
   const [fn, open, ...rest] = buffer
-  let id = 0
 
   if (fn[0] !== TokenType.Fn)
     throw new SyntaxError(
@@ -36,12 +36,10 @@ export const buildAnonymousFunction = (buffer: Token[]) => {
   const params = getParamsFromBuffer(rest)
   const body = getBodyFromBuffer(rest)
 
-  return new ExpressionStatement(
-    new ArrowFunctionExpression(
-      null,
-      params.map(param => new Identifier(param[1])),
-      new ReturnStatement(parseFunctionFromBuffer(body))
-    )
+  return new ArrowFunctionExpression(
+    null,
+    params.map(param => new Identifier(param[1])),
+    parseFunctionFromBuffer(body)
   )
 }
 
@@ -52,10 +50,13 @@ export const parseFunctionFromBuffer = (buffer: Token[]) => {
     const params = getParamsFromBuffer(rest)
 
     if (left[0] === TokenType.Identifier) {
-      return buildFunctionCall(new Identifier(left[1]), params)
-    } else if (left[0] === TokenType.MemberIdentifier) {
-      return buildFunctionCall(parseMemberExpression(left), params)
+      return buildFunctionCall(
+        new Identifier(left[1]),
+        params.map(param => parseAnyType(param))
+      )
     }
+  } else if (left[0] === TokenType.ListOpen) {
+    return parseList(buffer)
   } else {
     return parseExpression(buffer)
   }

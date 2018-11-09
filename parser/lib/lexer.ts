@@ -34,10 +34,8 @@ export enum TokenType {
   ParamsClose = "ParamsClose",
 
   TupleOpen = "TupleOpen",
-  TupleClose = "TupleClose",
-
   MapOpen = "MapOpen",
-  MapClose = "MapClose",
+  CurlyClose = "CurlyClose",
 
   TemplateOperator = "Template",
 
@@ -63,7 +61,6 @@ export const TokenDefinitions: TokenDefiniftion[] = [
   new TokenDefiniftion(TokenType.TemplateOperator, /^\!\!/),
   new TokenDefiniftion(TokenType.String, /^"[^"]*"/),
   new TokenDefiniftion(TokenType.String, /^'[^']*'/),
-  new TokenDefiniftion(TokenType.Comma, /^\,/),
 
   // Operators
   new TokenDefiniftion(TokenType.StringConcat, /^\<\>/),
@@ -79,27 +76,28 @@ export const TokenDefinitions: TokenDefiniftion[] = [
   new TokenDefiniftion(TokenType.Tilde, /^~/),
 
   // Tokens
-  new TokenDefiniftion(TokenType.ListOpen, /^\[/),
   new TokenDefiniftion(TokenType.Dot, /^\./),
+  new TokenDefiniftion(TokenType.Comma, /^\,/),
+  new TokenDefiniftion(TokenType.ListOpen, /^\[/),
   new TokenDefiniftion(TokenType.ListClose, /^\]/),
   new TokenDefiniftion(TokenType.TupleOpen, /^\{/),
-  new TokenDefiniftion(TokenType.TupleClose, /^\}/),
-  new TokenDefiniftion(TokenType.MapClose, /^\%\{/),
+  new TokenDefiniftion(TokenType.CurlyClose, /^\}/),
+  new TokenDefiniftion(TokenType.MapOpen, /^\%\{/),
   new TokenDefiniftion(TokenType.ParamsOpen, /^\(/),
   new TokenDefiniftion(TokenType.ParamsClose, /^\)/),
 
   // Keywords
   new TokenDefiniftion(TokenType.DefModule, /^defmodule/),
   new TokenDefiniftion(TokenType.Def, /^def/),
-  new TokenDefiniftion(TokenType.Do, /^do/),
+  new TokenDefiniftion(TokenType.Do, /^do\s+/),
   new TokenDefiniftion(TokenType.End, /^end/),
   new TokenDefiniftion(TokenType.Import, /^import/),
   new TokenDefiniftion(TokenType.As, /^as/),
   new TokenDefiniftion(TokenType.Fn, /^fn/),
-  new TokenDefiniftion(
-    TokenType.MemberIdentifier,
-    /^[$A-Z_][0-9A-Z_$]*\.[$A-Z_][0-9A-Z_$]+/i
-  ),
+  // new TokenDefiniftion(
+  //   TokenType.MemberIdentifier,
+  //   /^[$A-Z_][0-9A-Z_$]*\.[$A-Z_][0-9A-Z_$]+/i
+  // ),
   new TokenDefiniftion(TokenType.Identifier, /^[$A-Z_][0-9A-Z_$]*/i)
 ]
 
@@ -173,16 +171,3 @@ export const tokenize = (code: string) => {
   tokens.push([TokenType.EndOfFile, "", ""])
   return tokens
 }
-
-// export const getTokenType = (token: string) => {
-//   if (keywords.includes(token)) return TokenType.Keyword
-//   if (operations.includes(token)) return TokenType.Operator
-//   if (isNumber(token)) return TokenType.Number
-//   if (isIndentifier(token)) return TokenType.Identifier
-//   if (isFunction(token)) return TokenType.Function
-//   if (isString(token)) return TokenType.String
-
-//   throw new SyntaxError(
-//     `Unknown identifier "${token}" in ${this.line}:${this.position}`
-//   )
-// }

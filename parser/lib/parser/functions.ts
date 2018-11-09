@@ -21,11 +21,13 @@ import { parseAnyType } from "./tokens"
 
 const createLogicalStatement = params => {
   const [head, ...tail] = params
-
   const current = new BinaryExpression(
-    new MemberExpression(new Identifier("params"), new NumberLiteral(head[3])),
+    new MemberExpression(
+      new Identifier("params"),
+      new NumberLiteral(head.index)
+    ),
     "===",
-    parseAnyType(head)
+    head
   )
 
   if (!tail.length) {
@@ -37,9 +39,7 @@ const createLogicalStatement = params => {
 
 const buildPattenrMatching = params => {
   const length = params.length
-  const nonIdParams = params.filter(
-    ([type, value, id]) => type !== TokenType.Identifier
-  )
+  const nonIdParams = params.filter(token => !(token instanceof Identifier))
 
   const arityCheck = new BinaryExpression(
     new MemberExpression(new Identifier("params"), new Identifier("length")),
@@ -63,12 +63,10 @@ const redeclareParamsInsideClause = params =>
   params.length
     ? new VariableDeclaration(
         new ArrayPattern(
-          params.map(
-            ([type, value], index) =>
-              new Identifier(
-                type === TokenType.Identifier ? value : `_${type}_${index}`
-              )
-          )
+          params.map((test, index) => {
+            if (test instanceof Identifier) return test
+            else return new Identifier(`_${test.type}_${index}`)
+          })
         ),
         new Identifier("params")
       )
@@ -77,7 +75,10 @@ const redeclareParamsInsideClause = params =>
 const buildClause = ({ params, body: block }) => {
   const paramDeclaration = redeclareParamsInsideClause(params)
   const body = new Block([].concat(paramDeclaration, block.body))
-  const args = params.map((param, index) => param.concat(index))
+  const args = params.map((param, index) => {
+    param.index = index
+    return param
+  })
 
   return new IfStatement(buildPattenrMatching(args), body)
 }
@@ -109,9 +110,7 @@ export const buildModuleMethods = (mod: any, modName: string): any[] => {
 
 export const buildFunctionCall = (
   name: Identifier | MemberExpression,
-  params
+  params: Array<Identifier | StringLiteral | NumberLiteral>
 ) => {
-  return new ExpressionStatement(
-    new CallExpression(name, params.map(param => parseAnyType(param)))
-  )
+  return new ExpressionStatement(new CallExpression(name, params))
 }

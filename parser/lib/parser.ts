@@ -13,11 +13,7 @@ import {
   Program,
   ExportDefaultDeclaration,
   ImportDeclaration,
-  RestElement,
-  TaggedTemplateExpression,
-  TemplateLiteral,
-  TemplateElement,
-  TemplateLiteralValue
+  TaggedTemplateExpression
 } from "./parser/ast"
 import { buildModuleMethods, buildFunctionCall } from "./parser/functions"
 import {
@@ -32,8 +28,9 @@ import {
   Token
 } from "./lexer"
 import { parseExpression } from "./parser/expressions"
-import { parseIdentifierOrNumber } from "./parser/tokens"
+import { parseIdentifierOrNumber, parseAnyType } from "./parser/tokens"
 import { parseList } from "./parser/lists"
+import { parseMap } from "./parser/maps"
 import { parseString } from "./parser/strings"
 
 export default class Parser {
@@ -70,12 +67,13 @@ export default class Parser {
         expressions.push(this.parseIdentifier())
       } else if (type === TokenType.Number) {
         expressions.push(this.parseNumber())
+      } else if (type === TokenType.MapOpen) {
+        const buffer = this.getBufferUntil(TokenType.CurlyClose)
+        expressions.push(parseMap(buffer))
+        continue
       } else if (type === TokenType.ListOpen) {
         const buffer = this.getBufferUntil(TokenType.ListClose)
-        expressions.push(new ExpressionStatement(parseList(buffer)))
-      } else if (type === TokenType.MemberIdentifier) {
-        const buffer = this.getBufferUntil(TokenType.Newline)
-        expressions.push(parseFunctionFromBuffer(buffer))
+        expressions.push(parseList(buffer))
       } else {
         this.consume()
       }
@@ -102,6 +100,35 @@ export default class Parser {
     }
   }
 
+  private parseMemberExpression(object) {
+    this.consume() // remove dot
+    const property = this.consume()
+    const member = new MemberExpression(object, parseAnyType(property))
+
+    const [operator] = this.peek()
+    const [value] = this.peek(1)
+
+    if (operator === TokenType.ParamsOpen) {
+      const params = this.getParams()
+      return buildFunctionCall(member, params)
+    }
+
+    if (operator === TokenType.Dot) {
+      return this.parseMemberExpression(new Identifier(member))
+    }
+
+    if (operator === TokenType.Tilde && value === TokenType.String) {
+      this.consume() // remove tilde
+      const taggedTemplate = this.consume() // string
+
+      return new ExpressionStatement(
+        new TaggedTemplateExpression(member, parseString(taggedTemplate))
+      )
+    }
+
+    return member
+  }
+
   private parseIdentifier = (val?) => {
     const [type, value] = val ? val : this.consume()
     const [operator_type, operator_value] = this.peek()
@@ -109,6 +136,10 @@ export default class Parser {
 
     if (operator_type === TokenType.EndOfFile) {
       return new Identifier(value)
+    }
+
+    if (operator_type === TokenType.Dot) {
+      return this.parseMemberExpression(new Identifier(value))
     }
 
     if (operator_type === TokenType.ParamsOpen) {
@@ -141,6 +172,9 @@ export default class Parser {
       } else if (next && next[0] === TokenType.ListOpen) {
         const buffer = this.getBufferUntil(TokenType.ListClose)
         right = parseList(buffer)
+      } else if (next && next[0] === TokenType.MapOpen) {
+        const buffer = this.getBufferUntil(TokenType.CurlyClose)
+        right = parseMap(buffer)
       } else if (next && next[0] === TokenType.Identifier) {
         right = this.parseIdentifier()
       } else {
@@ -296,21 +330,36 @@ export default class Parser {
     if (type === TokenType.ParamsOpen) {
       let params = []
       while (true) {
-        const next = this.consume()
+        const value = this.consume()
+        const next = this.peek()
 
-        if (next[0] === TokenType.ParamsClose) break
-        if (next[0] === TokenType.Comma || next[0] === TokenType.Newline)
+        if (value[0] === TokenType.ParamsClose) break
+        if (value[0] === TokenType.Comma || value[0] === TokenType.Newline)
           continue
 
-        if (!isValidParameter(next)) {
+        if (value[0] === TokenType.Fn) {
+          const buffer = this.getBufferUntil(TokenType.End)
+          const fn = buildAnonymousFunction([value, ...buffer])
+
+          params.push(fn)
+          continue
+        }
+
+        if (!isValidParameter(value)) {
           throw new SyntaxError(
-            `Unexpected token ${
-              next[1]
-            } when declaring function parameters at ${next[2]}`
+            `Unexpected token ${value[1]} of type ${
+              value[0]
+            } when declaring function parameters at ${value[2]}`
           )
         }
 
-        params.push(next)
+        if (value[0] === TokenType.Identifier && next[0] === TokenType.Dot) {
+          const member = this.parseMemberExpression(new Identifier(value[1]))
+          params.push(member)
+          continue
+        } else {
+          params.push(parseAnyType(value))
+        }
       }
 
       return params
@@ -333,9 +382,13 @@ export default class Parser {
         if (nextType === TokenType.Identifier) {
           body.push(this.parseIdentifier(token))
           continue
-        } else if (nextType === TokenType.MemberIdentifier) {
-          const buffer = this.getBufferUntil(TokenType.Newline)
-          body.push(parseFunctionFromBuffer([token, ...buffer]))
+        } else if (nextType === TokenType.ListOpen) {
+          const buffer = this.getBufferUntil(TokenType.ListClose)
+          body.push(parseList([token, ...buffer]))
+          continue
+        } else if (nextType === TokenType.MapOpen) {
+          const buffer = this.getBufferUntil(TokenType.CurlyClose)
+          body.push(parseMap([token, ...buffer]))
           continue
         } else if (
           nextType === TokenType.Number ||

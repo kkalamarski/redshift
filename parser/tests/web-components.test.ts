@@ -6,22 +6,21 @@ describe("Web Components", () => {
     const code = `
       defmodule App do
         def main() do
-          update = fn(state) -> App.update(state) end
-          template = fn(render, state) -> App.template(render, state) end
-          
-          WebComponent.of("redshift-app", update, template)
+          WebComponent.of("redshift-app", App.model, App.template)
         end
       
-        def update(state) do
+        def model() do
           new_state = state.set("name", "Chris")
       
           new_state
         end
       
-        def template(render, state) do 
+        def template(state) do 
           name = state.get("name")
       
-          render ~ "Hello, my name is {name}"
+          WebComponent.html ~ "
+            <h2>Hello, my name is {{name}}</h2>
+          "
         end
       end
 

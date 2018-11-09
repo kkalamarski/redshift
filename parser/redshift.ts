@@ -13,7 +13,8 @@ export const compileAstToCode = (ast: any, es5?: boolean) => {
   const { code } = babel.transformFromAst(
     ast,
     {
-      minified: true
+      minified: true,
+      parserOpts: { allowReturnOutsideFunction: true }
     },
     {
       presets: es5 ? ["@babel/env"] : []

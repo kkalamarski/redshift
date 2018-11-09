@@ -69,4 +69,46 @@ describe("Functions", () => {
     const result = evaluate(code)
     expect(result).toBe(25)
   })
+
+  it("should be possible pass module function as a parameter", () => {
+    const code = `
+      test(Math.double, IO.puts("test"))
+    `
+    const result = compile(code)
+    expect(result).toContain("Math.double")
+    expect(result).toContain('IO.puts("test")')
+  })
+
+  it("should be possible to pass anonymous functions directly in parameters", () => {
+    const code = `
+      def test(value, func) do
+        func(value)
+      end
+
+      doubled = test(5, fn(a) -> a * 2 end)
+    `
+
+    const result = compile(code)
+
+    expect(result).toContain("a => a * 2)")
+  })
+
+  it("should be possible to span parameters across several lines", () => {
+    const code = `
+      def sum_all(a, b, c, d) do
+        a + b + c + d
+      end
+
+      sum_all(
+        1,
+        2, 
+        3,
+        4
+      )
+    `
+
+    const result = evaluate(code)
+
+    expect(result).toBe(10)
+  })
 })

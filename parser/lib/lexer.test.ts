@@ -73,10 +73,12 @@ describe("Lexer", () => {
 
   it("should match identifiers", () => {
     const code = "variable Math.round"
-    const [id, member] = tokenize(code)
+    const [id, member, dot, property] = tokenize(code)
 
     expect(id[0]).toBe(TokenType.Identifier)
-    expect(member[0]).toBe(TokenType.MemberIdentifier)
+    expect(member[0]).toBe(TokenType.Identifier)
+    expect(dot[0]).toBe(TokenType.Dot)
+    expect(property[0]).toBe(TokenType.Identifier)
   })
 
   it("should match parenthesess", () => {
@@ -87,9 +89,9 @@ describe("Lexer", () => {
     expect(result[0][0]).toBe(TokenType.ListOpen)
     expect(result[1][0]).toBe(TokenType.ListClose)
     expect(result[2][0]).toBe(TokenType.TupleOpen)
-    expect(result[3][0]).toBe(TokenType.TupleClose)
-    expect(result[4][0]).toBe(TokenType.MapClose)
-    expect(result[5][0]).toBe(TokenType.TupleClose)
+    expect(result[3][0]).toBe(TokenType.CurlyClose)
+    expect(result[4][0]).toBe(TokenType.MapOpen)
+    expect(result[5][0]).toBe(TokenType.CurlyClose)
     expect(result[6][0]).toBe(TokenType.ParamsOpen)
     expect(result[7][0]).toBe(TokenType.ParamsClose)
   })

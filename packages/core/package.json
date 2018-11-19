@@ -1,6 +1,6 @@
 {
   "name": "@redshift/core",
-  "version": "0.6.1-alpha.0",
+  "version": "0.6.2-alpha.0",
   "description": "",
   "main": "build/index.js",
   "scripts": {

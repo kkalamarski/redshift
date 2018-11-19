@@ -1,6 +1,6 @@
 {
   "name": "@redshift/core",
-  "version": "0.5.2",
+  "version": "0.6.1-alpha.0",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -26,8 +26,8 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@polymer/lit-element": "^0.6.2",
-    "@types/node": "^10.12.2",
     "@types/jest": "^23.3.9",
+    "@types/node": "^10.12.2",
     "antlr4ts": "^0.4.1-alpha.0",
     "babel-traverse": "^6.26.0",
     "babylon": "^6.18.0",

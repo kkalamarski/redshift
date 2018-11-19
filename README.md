@@ -29,7 +29,13 @@ redshift create <project_name>
 cd <project_name>
 ```
 
-Once generated you can yse npm scripts to run your application.
+Once generated you can use npm scripts to run your application.
+
+### REPL mode
+
+```bash
+redshift repl
+```
 
 ### One time build
 
@@ -102,17 +108,22 @@ error("Unknown") # Unknown error occured!
 
 ### Function expressions
 
-Redshift lets you define function expressions by using `fn/->/end` syntax.
+Redshift lets you define function expressions by using `->` syntax.
+Expression after arrow will be returned.
+
+To call anonymous function, dot syntax is used. This indicates that called function is an anonymous function and pattern matching should not be performed.
 
 ```elixir
-double = fn(a) -> a * 2 end
+let double = (a) -> a * 2
+
+double.(2) # 4
 ```
 
 Function expressions **do not** support pattern matching.
 To pass them as an argument to another function, they must be first stored in a variable. This is by design and improves code readability.
 
 ```elixir
-say_hello = fn(name) -> "Hello " <> name end
+let say_hello = (name) -> "Hello " <> name
 
 List.map(names, say_hello)
 ```
@@ -123,16 +134,16 @@ Because of lack of mutations, redshift supports constants only.
 Constants are block scoped.
 
 ```elixir
-test_constant = 2
-result = 2 * 3
+let test_constant = 2
+let result = 2 * 3
 ```
 
 Constants can also be used inside functions
 
 ```elixir
 def func() do
-  a = 40
-  b = 100
+  let a = 40
+  let b = 100
 
   a + b
 end
@@ -175,16 +186,16 @@ import "./js/User.js" as User
 String literals are declared using double quotes `"`.
 
 ```elixir
-hello_world = "Hello world!"
+let hello_world = "Hello world!"
 ```
 
 To concat two strings use concatenation operator `<>`.
 
 ```elixir
-str1 = "Hello "
-str2 = "world!"
+let str1 = "Hello "
+let str2 = "world!"
 
-result = str1 <> str2
+let result = str1 <> str2
 ```
 
 ### List Literals
@@ -192,16 +203,16 @@ result = str1 <> str2
 Lists are declared using square parentheses `[]`.
 
 ```elixir
-names = ["tom", "mark", "andrew"]
+let names = ["tom", "mark", "andrew"]
 ```
 
 To concat two lists use concatenation operator `++`.
 
 ```elixir
-names = ["tom", "mark", "adam"]
-other_names = ["anna", "kasia", "ewelina"]
+let names = ["tom", "mark", "adam"]
+let other_names = ["anna", "kasia", "ewelina"]
 
-all = names ++ other_names
+let all = names ++ other_names
 ```
 
 To perform more advanced operations like mapping, reducing, filtering and searching use List module
@@ -209,14 +220,14 @@ To perform more advanced operations like mapping, reducing, filtering and search
 ```elixir
 import List
 
-numbers = [1, 2, 3]
-double = fn(num) -> num * 2 end
+let numbers = [1, 2, 3]
+let double = (num) -> num * 2
 
-doubled = List.map(numbers, double)
+let doubled = List.map(numbers, double)
 
 ## Head | Tail
-head = List.head(numbers) # 1
-tail = List.tail(numbers) # [2, 3]
+let head = List.head(numbers) # 1
+let tail = List.tail(numbers) # [2, 3]
 ```
 
 ### Modules

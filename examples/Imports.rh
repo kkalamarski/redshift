@@ -1,8 +1,0 @@
-import IO
-
-def say_hello(name) do
-    text = "Hello " <> name
-    IO.puts(text)
-end
-
-say_hello("World!")

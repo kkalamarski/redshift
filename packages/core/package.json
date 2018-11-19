@@ -17,6 +17,9 @@
     "language",
     "functional"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Krzysztof Kałamarski",
   "license": "ISC",
   "dependencies": {
@@ -44,5 +47,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/kkalamarski/redshift.git"
-  }
+  },
+  "gitHead": "495d3084d3be716f90e39c7aa1df685b0fd5d524"
 }

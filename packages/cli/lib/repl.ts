@@ -1,11 +1,5 @@
 import repl from "repl"
-import { evaluate } from "@redshift/core"
-import List from "@redshift/core/core/List"
-import Maybe from "@redshift/core/core/Maybe"
-import IO from "@redshift/core/core/IO"
-import Map from "@redshift/core/core/Map"
-import State from "@redshift/core/core/State"
-import Math from "@redshift/core/core/Math"
+import { evaluate, List, Maybe, IO, Map, State, Math } from "@redshift/core"
 
 let buffer = ""
 

@@ -41,3 +41,21 @@ export const evaluate = (redshiftCode: string, es5?: boolean) => {
 
   return eval(jsCode)
 }
+
+import * as IO from "./core/IO"
+export { IO }
+
+import * as List from "./core/List"
+export { List }
+
+import * as Map from "./core/Map"
+export { Map }
+
+import * as Math from "./core/Math"
+export { Math }
+
+import * as Maybe from "./core/Maybe"
+export { Maybe }
+
+import * as State from "./core/State"
+export { State }

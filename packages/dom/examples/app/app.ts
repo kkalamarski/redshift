@@ -2,8 +2,6 @@ import { h, render, section, div, input } from "../../index"
 import { button } from "./../../index"
 import { Action } from "../../state"
 
-const root = document.getElementById("root")
-
 const update = (state: any, action: Action) => {
   const [type, payload] = action
 
@@ -52,4 +50,4 @@ let view = (state: any) =>
     ]
   )
 
-render(root, { view, update, model })
+render("root", { view, update, model })

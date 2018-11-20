@@ -1,81 +1,13 @@
 import fs from "fs"
 import path from "path"
 
-const main = target => `import "./src/App.rh" as App
+const main = target => `import "@redshift/dom" as RedshiftDOM
 
-App.main()
-`
-
-const app = target => `import WebComponent
-
-defmodule App do
-  def main() do
-    update = fn(state) -> App.update(state) end
-    template = fn(render, state) -> App.template(render, state) end
-
-    WebComponent.of("rh-app", update, template)    
-  end
-
-  def update(state) do
-    new_state = state.set("name", "Redshift")
-
-    new_state
-  end
-
-  def template(render, state) do 
-    name = state.get("name")
-
-    render ~ "
-      <style>
-        :host {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 16px;
-        }
-
-        h1 { 
-          color: #ffffff;
-          font-size: 3em;
-          text-align: center;
-          padding: 200px;
-          margin: 0;
-
-          background: #C02425;
-          background: -webkit-linear-gradient(to right, #F0CB35, #C02425); 
-          background: linear-gradient(to right, #F0CB35, #C02425);
-        }
-
-        h2 {
-          padding: 25px;
-          text-align: center;
-          font-size: 2em;
-          font-weight: normal;      
-          background: #C02425;
-          color: #FFFFFF;
-          margin: 0;
-        }
-
-        p {
-          text-align: center;
-          font-size: 1.5em;
-        }
-
-        a {
-          display: block;
-          text-align: center;
-          color: #C02425;
-          text-decoration: none;
-          font-size: 1.5em;
-        }
-
-      </style>
-      <h1>Welcome to the {{ name }} app!</h1>
-      <h2>This is a base template for Redshift web applications</h2>
-      <p>Start editing in /src/App.rh.</p>
-      <p> -- or -- </p>
-      <a href='https://github.com/kkalamarski/redshift'>Visit Github Page</a>
-    "
-  end
-end
+RedshiftDOM.render("root", {
+  model = 1,
+  view = (state) -> RedshiftDOM.h1({ style = "text-align: center;" }, ["Hello world!"]),
+  update = (state, action) -> state 
+})
 `
 
 const html = () => `<!DOCTYPE html>
@@ -89,7 +21,7 @@ const html = () => `<!DOCTYPE html>
 </head>
 
 <body>
-    <rh-app></rh-app>
+    <div id="root"></div>
 
     <script src="bin/bundle.js"></script>
 </body>
@@ -103,14 +35,10 @@ const pkg = target =>
       version: "0.0.0",
       description: "Sample project for Redshift programming language.",
       main: "bin/index.js",
-      scripts: {
-        start: "redshift serve main.rh",
-        watch: "redshift watch main.rh",
-        build: "redshift build main.rh"
-      },
 
       dependencies: {
-        redshiftlang: require("../../package.json").version
+        "@redshift/core": require("../package.json").version,
+        "@redshift/dom": require("../package.json").version
       }
     },
     null,
@@ -129,7 +57,6 @@ const generate = target => {
   fs.writeFileSync(path.join(target, "package.json"), pkg(target), "utf-8")
 
   fs.mkdirSync(path.join(target, "src"))
-  fs.writeFileSync(path.join(target, "src/App.rh"), app(target), "utf-8")
 
   fs.mkdirSync(path.join(target, "bin"))
 }

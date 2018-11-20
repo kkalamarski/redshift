@@ -13,7 +13,9 @@ export const h = (type: string, props: any = {}, children: any[] = []) => ({
   children
 })
 
-export const render = ($parent: any, { view, update, model }: Init) => {
+export const render = (root: string, { view, update, model }: Init) => {
+  const $parent = document.getElementById(root)
+
   let oldNode: any = null
 
   subscribe((state: any) => {

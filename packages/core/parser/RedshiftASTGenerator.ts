@@ -45,8 +45,6 @@ import {
   RecordContext,
   KeyValueContext,
   StatementContext,
-  ExposeContext,
-  AliasedContext
 } from "./RedshiftParser"
 
 const typed: { [x: string]: any } = {}
@@ -81,25 +79,7 @@ export default class RedshiftASTGenerator extends AbstractParseTreeVisitor<void>
   public visitBlock(ctx: BlockContext) {
     return ctx.children.map(expr => this.visit(expr))
   }
-
-  public visitExpose(ctx: ExposeContext) {
-    const module = ctx._module
-
-    const funs = this.visit<Property[]>(ctx.aliased())
-
-    return new VariableDeclaration(
-      new ObjectPattern(funs),
-      new Identifier(module.text)
-    )
-  }
-
-  public visitAliased(ctx: AliasedContext): Property[] {
-    return ctx
-      .IDENTIFIER()
-      .map(id => this.visit<Identifier>(id))
-      .map(id => new Property(id, id))
-  }
-
+  
   public visitExpression(ctx: ExpressionContext) {
     this.log("expression visited", ctx.text)
 

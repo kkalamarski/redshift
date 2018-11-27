@@ -3,12 +3,12 @@ grammar Redshift;
 program: statement* EOF;
 
 statement:
-	expose
+	expression
 	| constDeclaration
 	| funcDeclaration
 	| importStatement;
 
-block: (expose | constDeclaration | expression)+;
+block: (constDeclaration | expression)+;
 
 expression:
 	left = expression op = ('===' | '>' | '<' | '<=' | '>=') right = expression	# logicExpression
@@ -25,10 +25,6 @@ expression:
 	| atom = BOOLEAN															# atomExpr
 	| atom = IDENTIFIER															# atomExpr
 	| atom = STRING																# atomExpr;
-
-aliased: '(' (IDENTIFIER ','?)* ')';
-
-expose: 'expose' aliased 'from' module = IDENTIFIER;
 
 constDeclaration:
 	'let' name = IDENTIFIER ':' type = IDENTIFIER '=' expression

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./build",
+    "strict": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "baseUrl": ".",
+    "paths": {
+      "~*": ["*"]
+    }
+  },
+  "files": ["index.ts"],
+  "lib": ["DOM", "es2017"],
+  "exclude": ["node_modules", "build/**/*"],
+  "include": ["core/*", "*"]
+}

@@ -1,0 +1,13 @@
+import WebComponent
+
+def main() do
+  let temp = "Hello, my name is {{ name }}"
+
+  WebComponent.of(
+    "rh-app", 
+    () -> { name = "Chris" }, 
+    (state) -> WebComponent.html(template, { name = state.name })
+  )    
+end
+
+main()

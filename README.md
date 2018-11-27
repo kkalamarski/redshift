@@ -1,6 +1,7 @@
 # Redshift - functional programming language
 
 [![CircleCI](https://circleci.com/gh/kkalamarski/redshift/tree/master.svg?style=svg)](https://circleci.com/gh/kkalamarski/redshift/tree/master)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 Redshift is a functional programming language compiled to Javascript.
 It implements syntax similiar to Elixir. It is created as a part of learning how do compilers work, and it's mostly just _proof of concept_.
 
@@ -17,7 +18,7 @@ It implements syntax similiar to Elixir. It is created as a part of learning how
 Install compiler via npm:
 
 ```bash
-npm install -g redshiftlang
+npm install -g @redshift/cli
 ```
 
 ### Generating project files
@@ -29,7 +30,13 @@ redshift create <project_name>
 cd <project_name>
 ```
 
-Once generated you can yse npm scripts to run your application.
+Once generated you can use npm scripts to run your application.
+
+### REPL mode
+
+```bash
+redshift repl
+```
 
 ### One time build
 
@@ -62,59 +69,20 @@ def sum(a, b) do
 end
 ```
 
-Redshift takes note of the arity of the function (number of arguments), so it is possible to declare functions with same name, but different arity.
-For example following code is valid
-
-```elixir
-def sum(a) do
-  a + a
-end
-
-def sum(a, b) do
-  a + b
-end
-```
-
-### Pattern matching
-
-Redshift lets you use pattern matching in function declarations.
-
-```elixir
-def error("syntax") do
-  IO.puts("You used wrong syntax!")
-end
-
-def error("type") do
-  IO.puts("Trying to assign different type")
-end
-
-def error("range") do
-  IO.puts("Given value is out of range")
-end
-
-def error(type) do
-  IO.puts(type <> " error occured!")
-end
-
-error("syntax") # You used wrong syntax!
-error("Unknown") # Unknown error occured!
-```
-
 ### Function expressions
 
-Redshift lets you define function expressions by using `fn/->/end` syntax.
+Redshift lets you define function expressions by using `->` syntax.
+Expression after arrow will be returned.
+
+To call anonymous function, dot syntax is used. This indicates that called function is an anonymous function and pattern matching should not be performed.
 
 ```elixir
-double = fn(a) -> a * 2 end
-```
+let double = (a) -> a * 2
 
-Function expressions **do not** support pattern matching.
-To pass them as an argument to another function, they must be first stored in a variable. This is by design and improves code readability.
+double.(2) # 4
 
-```elixir
-say_hello = fn(name) -> "Hello " <> name end
+let greeted = List.map(names, (name) -> "Hello " <> name <> "!")
 
-List.map(names, say_hello)
 ```
 
 ### Constants
@@ -123,19 +91,23 @@ Because of lack of mutations, redshift supports constants only.
 Constants are block scoped.
 
 ```elixir
-test_constant = 2
-result = 2 * 3
+let test_constant = 2
+let result = 2 * 3
 ```
 
 Constants can also be used inside functions
 
 ```elixir
+let a = 5
+
 def func() do
-  a = 40
-  b = 100
+  let a = 40
+  let b = 100
 
   a + b
 end
+
+a # 5
 ```
 
 ### Imports
@@ -175,16 +147,16 @@ import "./js/User.js" as User
 String literals are declared using double quotes `"`.
 
 ```elixir
-hello_world = "Hello world!"
+let hello_world = "Hello world!"
 ```
 
 To concat two strings use concatenation operator `<>`.
 
 ```elixir
-str1 = "Hello "
-str2 = "world!"
+let str1 = "Hello "
+let str2 = "world!"
 
-result = str1 <> str2
+let result = str1 <> str2
 ```
 
 ### List Literals
@@ -192,16 +164,16 @@ result = str1 <> str2
 Lists are declared using square parentheses `[]`.
 
 ```elixir
-names = ["tom", "mark", "andrew"]
+let names = ["tom", "mark", "andrew"]
 ```
 
 To concat two lists use concatenation operator `++`.
 
 ```elixir
-names = ["tom", "mark", "adam"]
-other_names = ["anna", "kasia", "ewelina"]
+let names = ["tom", "mark", "adam"]
+let other_names = ["anna", "kasia", "ewelina"]
 
-all = names ++ other_names
+let all = names ++ other_names
 ```
 
 To perform more advanced operations like mapping, reducing, filtering and searching use List module
@@ -209,38 +181,12 @@ To perform more advanced operations like mapping, reducing, filtering and search
 ```elixir
 import List
 
-numbers = [1, 2, 3]
-double = fn(num) -> num * 2 end
+let numbers = [1, 2, 3]
+let double = (num) -> num * 2
 
-doubled = List.map(numbers, double)
+let doubled = List.map(numbers, double)
 
 ## Head | Tail
-head = List.head(numbers) # 1
-tail = List.tail(numbers) # [2, 3]
+let head = List.head(numbers) # 1
+let tail = List.tail(numbers) # [2, 3]
 ```
-
-### Modules
-
-Module is a namespace for the functions serving similiar purpose.
-Examples of built-in modules are:
-
-`Math` - contianing functions for arythmetic operations
-
-`IO` - containig functions for managind input and output
-
-To decalre custom module `defmodule / end` notation is used.
-
-```elixir
-defmodule User do
-
-  def get_user() do
-    # some logic
-  end
-
-  def delete_user() do
-    # some logic
-  end
-end
-```
-
-Module is always 'default' exported. That is why it is only possible to have one module per file.

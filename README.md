@@ -18,7 +18,7 @@ It implements syntax similiar to Elixir. It is created as a part of learning how
 Install compiler via npm:
 
 ```bash
-npm install -g redshiftlang
+npm install -g @redshift/cli
 ```
 
 ### Generating project files

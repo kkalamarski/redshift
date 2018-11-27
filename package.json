@@ -15,6 +15,6 @@
   },
   "scripts": {
     "test": "lerna run test",
-    "bootstrap": "lerna bootstrap --hoist"
+    "bootstrap": "lerna bootstrap"
   }
 }

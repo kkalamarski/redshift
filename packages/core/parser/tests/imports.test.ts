@@ -1,4 +1,4 @@
-import { compile } from "../redshift"
+import { compile } from "../../index"
 
 describe("Import statements", () => {
   it("should create an internal import", () => {

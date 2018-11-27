@@ -1,4 +1,4 @@
-import { compile } from "../redshift"
+import { compile } from "../../index"
 
 describe("Templates", () => {
   it("should parse template literals", () => {

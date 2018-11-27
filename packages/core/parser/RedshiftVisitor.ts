@@ -15,6 +15,8 @@ import { ProgramContext } from './RedshiftParser';
 import { StatementContext } from './RedshiftParser';
 import { BlockContext } from './RedshiftParser';
 import { ExpressionContext } from './RedshiftParser';
+import { AliasedContext } from './RedshiftParser';
+import { ExposeContext } from './RedshiftParser';
 import { ConstDeclarationContext } from './RedshiftParser';
 import { FuncDeclarationContext } from './RedshiftParser';
 import { LambdaContext } from './RedshiftParser';
@@ -127,6 +129,20 @@ export interface RedshiftVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitExpression?: (ctx: ExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `RedshiftParser.aliased`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitAliased?: (ctx: AliasedContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `RedshiftParser.expose`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitExpose?: (ctx: ExposeContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `RedshiftParser.constDeclaration`.

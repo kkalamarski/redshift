@@ -1,4 +1,4 @@
-import { evaluate, compile } from "../redshift"
+import { evaluate, compile } from "../../index"
 
 describe("Strings", () => {
   it("should parse string", () => {

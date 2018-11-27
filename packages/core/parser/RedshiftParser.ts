@@ -55,45 +55,50 @@ export class RedshiftParser extends Parser {
 	public static readonly T__25=26;
 	public static readonly T__26=27;
 	public static readonly T__27=28;
-	public static readonly NUMBER=29;
-	public static readonly STRING=30;
-	public static readonly BOOLEAN=31;
-	public static readonly IDENTIFIER=32;
-	public static readonly WS=33;
-	public static readonly NEWLINE=34;
+	public static readonly T__28=29;
+	public static readonly T__29=30;
+	public static readonly NUMBER=31;
+	public static readonly STRING=32;
+	public static readonly BOOLEAN=33;
+	public static readonly IDENTIFIER=34;
+	public static readonly WS=35;
+	public static readonly NEWLINE=36;
 	public static readonly RULE_program = 0;
 	public static readonly RULE_statement = 1;
 	public static readonly RULE_block = 2;
 	public static readonly RULE_expression = 3;
-	public static readonly RULE_constDeclaration = 4;
-	public static readonly RULE_funcDeclaration = 5;
-	public static readonly RULE_lambda = 6;
-	public static readonly RULE_lambdaCall = 7;
-	public static readonly RULE_funcCall = 8;
-	public static readonly RULE_funcParams = 9;
-	public static readonly RULE_memberExpression = 10;
-	public static readonly RULE_list = 11;
-	public static readonly RULE_record = 12;
-	public static readonly RULE_keyValue = 13;
-	public static readonly RULE_importStatement = 14;
+	public static readonly RULE_aliased = 4;
+	public static readonly RULE_expose = 5;
+	public static readonly RULE_constDeclaration = 6;
+	public static readonly RULE_funcDeclaration = 7;
+	public static readonly RULE_lambda = 8;
+	public static readonly RULE_lambdaCall = 9;
+	public static readonly RULE_funcCall = 10;
+	public static readonly RULE_funcParams = 11;
+	public static readonly RULE_memberExpression = 12;
+	public static readonly RULE_list = 13;
+	public static readonly RULE_record = 14;
+	public static readonly RULE_keyValue = 15;
+	public static readonly RULE_importStatement = 16;
 	public static readonly ruleNames: string[] = [
-		"program", "statement", "block", "expression", "constDeclaration", "funcDeclaration", 
-		"lambda", "lambdaCall", "funcCall", "funcParams", "memberExpression", 
+		"program", "statement", "block", "expression", "aliased", "expose", "constDeclaration", 
+		"funcDeclaration", "lambda", "lambdaCall", "funcCall", "funcParams", "memberExpression", 
 		"list", "record", "keyValue", "importStatement"
 	];
 
 	private static readonly _LITERAL_NAMES: (string | undefined)[] = [
 		undefined, "'==='", "'>'", "'<'", "'<='", "'>='", "'*'", "'/'", "'+'", 
-		"'-'", "'<>'", "'++'", "'let'", "':'", "'='", "'def'", "'do'", "'end'", 
-		"'('", "')'", "'->'", "'.'", "','", "'['", "']'", "'{'", "'}'", "'import'", 
-		"'as'"
+		"'-'", "'<>'", "'++'", "'('", "','", "')'", "'expose'", "'from'", "'let'", 
+		"':'", "'='", "'def'", "'do'", "'end'", "'->'", "'.'", "'['", "']'", "'{'", 
+		"'}'", "'import'", "'as'"
 	];
 	private static readonly _SYMBOLIC_NAMES: (string | undefined)[] = [
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
-		undefined, "NUMBER", "STRING", "BOOLEAN", "IDENTIFIER", "WS", "NEWLINE"
+		undefined, undefined, undefined, "NUMBER", "STRING", "BOOLEAN", "IDENTIFIER", 
+		"WS", "NEWLINE"
 	];
 	public static readonly VOCABULARY: Vocabulary = new VocabularyImpl(RedshiftParser._LITERAL_NAMES, RedshiftParser._SYMBOLIC_NAMES, []);
 
@@ -124,21 +129,21 @@ export class RedshiftParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 33;
+			this.state = 37;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (((((_la - 12)) & ~0x1F) === 0 && ((1 << (_la - 12)) & ((1 << (RedshiftParser.T__11 - 12)) | (1 << (RedshiftParser.T__14 - 12)) | (1 << (RedshiftParser.T__17 - 12)) | (1 << (RedshiftParser.T__22 - 12)) | (1 << (RedshiftParser.T__24 - 12)) | (1 << (RedshiftParser.T__26 - 12)) | (1 << (RedshiftParser.NUMBER - 12)) | (1 << (RedshiftParser.STRING - 12)) | (1 << (RedshiftParser.BOOLEAN - 12)) | (1 << (RedshiftParser.IDENTIFIER - 12)))) !== 0)) {
+			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << RedshiftParser.T__14) | (1 << RedshiftParser.T__16) | (1 << RedshiftParser.T__19) | (1 << RedshiftParser.T__28))) !== 0)) {
 				{
 				{
-				this.state = 30;
+				this.state = 34;
 				this.statement();
 				}
 				}
-				this.state = 35;
+				this.state = 39;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 36;
+			this.state = 40;
 			this.match(RedshiftParser.EOF);
 			}
 		}
@@ -161,40 +166,34 @@ export class RedshiftParser extends Parser {
 		let _localctx: StatementContext = new StatementContext(this._ctx, this.state);
 		this.enterRule(_localctx, 2, RedshiftParser.RULE_statement);
 		try {
-			this.state = 42;
+			this.state = 46;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case RedshiftParser.T__17:
-			case RedshiftParser.T__22:
-			case RedshiftParser.T__24:
-			case RedshiftParser.NUMBER:
-			case RedshiftParser.STRING:
-			case RedshiftParser.BOOLEAN:
-			case RedshiftParser.IDENTIFIER:
+			case RedshiftParser.T__14:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 38;
-				this.expression(0);
+				this.state = 42;
+				this.expose();
 				}
 				break;
-			case RedshiftParser.T__11:
+			case RedshiftParser.T__16:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 39;
+				this.state = 43;
 				this.constDeclaration();
 				}
 				break;
-			case RedshiftParser.T__14:
+			case RedshiftParser.T__19:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 40;
+				this.state = 44;
 				this.funcDeclaration();
 				}
 				break;
-			case RedshiftParser.T__26:
+			case RedshiftParser.T__28:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 41;
+				this.state = 45;
 				this.importStatement();
 				}
 				break;
@@ -224,40 +223,46 @@ export class RedshiftParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 46; 
+			this.state = 51; 
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			do {
 				{
-				this.state = 46;
+				this.state = 51;
 				this._errHandler.sync(this);
 				switch (this._input.LA(1)) {
-				case RedshiftParser.T__17:
-				case RedshiftParser.T__22:
+				case RedshiftParser.T__14:
+					{
+					this.state = 48;
+					this.expose();
+					}
+					break;
+				case RedshiftParser.T__16:
+					{
+					this.state = 49;
+					this.constDeclaration();
+					}
+					break;
+				case RedshiftParser.T__11:
 				case RedshiftParser.T__24:
+				case RedshiftParser.T__26:
 				case RedshiftParser.NUMBER:
 				case RedshiftParser.STRING:
 				case RedshiftParser.BOOLEAN:
 				case RedshiftParser.IDENTIFIER:
 					{
-					this.state = 44;
+					this.state = 50;
 					this.expression(0);
-					}
-					break;
-				case RedshiftParser.T__11:
-					{
-					this.state = 45;
-					this.constDeclaration();
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
 				}
-				this.state = 48; 
+				this.state = 53; 
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-			} while ( ((((_la - 12)) & ~0x1F) === 0 && ((1 << (_la - 12)) & ((1 << (RedshiftParser.T__11 - 12)) | (1 << (RedshiftParser.T__17 - 12)) | (1 << (RedshiftParser.T__22 - 12)) | (1 << (RedshiftParser.T__24 - 12)) | (1 << (RedshiftParser.NUMBER - 12)) | (1 << (RedshiftParser.STRING - 12)) | (1 << (RedshiftParser.BOOLEAN - 12)) | (1 << (RedshiftParser.IDENTIFIER - 12)))) !== 0) );
+			} while ( ((((_la - 12)) & ~0x1F) === 0 && ((1 << (_la - 12)) & ((1 << (RedshiftParser.T__11 - 12)) | (1 << (RedshiftParser.T__14 - 12)) | (1 << (RedshiftParser.T__16 - 12)) | (1 << (RedshiftParser.T__24 - 12)) | (1 << (RedshiftParser.T__26 - 12)) | (1 << (RedshiftParser.NUMBER - 12)) | (1 << (RedshiftParser.STRING - 12)) | (1 << (RedshiftParser.BOOLEAN - 12)) | (1 << (RedshiftParser.IDENTIFIER - 12)))) !== 0) );
 			}
 		}
 		catch (re) {
@@ -294,7 +299,7 @@ export class RedshiftParser extends Parser {
 			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 61;
+			this.state = 66;
 			this._errHandler.sync(this);
 			switch ( this.interpreter.adaptivePredict(this._input,4,this._ctx) ) {
 			case 1:
@@ -303,7 +308,7 @@ export class RedshiftParser extends Parser {
 				this._ctx = _localctx;
 				_prevctx = _localctx;
 
-				this.state = 51;
+				this.state = 56;
 				(_localctx as FuncExprContext)._func = this.funcCall();
 				}
 				break;
@@ -313,7 +318,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new LambdaExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 52;
+				this.state = 57;
 				(_localctx as LambdaExprContext)._lambdaD = this.lambda();
 				}
 				break;
@@ -323,7 +328,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new LambdaExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 53;
+				this.state = 58;
 				(_localctx as LambdaExprContext)._lambdaC = this.lambdaCall();
 				}
 				break;
@@ -333,7 +338,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new MemberExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 54;
+				this.state = 59;
 				(_localctx as MemberExprContext)._member = this.memberExpression(0);
 				}
 				break;
@@ -343,7 +348,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new ListExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 55;
+				this.state = 60;
 				(_localctx as ListExprContext)._atom = this.list();
 				}
 				break;
@@ -353,7 +358,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new RecordExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 56;
+				this.state = 61;
 				(_localctx as RecordExprContext)._atom = this.record();
 				}
 				break;
@@ -363,7 +368,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new AtomExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 57;
+				this.state = 62;
 				(_localctx as AtomExprContext)._atom = this.match(RedshiftParser.NUMBER);
 				}
 				break;
@@ -373,7 +378,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new AtomExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 58;
+				this.state = 63;
 				(_localctx as AtomExprContext)._atom = this.match(RedshiftParser.BOOLEAN);
 				}
 				break;
@@ -383,7 +388,7 @@ export class RedshiftParser extends Parser {
 				_localctx = new AtomExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 59;
+				this.state = 64;
 				(_localctx as AtomExprContext)._atom = this.match(RedshiftParser.IDENTIFIER);
 				}
 				break;
@@ -393,13 +398,13 @@ export class RedshiftParser extends Parser {
 				_localctx = new AtomExprContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 60;
+				this.state = 65;
 				(_localctx as AtomExprContext)._atom = this.match(RedshiftParser.STRING);
 				}
 				break;
 			}
 			this._ctx._stop = this._input.tryLT(-1);
-			this.state = 77;
+			this.state = 82;
 			this._errHandler.sync(this);
 			_alt = this.interpreter.adaptivePredict(this._input,6,this._ctx);
 			while ( _alt!==2 && _alt!==ATN.INVALID_ALT_NUMBER ) {
@@ -407,7 +412,7 @@ export class RedshiftParser extends Parser {
 					if ( this._parseListeners!=null ) this.triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					this.state = 75;
+					this.state = 80;
 					this._errHandler.sync(this);
 					switch ( this.interpreter.adaptivePredict(this._input,5,this._ctx) ) {
 					case 1:
@@ -415,9 +420,9 @@ export class RedshiftParser extends Parser {
 						_localctx = new LogicExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						(_localctx as LogicExpressionContext)._left = _prevctx;
 						this.pushNewRecursionContext(_localctx, _startState, RedshiftParser.RULE_expression);
-						this.state = 63;
+						this.state = 68;
 						if (!(this.precpred(this._ctx, 14))) throw new FailedPredicateException(this, "this.precpred(this._ctx, 14)");
-						this.state = 64;
+						this.state = 69;
 						(_localctx as LogicExpressionContext)._op = this._input.LT(1);
 						_la = this._input.LA(1);
 						if ( !((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << RedshiftParser.T__0) | (1 << RedshiftParser.T__1) | (1 << RedshiftParser.T__2) | (1 << RedshiftParser.T__3) | (1 << RedshiftParser.T__4))) !== 0)) ) {
@@ -430,7 +435,7 @@ export class RedshiftParser extends Parser {
 							this._errHandler.reportMatch(this);
 							this.consume();
 						}
-						this.state = 65;
+						this.state = 70;
 						(_localctx as LogicExpressionContext)._right = this.expression(15);
 						}
 						break;
@@ -440,9 +445,9 @@ export class RedshiftParser extends Parser {
 						_localctx = new BinaryExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						(_localctx as BinaryExpressionContext)._left = _prevctx;
 						this.pushNewRecursionContext(_localctx, _startState, RedshiftParser.RULE_expression);
-						this.state = 66;
+						this.state = 71;
 						if (!(this.precpred(this._ctx, 13))) throw new FailedPredicateException(this, "this.precpred(this._ctx, 13)");
-						this.state = 67;
+						this.state = 72;
 						(_localctx as BinaryExpressionContext)._op = this._input.LT(1);
 						_la = this._input.LA(1);
 						if ( !(_la===RedshiftParser.T__5 || _la===RedshiftParser.T__6) ) {
@@ -455,7 +460,7 @@ export class RedshiftParser extends Parser {
 							this._errHandler.reportMatch(this);
 							this.consume();
 						}
-						this.state = 68;
+						this.state = 73;
 						(_localctx as BinaryExpressionContext)._right = this.expression(14);
 						}
 						break;
@@ -465,9 +470,9 @@ export class RedshiftParser extends Parser {
 						_localctx = new BinaryExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						(_localctx as BinaryExpressionContext)._left = _prevctx;
 						this.pushNewRecursionContext(_localctx, _startState, RedshiftParser.RULE_expression);
-						this.state = 69;
+						this.state = 74;
 						if (!(this.precpred(this._ctx, 12))) throw new FailedPredicateException(this, "this.precpred(this._ctx, 12)");
-						this.state = 70;
+						this.state = 75;
 						(_localctx as BinaryExpressionContext)._op = this._input.LT(1);
 						_la = this._input.LA(1);
 						if ( !(_la===RedshiftParser.T__7 || _la===RedshiftParser.T__8) ) {
@@ -480,7 +485,7 @@ export class RedshiftParser extends Parser {
 							this._errHandler.reportMatch(this);
 							this.consume();
 						}
-						this.state = 71;
+						this.state = 76;
 						(_localctx as BinaryExpressionContext)._right = this.expression(13);
 						}
 						break;
@@ -490,9 +495,9 @@ export class RedshiftParser extends Parser {
 						_localctx = new BinaryExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						(_localctx as BinaryExpressionContext)._left = _prevctx;
 						this.pushNewRecursionContext(_localctx, _startState, RedshiftParser.RULE_expression);
-						this.state = 72;
+						this.state = 77;
 						if (!(this.precpred(this._ctx, 11))) throw new FailedPredicateException(this, "this.precpred(this._ctx, 11)");
-						this.state = 73;
+						this.state = 78;
 						(_localctx as BinaryExpressionContext)._op = this._input.LT(1);
 						_la = this._input.LA(1);
 						if ( !(_la===RedshiftParser.T__9 || _la===RedshiftParser.T__10) ) {
@@ -505,14 +510,14 @@ export class RedshiftParser extends Parser {
 							this._errHandler.reportMatch(this);
 							this.consume();
 						}
-						this.state = 74;
+						this.state = 79;
 						(_localctx as BinaryExpressionContext)._right = this.expression(12);
 						}
 						break;
 					}
 					} 
 				}
-				this.state = 79;
+				this.state = 84;
 				this._errHandler.sync(this);
 				_alt = this.interpreter.adaptivePredict(this._input,6,this._ctx);
 			}
@@ -533,27 +538,110 @@ export class RedshiftParser extends Parser {
 		return _localctx;
 	}
 	@RuleVersion(0)
+	public aliased(): AliasedContext {
+		let _localctx: AliasedContext = new AliasedContext(this._ctx, this.state);
+		this.enterRule(_localctx, 8, RedshiftParser.RULE_aliased);
+		let _la: number;
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 85;
+			this.match(RedshiftParser.T__11);
+			this.state = 92;
+			this._errHandler.sync(this);
+			_la = this._input.LA(1);
+			while (_la===RedshiftParser.IDENTIFIER) {
+				{
+				{
+				this.state = 86;
+				this.match(RedshiftParser.IDENTIFIER);
+				this.state = 88;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+				if (_la===RedshiftParser.T__12) {
+					{
+					this.state = 87;
+					this.match(RedshiftParser.T__12);
+					}
+				}
+
+				}
+				}
+				this.state = 94;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+			}
+			this.state = 95;
+			this.match(RedshiftParser.T__13);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	@RuleVersion(0)
+	public expose(): ExposeContext {
+		let _localctx: ExposeContext = new ExposeContext(this._ctx, this.state);
+		this.enterRule(_localctx, 10, RedshiftParser.RULE_expose);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 97;
+			this.match(RedshiftParser.T__14);
+			this.state = 98;
+			this.aliased();
+			this.state = 99;
+			this.match(RedshiftParser.T__15);
+			this.state = 100;
+			_localctx._module = this.match(RedshiftParser.IDENTIFIER);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	@RuleVersion(0)
 	public constDeclaration(): ConstDeclarationContext {
 		let _localctx: ConstDeclarationContext = new ConstDeclarationContext(this._ctx, this.state);
-		this.enterRule(_localctx, 8, RedshiftParser.RULE_constDeclaration);
+		this.enterRule(_localctx, 12, RedshiftParser.RULE_constDeclaration);
 		try {
-			this.state = 90;
+			this.state = 112;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,7,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,9,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 80;
-				this.match(RedshiftParser.T__11);
-				this.state = 81;
+				this.state = 102;
+				this.match(RedshiftParser.T__16);
+				this.state = 103;
 				_localctx._name = this.match(RedshiftParser.IDENTIFIER);
-				this.state = 82;
-				this.match(RedshiftParser.T__12);
-				this.state = 83;
+				this.state = 104;
+				this.match(RedshiftParser.T__17);
+				this.state = 105;
 				_localctx._type = this.match(RedshiftParser.IDENTIFIER);
-				this.state = 84;
-				this.match(RedshiftParser.T__13);
-				this.state = 85;
+				this.state = 106;
+				this.match(RedshiftParser.T__18);
+				this.state = 107;
 				this.expression(0);
 				}
 				break;
@@ -561,13 +649,13 @@ export class RedshiftParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 86;
-				this.match(RedshiftParser.T__11);
-				this.state = 87;
+				this.state = 108;
+				this.match(RedshiftParser.T__16);
+				this.state = 109;
 				_localctx._name = this.match(RedshiftParser.IDENTIFIER);
-				this.state = 88;
-				this.match(RedshiftParser.T__13);
-				this.state = 89;
+				this.state = 110;
+				this.match(RedshiftParser.T__18);
+				this.state = 111;
 				this.expression(0);
 				}
 				break;
@@ -590,55 +678,55 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public funcDeclaration(): FuncDeclarationContext {
 		let _localctx: FuncDeclarationContext = new FuncDeclarationContext(this._ctx, this.state);
-		this.enterRule(_localctx, 10, RedshiftParser.RULE_funcDeclaration);
+		this.enterRule(_localctx, 14, RedshiftParser.RULE_funcDeclaration);
 		let _la: number;
 		try {
-			this.state = 109;
+			this.state = 131;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,9,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,11,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 92;
-				this.match(RedshiftParser.T__14);
-				this.state = 93;
+				this.state = 114;
+				this.match(RedshiftParser.T__19);
+				this.state = 115;
 				_localctx._name = this.match(RedshiftParser.IDENTIFIER);
-				this.state = 94;
-				this.match(RedshiftParser.T__15);
-				this.state = 95;
+				this.state = 116;
+				this.match(RedshiftParser.T__20);
+				this.state = 117;
 				this.block();
-				this.state = 96;
-				this.match(RedshiftParser.T__16);
+				this.state = 118;
+				this.match(RedshiftParser.T__21);
 				}
 				break;
 
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 98;
-				this.match(RedshiftParser.T__14);
-				this.state = 99;
+				this.state = 120;
+				this.match(RedshiftParser.T__19);
+				this.state = 121;
 				_localctx._name = this.match(RedshiftParser.IDENTIFIER);
-				this.state = 100;
-				this.match(RedshiftParser.T__17);
-				this.state = 102;
+				this.state = 122;
+				this.match(RedshiftParser.T__11);
+				this.state = 124;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 				if (_la===RedshiftParser.IDENTIFIER) {
 					{
-					this.state = 101;
+					this.state = 123;
 					this.funcParams(0);
 					}
 				}
 
-				this.state = 104;
-				this.match(RedshiftParser.T__18);
-				this.state = 105;
-				this.match(RedshiftParser.T__15);
-				this.state = 106;
+				this.state = 126;
+				this.match(RedshiftParser.T__13);
+				this.state = 127;
+				this.match(RedshiftParser.T__20);
+				this.state = 128;
 				this.block();
-				this.state = 107;
-				this.match(RedshiftParser.T__16);
+				this.state = 129;
+				this.match(RedshiftParser.T__21);
 				}
 				break;
 			}
@@ -660,28 +748,28 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public lambda(): LambdaContext {
 		let _localctx: LambdaContext = new LambdaContext(this._ctx, this.state);
-		this.enterRule(_localctx, 12, RedshiftParser.RULE_lambda);
+		this.enterRule(_localctx, 16, RedshiftParser.RULE_lambda);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 111;
-			this.match(RedshiftParser.T__17);
-			this.state = 113;
+			this.state = 133;
+			this.match(RedshiftParser.T__11);
+			this.state = 135;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===RedshiftParser.IDENTIFIER) {
 				{
-				this.state = 112;
+				this.state = 134;
 				this.funcParams(0);
 				}
 			}
 
-			this.state = 115;
-			this.match(RedshiftParser.T__18);
-			this.state = 116;
-			this.match(RedshiftParser.T__19);
-			this.state = 117;
+			this.state = 137;
+			this.match(RedshiftParser.T__13);
+			this.state = 138;
+			this.match(RedshiftParser.T__22);
+			this.state = 139;
 			this.expression(0);
 			}
 		}
@@ -702,43 +790,43 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public lambdaCall(): LambdaCallContext {
 		let _localctx: LambdaCallContext = new LambdaCallContext(this._ctx, this.state);
-		this.enterRule(_localctx, 14, RedshiftParser.RULE_lambdaCall);
+		this.enterRule(_localctx, 18, RedshiftParser.RULE_lambdaCall);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 119;
+			this.state = 141;
 			_localctx._name = this.match(RedshiftParser.IDENTIFIER);
-			this.state = 120;
-			this.match(RedshiftParser.T__20);
-			this.state = 121;
-			this.match(RedshiftParser.T__17);
-			this.state = 128;
+			this.state = 142;
+			this.match(RedshiftParser.T__23);
+			this.state = 143;
+			this.match(RedshiftParser.T__11);
+			this.state = 150;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (((((_la - 18)) & ~0x1F) === 0 && ((1 << (_la - 18)) & ((1 << (RedshiftParser.T__17 - 18)) | (1 << (RedshiftParser.T__22 - 18)) | (1 << (RedshiftParser.T__24 - 18)) | (1 << (RedshiftParser.NUMBER - 18)) | (1 << (RedshiftParser.STRING - 18)) | (1 << (RedshiftParser.BOOLEAN - 18)) | (1 << (RedshiftParser.IDENTIFIER - 18)))) !== 0)) {
+			while (((((_la - 12)) & ~0x1F) === 0 && ((1 << (_la - 12)) & ((1 << (RedshiftParser.T__11 - 12)) | (1 << (RedshiftParser.T__24 - 12)) | (1 << (RedshiftParser.T__26 - 12)) | (1 << (RedshiftParser.NUMBER - 12)) | (1 << (RedshiftParser.STRING - 12)) | (1 << (RedshiftParser.BOOLEAN - 12)) | (1 << (RedshiftParser.IDENTIFIER - 12)))) !== 0)) {
 				{
 				{
-				this.state = 122;
+				this.state = 144;
 				this.expression(0);
-				this.state = 124;
+				this.state = 146;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===RedshiftParser.T__21) {
+				if (_la===RedshiftParser.T__12) {
 					{
-					this.state = 123;
-					this.match(RedshiftParser.T__21);
+					this.state = 145;
+					this.match(RedshiftParser.T__12);
 					}
 				}
 
 				}
 				}
-				this.state = 130;
+				this.state = 152;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 131;
-			this.match(RedshiftParser.T__18);
+			this.state = 153;
+			this.match(RedshiftParser.T__13);
 			}
 		}
 		catch (re) {
@@ -758,81 +846,81 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public funcCall(): FuncCallContext {
 		let _localctx: FuncCallContext = new FuncCallContext(this._ctx, this.state);
-		this.enterRule(_localctx, 16, RedshiftParser.RULE_funcCall);
+		this.enterRule(_localctx, 20, RedshiftParser.RULE_funcCall);
 		let _la: number;
 		try {
-			this.state = 158;
+			this.state = 180;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,17,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,19,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 133;
+				this.state = 155;
 				_localctx._name = this.match(RedshiftParser.IDENTIFIER);
-				this.state = 134;
-				this.match(RedshiftParser.T__17);
-				this.state = 141;
+				this.state = 156;
+				this.match(RedshiftParser.T__11);
+				this.state = 163;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (((((_la - 18)) & ~0x1F) === 0 && ((1 << (_la - 18)) & ((1 << (RedshiftParser.T__17 - 18)) | (1 << (RedshiftParser.T__22 - 18)) | (1 << (RedshiftParser.T__24 - 18)) | (1 << (RedshiftParser.NUMBER - 18)) | (1 << (RedshiftParser.STRING - 18)) | (1 << (RedshiftParser.BOOLEAN - 18)) | (1 << (RedshiftParser.IDENTIFIER - 18)))) !== 0)) {
+				while (((((_la - 12)) & ~0x1F) === 0 && ((1 << (_la - 12)) & ((1 << (RedshiftParser.T__11 - 12)) | (1 << (RedshiftParser.T__24 - 12)) | (1 << (RedshiftParser.T__26 - 12)) | (1 << (RedshiftParser.NUMBER - 12)) | (1 << (RedshiftParser.STRING - 12)) | (1 << (RedshiftParser.BOOLEAN - 12)) | (1 << (RedshiftParser.IDENTIFIER - 12)))) !== 0)) {
 					{
 					{
-					this.state = 135;
+					this.state = 157;
 					this.expression(0);
-					this.state = 137;
+					this.state = 159;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
-					if (_la===RedshiftParser.T__21) {
+					if (_la===RedshiftParser.T__12) {
 						{
-						this.state = 136;
-						this.match(RedshiftParser.T__21);
+						this.state = 158;
+						this.match(RedshiftParser.T__12);
 						}
 					}
 
 					}
 					}
-					this.state = 143;
+					this.state = 165;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
 				}
-				this.state = 144;
-				this.match(RedshiftParser.T__18);
+				this.state = 166;
+				this.match(RedshiftParser.T__13);
 				}
 				break;
 
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 145;
+				this.state = 167;
 				_localctx._member = this.memberExpression(0);
-				this.state = 146;
-				this.match(RedshiftParser.T__17);
-				this.state = 153;
+				this.state = 168;
+				this.match(RedshiftParser.T__11);
+				this.state = 175;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (((((_la - 18)) & ~0x1F) === 0 && ((1 << (_la - 18)) & ((1 << (RedshiftParser.T__17 - 18)) | (1 << (RedshiftParser.T__22 - 18)) | (1 << (RedshiftParser.T__24 - 18)) | (1 << (RedshiftParser.NUMBER - 18)) | (1 << (RedshiftParser.STRING - 18)) | (1 << (RedshiftParser.BOOLEAN - 18)) | (1 << (RedshiftParser.IDENTIFIER - 18)))) !== 0)) {
+				while (((((_la - 12)) & ~0x1F) === 0 && ((1 << (_la - 12)) & ((1 << (RedshiftParser.T__11 - 12)) | (1 << (RedshiftParser.T__24 - 12)) | (1 << (RedshiftParser.T__26 - 12)) | (1 << (RedshiftParser.NUMBER - 12)) | (1 << (RedshiftParser.STRING - 12)) | (1 << (RedshiftParser.BOOLEAN - 12)) | (1 << (RedshiftParser.IDENTIFIER - 12)))) !== 0)) {
 					{
 					{
-					this.state = 147;
+					this.state = 169;
 					this.expression(0);
-					this.state = 149;
+					this.state = 171;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
-					if (_la===RedshiftParser.T__21) {
+					if (_la===RedshiftParser.T__12) {
 						{
-						this.state = 148;
-						this.match(RedshiftParser.T__21);
+						this.state = 170;
+						this.match(RedshiftParser.T__12);
 						}
 					}
 
 					}
 					}
-					this.state = 155;
+					this.state = 177;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
 				}
-				this.state = 156;
-				this.match(RedshiftParser.T__18);
+				this.state = 178;
+				this.match(RedshiftParser.T__13);
 				}
 				break;
 			}
@@ -864,20 +952,20 @@ export class RedshiftParser extends Parser {
 		let _parentState: number = this.state;
 		let _localctx: FuncParamsContext = new FuncParamsContext(this._ctx, _parentState);
 		let _prevctx: FuncParamsContext = _localctx;
-		let _startState: number = 18;
-		this.enterRecursionRule(_localctx, 18, RedshiftParser.RULE_funcParams, _p);
+		let _startState: number = 22;
+		this.enterRecursionRule(_localctx, 22, RedshiftParser.RULE_funcParams, _p);
 		try {
 			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
 			{
 			{
-			this.state = 161;
+			this.state = 183;
 			_localctx._id = this.match(RedshiftParser.IDENTIFIER);
 			}
 			this._ctx._stop = this._input.tryLT(-1);
-			this.state = 168;
+			this.state = 190;
 			this._errHandler.sync(this);
-			_alt = this.interpreter.adaptivePredict(this._input,18,this._ctx);
+			_alt = this.interpreter.adaptivePredict(this._input,20,this._ctx);
 			while ( _alt!==2 && _alt!==ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt===1 ) {
 					if ( this._parseListeners!=null ) this.triggerExitRuleEvent();
@@ -886,18 +974,18 @@ export class RedshiftParser extends Parser {
 					{
 					_localctx = new FuncParamsContext(_parentctx, _parentState);
 					this.pushNewRecursionContext(_localctx, _startState, RedshiftParser.RULE_funcParams);
-					this.state = 163;
+					this.state = 185;
 					if (!(this.precpred(this._ctx, 1))) throw new FailedPredicateException(this, "this.precpred(this._ctx, 1)");
-					this.state = 164;
-					this.match(RedshiftParser.T__21);
-					this.state = 165;
+					this.state = 186;
+					this.match(RedshiftParser.T__12);
+					this.state = 187;
 					_localctx._id = this.match(RedshiftParser.IDENTIFIER);
 					}
 					} 
 				}
-				this.state = 170;
+				this.state = 192;
 				this._errHandler.sync(this);
-				_alt = this.interpreter.adaptivePredict(this._input,18,this._ctx);
+				_alt = this.interpreter.adaptivePredict(this._input,20,this._ctx);
 			}
 			}
 		}
@@ -928,24 +1016,24 @@ export class RedshiftParser extends Parser {
 		let _parentState: number = this.state;
 		let _localctx: MemberExpressionContext = new MemberExpressionContext(this._ctx, _parentState);
 		let _prevctx: MemberExpressionContext = _localctx;
-		let _startState: number = 20;
-		this.enterRecursionRule(_localctx, 20, RedshiftParser.RULE_memberExpression, _p);
+		let _startState: number = 24;
+		this.enterRecursionRule(_localctx, 24, RedshiftParser.RULE_memberExpression, _p);
 		try {
 			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
 			{
 			{
-			this.state = 172;
+			this.state = 194;
 			_localctx._object = this.match(RedshiftParser.IDENTIFIER);
-			this.state = 173;
-			this.match(RedshiftParser.T__20);
-			this.state = 174;
+			this.state = 195;
+			this.match(RedshiftParser.T__23);
+			this.state = 196;
 			_localctx._property = this.match(RedshiftParser.IDENTIFIER);
 			}
 			this._ctx._stop = this._input.tryLT(-1);
-			this.state = 181;
+			this.state = 203;
 			this._errHandler.sync(this);
-			_alt = this.interpreter.adaptivePredict(this._input,19,this._ctx);
+			_alt = this.interpreter.adaptivePredict(this._input,21,this._ctx);
 			while ( _alt!==2 && _alt!==ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt===1 ) {
 					if ( this._parseListeners!=null ) this.triggerExitRuleEvent();
@@ -955,18 +1043,18 @@ export class RedshiftParser extends Parser {
 					_localctx = new MemberExpressionContext(_parentctx, _parentState);
 					_localctx._member = _prevctx;
 					this.pushNewRecursionContext(_localctx, _startState, RedshiftParser.RULE_memberExpression);
-					this.state = 176;
+					this.state = 198;
 					if (!(this.precpred(this._ctx, 1))) throw new FailedPredicateException(this, "this.precpred(this._ctx, 1)");
-					this.state = 177;
-					this.match(RedshiftParser.T__20);
-					this.state = 178;
+					this.state = 199;
+					this.match(RedshiftParser.T__23);
+					this.state = 200;
 					_localctx._property = this.match(RedshiftParser.IDENTIFIER);
 					}
 					} 
 				}
-				this.state = 183;
+				this.state = 205;
 				this._errHandler.sync(this);
-				_alt = this.interpreter.adaptivePredict(this._input,19,this._ctx);
+				_alt = this.interpreter.adaptivePredict(this._input,21,this._ctx);
 			}
 			}
 		}
@@ -987,39 +1075,39 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public list(): ListContext {
 		let _localctx: ListContext = new ListContext(this._ctx, this.state);
-		this.enterRule(_localctx, 22, RedshiftParser.RULE_list);
+		this.enterRule(_localctx, 26, RedshiftParser.RULE_list);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 184;
-			this.match(RedshiftParser.T__22);
-			this.state = 191;
+			this.state = 206;
+			this.match(RedshiftParser.T__24);
+			this.state = 213;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (((((_la - 18)) & ~0x1F) === 0 && ((1 << (_la - 18)) & ((1 << (RedshiftParser.T__17 - 18)) | (1 << (RedshiftParser.T__22 - 18)) | (1 << (RedshiftParser.T__24 - 18)) | (1 << (RedshiftParser.NUMBER - 18)) | (1 << (RedshiftParser.STRING - 18)) | (1 << (RedshiftParser.BOOLEAN - 18)) | (1 << (RedshiftParser.IDENTIFIER - 18)))) !== 0)) {
+			while (((((_la - 12)) & ~0x1F) === 0 && ((1 << (_la - 12)) & ((1 << (RedshiftParser.T__11 - 12)) | (1 << (RedshiftParser.T__24 - 12)) | (1 << (RedshiftParser.T__26 - 12)) | (1 << (RedshiftParser.NUMBER - 12)) | (1 << (RedshiftParser.STRING - 12)) | (1 << (RedshiftParser.BOOLEAN - 12)) | (1 << (RedshiftParser.IDENTIFIER - 12)))) !== 0)) {
 				{
 				{
-				this.state = 185;
+				this.state = 207;
 				this.expression(0);
-				this.state = 187;
+				this.state = 209;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===RedshiftParser.T__21) {
+				if (_la===RedshiftParser.T__12) {
 					{
-					this.state = 186;
-					this.match(RedshiftParser.T__21);
+					this.state = 208;
+					this.match(RedshiftParser.T__12);
 					}
 				}
 
 				}
 				}
-				this.state = 193;
+				this.state = 215;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 194;
-			this.match(RedshiftParser.T__23);
+			this.state = 216;
+			this.match(RedshiftParser.T__25);
 			}
 		}
 		catch (re) {
@@ -1039,39 +1127,39 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public record(): RecordContext {
 		let _localctx: RecordContext = new RecordContext(this._ctx, this.state);
-		this.enterRule(_localctx, 24, RedshiftParser.RULE_record);
+		this.enterRule(_localctx, 28, RedshiftParser.RULE_record);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 196;
-			this.match(RedshiftParser.T__24);
-			this.state = 203;
+			this.state = 218;
+			this.match(RedshiftParser.T__26);
+			this.state = 225;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===RedshiftParser.IDENTIFIER) {
 				{
 				{
-				this.state = 197;
+				this.state = 219;
 				this.keyValue();
-				this.state = 199;
+				this.state = 221;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===RedshiftParser.T__21) {
+				if (_la===RedshiftParser.T__12) {
 					{
-					this.state = 198;
-					this.match(RedshiftParser.T__21);
+					this.state = 220;
+					this.match(RedshiftParser.T__12);
 					}
 				}
 
 				}
 				}
-				this.state = 205;
+				this.state = 227;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 206;
-			this.match(RedshiftParser.T__25);
+			this.state = 228;
+			this.match(RedshiftParser.T__27);
 			}
 		}
 		catch (re) {
@@ -1091,15 +1179,15 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public keyValue(): KeyValueContext {
 		let _localctx: KeyValueContext = new KeyValueContext(this._ctx, this.state);
-		this.enterRule(_localctx, 26, RedshiftParser.RULE_keyValue);
+		this.enterRule(_localctx, 30, RedshiftParser.RULE_keyValue);
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 208;
+			this.state = 230;
 			_localctx._key = this.match(RedshiftParser.IDENTIFIER);
-			this.state = 209;
-			this.match(RedshiftParser.T__13);
-			this.state = 210;
+			this.state = 231;
+			this.match(RedshiftParser.T__18);
+			this.state = 232;
 			_localctx._value = this.expression(0);
 			}
 		}
@@ -1120,17 +1208,17 @@ export class RedshiftParser extends Parser {
 	@RuleVersion(0)
 	public importStatement(): ImportStatementContext {
 		let _localctx: ImportStatementContext = new ImportStatementContext(this._ctx, this.state);
-		this.enterRule(_localctx, 28, RedshiftParser.RULE_importStatement);
+		this.enterRule(_localctx, 32, RedshiftParser.RULE_importStatement);
 		try {
-			this.state = 222;
+			this.state = 244;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input,24,this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input,26,this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 212;
-				this.match(RedshiftParser.T__26);
-				this.state = 213;
+				this.state = 234;
+				this.match(RedshiftParser.T__28);
+				this.state = 235;
 				_localctx._core = this.match(RedshiftParser.IDENTIFIER);
 				}
 				break;
@@ -1138,13 +1226,13 @@ export class RedshiftParser extends Parser {
 			case 2:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 214;
-				this.match(RedshiftParser.T__26);
-				this.state = 215;
+				this.state = 236;
+				this.match(RedshiftParser.T__28);
+				this.state = 237;
 				_localctx._core = this.match(RedshiftParser.IDENTIFIER);
-				this.state = 216;
-				this.match(RedshiftParser.T__27);
-				this.state = 217;
+				this.state = 238;
+				this.match(RedshiftParser.T__29);
+				this.state = 239;
 				_localctx._name = this.match(RedshiftParser.IDENTIFIER);
 				}
 				break;
@@ -1152,13 +1240,13 @@ export class RedshiftParser extends Parser {
 			case 3:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 218;
-				this.match(RedshiftParser.T__26);
-				this.state = 219;
+				this.state = 240;
+				this.match(RedshiftParser.T__28);
+				this.state = 241;
 				_localctx._source = this.match(RedshiftParser.STRING);
-				this.state = 220;
-				this.match(RedshiftParser.T__27);
-				this.state = 221;
+				this.state = 242;
+				this.match(RedshiftParser.T__29);
+				this.state = 243;
 				_localctx._name = this.match(RedshiftParser.IDENTIFIER);
 				}
 				break;
@@ -1184,10 +1272,10 @@ export class RedshiftParser extends Parser {
 		case 3:
 			return this.expression_sempred(_localctx as ExpressionContext, predIndex);
 
-		case 9:
+		case 11:
 			return this.funcParams_sempred(_localctx as FuncParamsContext, predIndex);
 
-		case 10:
+		case 12:
 			return this.memberExpression_sempred(_localctx as MemberExpressionContext, predIndex);
 		}
 		return true;
@@ -1224,105 +1312,116 @@ export class RedshiftParser extends Parser {
 	}
 
 	public static readonly _serializedATN: string =
-		"\x03\uAF6F\u8320\u479D\uB75C\u4880\u1605\u191C\uAB37\x03$\xE3\x04\x02"+
+		"\x03\uAF6F\u8320\u479D\uB75C\u4880\u1605\u191C\uAB37\x03&\xF9\x04\x02"+
 		"\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04\x07"+
 		"\t\x07\x04\b\t\b\x04\t\t\t\x04\n\t\n\x04\v\t\v\x04\f\t\f\x04\r\t\r\x04"+
-		"\x0E\t\x0E\x04\x0F\t\x0F\x04\x10\t\x10\x03\x02\x07\x02\"\n\x02\f\x02\x0E"+
-		"\x02%\v\x02\x03\x02\x03\x02\x03\x03\x03\x03\x03\x03\x03\x03\x05\x03-\n"+
-		"\x03\x03\x04\x03\x04\x06\x041\n\x04\r\x04\x0E\x042\x03\x05\x03\x05\x03"+
-		"\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x05"+
-		"\x05@\n\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03"+
-		"\x05\x03\x05\x03\x05\x03\x05\x03\x05\x07\x05N\n\x05\f\x05\x0E\x05Q\v\x05"+
-		"\x03\x06\x03\x06\x03\x06\x03\x06\x03\x06\x03\x06\x03\x06\x03\x06\x03\x06"+
-		"\x03\x06\x05\x06]\n\x06\x03\x07\x03\x07\x03\x07\x03\x07\x03\x07\x03\x07"+
-		"\x03\x07\x03\x07\x03\x07\x03\x07\x05\x07i\n\x07\x03\x07\x03\x07\x03\x07"+
-		"\x03\x07\x03\x07\x05\x07p\n\x07\x03\b\x03\b\x05\bt\n\b\x03\b\x03\b\x03"+
-		"\b\x03\b\x03\t\x03\t\x03\t\x03\t\x03\t\x05\t\x7F\n\t\x07\t\x81\n\t\f\t"+
-		"\x0E\t\x84\v\t\x03\t\x03\t\x03\n\x03\n\x03\n\x03\n\x05\n\x8C\n\n\x07\n"+
-		"\x8E\n\n\f\n\x0E\n\x91\v\n\x03\n\x03\n\x03\n\x03\n\x03\n\x05\n\x98\n\n"+
-		"\x07\n\x9A\n\n\f\n\x0E\n\x9D\v\n\x03\n\x03\n\x05\n\xA1\n\n\x03\v\x03\v"+
-		"\x03\v\x03\v\x03\v\x03\v\x07\v\xA9\n\v\f\v\x0E\v\xAC\v\v\x03\f\x03\f\x03"+
-		"\f\x03\f\x03\f\x03\f\x03\f\x03\f\x07\f\xB6\n\f\f\f\x0E\f\xB9\v\f\x03\r"+
-		"\x03\r\x03\r\x05\r\xBE\n\r\x07\r\xC0\n\r\f\r\x0E\r\xC3\v\r\x03\r\x03\r"+
-		"\x03\x0E\x03\x0E\x03\x0E\x05\x0E\xCA\n\x0E\x07\x0E\xCC\n\x0E\f\x0E\x0E"+
-		"\x0E\xCF\v\x0E\x03\x0E\x03\x0E\x03\x0F\x03\x0F\x03\x0F\x03\x0F\x03\x10"+
-		"\x03\x10\x03\x10\x03\x10\x03\x10\x03\x10\x03\x10\x03\x10\x03\x10\x03\x10"+
-		"\x05\x10\xE1\n\x10\x03\x10\x02\x02\x05\b\x14\x16\x11\x02\x02\x04\x02\x06"+
-		"\x02\b\x02\n\x02\f\x02\x0E\x02\x10\x02\x12\x02\x14\x02\x16\x02\x18\x02"+
-		"\x1A\x02\x1C\x02\x1E\x02\x02\x06\x03\x02\x03\x07\x03\x02\b\t\x03\x02\n"+
-		"\v\x03\x02\f\r\xF9\x02#\x03\x02\x02\x02\x04,\x03\x02\x02\x02\x060\x03"+
-		"\x02\x02\x02\b?\x03\x02\x02\x02\n\\\x03\x02\x02\x02\fo\x03\x02\x02\x02"+
-		"\x0Eq\x03\x02\x02\x02\x10y\x03\x02\x02\x02\x12\xA0\x03\x02\x02\x02\x14"+
-		"\xA2\x03\x02\x02\x02\x16\xAD\x03\x02\x02\x02\x18\xBA\x03\x02\x02\x02\x1A"+
-		"\xC6\x03\x02\x02\x02\x1C\xD2\x03\x02\x02\x02\x1E\xE0\x03\x02\x02\x02 "+
-		"\"\x05\x04\x03\x02! \x03\x02\x02\x02\"%\x03\x02\x02\x02#!\x03\x02\x02"+
-		"\x02#$\x03\x02\x02\x02$&\x03\x02\x02\x02%#\x03\x02\x02\x02&\'\x07\x02"+
-		"\x02\x03\'\x03\x03\x02\x02\x02(-\x05\b\x05\x02)-\x05\n\x06\x02*-\x05\f"+
-		"\x07\x02+-\x05\x1E\x10\x02,(\x03\x02\x02\x02,)\x03\x02\x02\x02,*\x03\x02"+
-		"\x02\x02,+\x03\x02\x02\x02-\x05\x03\x02\x02\x02.1\x05\b\x05\x02/1\x05"+
-		"\n\x06\x020.\x03\x02\x02\x020/\x03\x02\x02\x0212\x03\x02\x02\x0220\x03"+
-		"\x02\x02\x0223\x03\x02\x02\x023\x07\x03\x02\x02\x0245\b\x05\x01\x025@"+
-		"\x05\x12\n\x026@\x05\x0E\b\x027@\x05\x10\t\x028@\x05\x16\f\x029@\x05\x18"+
-		"\r\x02:@\x05\x1A\x0E\x02;@\x07\x1F\x02\x02<@\x07!\x02\x02=@\x07\"\x02"+
-		"\x02>@\x07 \x02\x02?4\x03\x02\x02\x02?6\x03\x02\x02\x02?7\x03\x02\x02"+
-		"\x02?8\x03\x02\x02\x02?9\x03\x02\x02\x02?:\x03\x02\x02\x02?;\x03\x02\x02"+
-		"\x02?<\x03\x02\x02\x02?=\x03\x02\x02\x02?>\x03\x02\x02\x02@O\x03\x02\x02"+
-		"\x02AB\f\x10\x02\x02BC\t\x02\x02\x02CN\x05\b\x05\x11DE\f\x0F\x02\x02E"+
-		"F\t\x03\x02\x02FN\x05\b\x05\x10GH\f\x0E\x02\x02HI\t\x04\x02\x02IN\x05"+
-		"\b\x05\x0FJK\f\r\x02\x02KL\t\x05\x02\x02LN\x05\b\x05\x0EMA\x03\x02\x02"+
-		"\x02MD\x03\x02\x02\x02MG\x03\x02\x02\x02MJ\x03\x02\x02\x02NQ\x03\x02\x02"+
-		"\x02OM\x03\x02\x02\x02OP\x03\x02\x02\x02P\t\x03\x02\x02\x02QO\x03\x02"+
-		"\x02\x02RS\x07\x0E\x02\x02ST\x07\"\x02\x02TU\x07\x0F\x02\x02UV\x07\"\x02"+
-		"\x02VW\x07\x10\x02\x02W]\x05\b\x05\x02XY\x07\x0E\x02\x02YZ\x07\"\x02\x02"+
-		"Z[\x07\x10\x02\x02[]\x05\b\x05\x02\\R\x03\x02\x02\x02\\X\x03\x02\x02\x02"+
-		"]\v\x03\x02\x02\x02^_\x07\x11\x02\x02_`\x07\"\x02\x02`a\x07\x12\x02\x02"+
-		"ab\x05\x06\x04\x02bc\x07\x13\x02\x02cp\x03\x02\x02\x02de\x07\x11\x02\x02"+
-		"ef\x07\"\x02\x02fh\x07\x14\x02\x02gi\x05\x14\v\x02hg\x03\x02\x02\x02h"+
-		"i\x03\x02\x02\x02ij\x03\x02\x02\x02jk\x07\x15\x02\x02kl\x07\x12\x02\x02"+
-		"lm\x05\x06\x04\x02mn\x07\x13\x02\x02np\x03\x02\x02\x02o^\x03\x02\x02\x02"+
-		"od\x03\x02\x02\x02p\r\x03\x02\x02\x02qs\x07\x14\x02\x02rt\x05\x14\v\x02"+
-		"sr\x03\x02\x02\x02st\x03\x02\x02\x02tu\x03\x02\x02\x02uv\x07\x15\x02\x02"+
-		"vw\x07\x16\x02\x02wx\x05\b\x05\x02x\x0F\x03\x02\x02\x02yz\x07\"\x02\x02"+
-		"z{\x07\x17\x02\x02{\x82\x07\x14\x02\x02|~\x05\b\x05\x02}\x7F\x07\x18\x02"+
-		"\x02~}\x03\x02\x02\x02~\x7F\x03\x02\x02\x02\x7F\x81\x03\x02\x02\x02\x80"+
-		"|\x03\x02\x02\x02\x81\x84\x03\x02\x02\x02\x82\x80\x03\x02\x02\x02\x82"+
-		"\x83\x03\x02\x02\x02\x83\x85\x03\x02\x02\x02\x84\x82\x03\x02\x02\x02\x85"+
-		"\x86\x07\x15\x02\x02\x86\x11\x03\x02\x02\x02\x87\x88\x07\"\x02\x02\x88"+
-		"\x8F\x07\x14\x02\x02\x89\x8B\x05\b\x05\x02\x8A\x8C\x07\x18\x02\x02\x8B"+
-		"\x8A\x03\x02\x02\x02\x8B\x8C\x03\x02\x02\x02\x8C\x8E\x03\x02\x02\x02\x8D"+
-		"\x89\x03\x02\x02\x02\x8E\x91\x03\x02\x02\x02\x8F\x8D\x03\x02\x02\x02\x8F"+
-		"\x90\x03\x02\x02\x02\x90\x92\x03\x02\x02\x02\x91\x8F\x03\x02\x02\x02\x92"+
-		"\xA1\x07\x15\x02\x02\x93\x94\x05\x16\f\x02\x94\x9B\x07\x14\x02\x02\x95"+
-		"\x97\x05\b\x05\x02\x96\x98\x07\x18\x02\x02\x97\x96\x03\x02\x02\x02\x97"+
-		"\x98\x03\x02\x02\x02\x98\x9A\x03\x02\x02\x02\x99\x95\x03\x02\x02\x02\x9A"+
-		"\x9D\x03\x02\x02\x02\x9B\x99\x03\x02\x02\x02\x9B\x9C\x03\x02\x02\x02\x9C"+
-		"\x9E\x03\x02\x02\x02\x9D\x9B\x03\x02\x02\x02\x9E\x9F\x07\x15\x02\x02\x9F"+
-		"\xA1\x03\x02\x02\x02\xA0\x87\x03\x02\x02\x02\xA0\x93\x03\x02\x02\x02\xA1"+
-		"\x13\x03\x02\x02\x02\xA2\xA3\b\v\x01\x02\xA3\xA4\x07\"\x02\x02\xA4\xAA"+
-		"\x03\x02\x02\x02\xA5\xA6\f\x03\x02\x02\xA6\xA7\x07\x18\x02\x02\xA7\xA9"+
-		"\x07\"\x02\x02\xA8\xA5\x03\x02\x02\x02\xA9\xAC\x03\x02\x02\x02\xAA\xA8"+
-		"\x03\x02\x02\x02\xAA\xAB\x03\x02\x02\x02\xAB\x15\x03\x02\x02\x02\xAC\xAA"+
-		"\x03\x02\x02\x02\xAD\xAE\b\f\x01\x02\xAE\xAF\x07\"\x02\x02\xAF\xB0\x07"+
-		"\x17\x02\x02\xB0\xB1\x07\"\x02\x02\xB1\xB7\x03\x02\x02\x02\xB2\xB3\f\x03"+
-		"\x02\x02\xB3\xB4\x07\x17\x02\x02\xB4\xB6\x07\"\x02\x02\xB5\xB2\x03\x02"+
-		"\x02\x02\xB6\xB9\x03\x02\x02\x02\xB7\xB5\x03\x02\x02\x02\xB7\xB8\x03\x02"+
-		"\x02\x02\xB8\x17\x03\x02\x02\x02\xB9\xB7\x03\x02\x02\x02\xBA\xC1\x07\x19"+
-		"\x02\x02\xBB\xBD\x05\b\x05\x02\xBC\xBE\x07\x18\x02\x02\xBD\xBC\x03\x02"+
-		"\x02\x02\xBD\xBE\x03\x02\x02\x02\xBE\xC0\x03\x02\x02\x02\xBF\xBB\x03\x02"+
-		"\x02\x02\xC0\xC3\x03\x02\x02\x02\xC1\xBF\x03\x02\x02\x02\xC1\xC2\x03\x02"+
-		"\x02\x02\xC2\xC4\x03\x02\x02\x02\xC3\xC1\x03\x02\x02\x02\xC4\xC5\x07\x1A"+
-		"\x02\x02\xC5\x19\x03\x02\x02\x02\xC6\xCD\x07\x1B\x02\x02\xC7\xC9\x05\x1C"+
-		"\x0F\x02\xC8\xCA\x07\x18\x02\x02\xC9\xC8\x03\x02\x02\x02\xC9\xCA\x03\x02"+
-		"\x02\x02\xCA\xCC\x03\x02\x02\x02\xCB\xC7\x03\x02\x02\x02\xCC\xCF\x03\x02"+
-		"\x02\x02\xCD\xCB\x03\x02\x02\x02\xCD\xCE\x03\x02\x02\x02\xCE\xD0\x03\x02"+
-		"\x02\x02\xCF\xCD\x03\x02\x02\x02\xD0\xD1\x07\x1C\x02\x02\xD1\x1B\x03\x02"+
-		"\x02\x02\xD2\xD3\x07\"\x02\x02\xD3\xD4\x07\x10\x02\x02\xD4\xD5\x05\b\x05"+
-		"\x02\xD5\x1D\x03\x02\x02\x02\xD6\xD7\x07\x1D\x02\x02\xD7\xE1\x07\"\x02"+
-		"\x02\xD8\xD9\x07\x1D\x02\x02\xD9\xDA\x07\"\x02\x02\xDA\xDB\x07\x1E\x02"+
-		"\x02\xDB\xE1\x07\"\x02\x02\xDC\xDD\x07\x1D\x02\x02\xDD\xDE\x07 \x02\x02"+
-		"\xDE\xDF\x07\x1E\x02\x02\xDF\xE1\x07\"\x02\x02\xE0\xD6\x03\x02\x02\x02"+
-		"\xE0\xD8\x03\x02\x02\x02\xE0\xDC\x03\x02\x02\x02\xE1\x1F\x03\x02\x02\x02"+
-		"\x1B#,02?MO\\hos~\x82\x8B\x8F\x97\x9B\xA0\xAA\xB7\xBD\xC1\xC9\xCD\xE0";
+		"\x0E\t\x0E\x04\x0F\t\x0F\x04\x10\t\x10\x04\x11\t\x11\x04\x12\t\x12\x03"+
+		"\x02\x07\x02&\n\x02\f\x02\x0E\x02)\v\x02\x03\x02\x03\x02\x03\x03\x03\x03"+
+		"\x03\x03\x03\x03\x05\x031\n\x03\x03\x04\x03\x04\x03\x04\x06\x046\n\x04"+
+		"\r\x04\x0E\x047\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05"+
+		"\x03\x05\x03\x05\x03\x05\x03\x05\x05\x05E\n\x05\x03\x05\x03\x05\x03\x05"+
+		"\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05\x03\x05"+
+		"\x07\x05S\n\x05\f\x05\x0E\x05V\v\x05\x03\x06\x03\x06\x03\x06\x05\x06["+
+		"\n\x06\x07\x06]\n\x06\f\x06\x0E\x06`\v\x06\x03\x06\x03\x06\x03\x07\x03"+
+		"\x07\x03\x07\x03\x07\x03\x07\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b"+
+		"\x03\b\x03\b\x03\b\x05\bs\n\b\x03\t\x03\t\x03\t\x03\t\x03\t\x03\t\x03"+
+		"\t\x03\t\x03\t\x03\t\x05\t\x7F\n\t\x03\t\x03\t\x03\t\x03\t\x03\t\x05\t"+
+		"\x86\n\t\x03\n\x03\n\x05\n\x8A\n\n\x03\n\x03\n\x03\n\x03\n\x03\v\x03\v"+
+		"\x03\v\x03\v\x03\v\x05\v\x95\n\v\x07\v\x97\n\v\f\v\x0E\v\x9A\v\v\x03\v"+
+		"\x03\v\x03\f\x03\f\x03\f\x03\f\x05\f\xA2\n\f\x07\f\xA4\n\f\f\f\x0E\f\xA7"+
+		"\v\f\x03\f\x03\f\x03\f\x03\f\x03\f\x05\f\xAE\n\f\x07\f\xB0\n\f\f\f\x0E"+
+		"\f\xB3\v\f\x03\f\x03\f\x05\f\xB7\n\f\x03\r\x03\r\x03\r\x03\r\x03\r\x03"+
+		"\r\x07\r\xBF\n\r\f\r\x0E\r\xC2\v\r\x03\x0E\x03\x0E\x03\x0E\x03\x0E\x03"+
+		"\x0E\x03\x0E\x03\x0E\x03\x0E\x07\x0E\xCC\n\x0E\f\x0E\x0E\x0E\xCF\v\x0E"+
+		"\x03\x0F\x03\x0F\x03\x0F\x05\x0F\xD4\n\x0F\x07\x0F\xD6\n\x0F\f\x0F\x0E"+
+		"\x0F\xD9\v\x0F\x03\x0F\x03\x0F\x03\x10\x03\x10\x03\x10\x05\x10\xE0\n\x10"+
+		"\x07\x10\xE2\n\x10\f\x10\x0E\x10\xE5\v\x10\x03\x10\x03\x10\x03\x11\x03"+
+		"\x11\x03\x11\x03\x11\x03\x12\x03\x12\x03\x12\x03\x12\x03\x12\x03\x12\x03"+
+		"\x12\x03\x12\x03\x12\x03\x12\x05\x12\xF7\n\x12\x03\x12\x02\x02\x05\b\x18"+
+		"\x1A\x13\x02\x02\x04\x02\x06\x02\b\x02\n\x02\f\x02\x0E\x02\x10\x02\x12"+
+		"\x02\x14\x02\x16\x02\x18\x02\x1A\x02\x1C\x02\x1E\x02 \x02\"\x02\x02\x06"+
+		"\x03\x02\x03\x07\x03\x02\b\t\x03\x02\n\v\x03\x02\f\r\u0110\x02\'\x03\x02"+
+		"\x02\x02\x040\x03\x02\x02\x02\x065\x03\x02\x02\x02\bD\x03\x02\x02\x02"+
+		"\nW\x03\x02\x02\x02\fc\x03\x02\x02\x02\x0Er\x03\x02\x02\x02\x10\x85\x03"+
+		"\x02\x02\x02\x12\x87\x03\x02\x02\x02\x14\x8F\x03\x02\x02\x02\x16\xB6\x03"+
+		"\x02\x02\x02\x18\xB8\x03\x02\x02\x02\x1A\xC3\x03\x02\x02\x02\x1C\xD0\x03"+
+		"\x02\x02\x02\x1E\xDC\x03\x02\x02\x02 \xE8\x03\x02\x02\x02\"\xF6\x03\x02"+
+		"\x02\x02$&\x05\x04\x03\x02%$\x03\x02\x02\x02&)\x03\x02\x02\x02\'%\x03"+
+		"\x02\x02\x02\'(\x03\x02\x02\x02(*\x03\x02\x02\x02)\'\x03\x02\x02\x02*"+
+		"+\x07\x02\x02\x03+\x03\x03\x02\x02\x02,1\x05\f\x07\x02-1\x05\x0E\b\x02"+
+		".1\x05\x10\t\x02/1\x05\"\x12\x020,\x03\x02\x02\x020-\x03\x02\x02\x020"+
+		".\x03\x02\x02\x020/\x03\x02\x02\x021\x05\x03\x02\x02\x0226\x05\f\x07\x02"+
+		"36\x05\x0E\b\x0246\x05\b\x05\x0252\x03\x02\x02\x0253\x03\x02\x02\x025"+
+		"4\x03\x02\x02\x0267\x03\x02\x02\x0275\x03\x02\x02\x0278\x03\x02\x02\x02"+
+		"8\x07\x03\x02\x02\x029:\b\x05\x01\x02:E\x05\x16\f\x02;E\x05\x12\n\x02"+
+		"<E\x05\x14\v\x02=E\x05\x1A\x0E\x02>E\x05\x1C\x0F\x02?E\x05\x1E\x10\x02"+
+		"@E\x07!\x02\x02AE\x07#\x02\x02BE\x07$\x02\x02CE\x07\"\x02\x02D9\x03\x02"+
+		"\x02\x02D;\x03\x02\x02\x02D<\x03\x02\x02\x02D=\x03\x02\x02\x02D>\x03\x02"+
+		"\x02\x02D?\x03\x02\x02\x02D@\x03\x02\x02\x02DA\x03\x02\x02\x02DB\x03\x02"+
+		"\x02\x02DC\x03\x02\x02\x02ET\x03\x02\x02\x02FG\f\x10\x02\x02GH\t\x02\x02"+
+		"\x02HS\x05\b\x05\x11IJ\f\x0F\x02\x02JK\t\x03\x02\x02KS\x05\b\x05\x10L"+
+		"M\f\x0E\x02\x02MN\t\x04\x02\x02NS\x05\b\x05\x0FOP\f\r\x02\x02PQ\t\x05"+
+		"\x02\x02QS\x05\b\x05\x0ERF\x03\x02\x02\x02RI\x03\x02\x02\x02RL\x03\x02"+
+		"\x02\x02RO\x03\x02\x02\x02SV\x03\x02\x02\x02TR\x03\x02\x02\x02TU\x03\x02"+
+		"\x02\x02U\t\x03\x02\x02\x02VT\x03\x02\x02\x02W^\x07\x0E\x02\x02XZ\x07"+
+		"$\x02\x02Y[\x07\x0F\x02\x02ZY\x03\x02\x02\x02Z[\x03\x02\x02\x02[]\x03"+
+		"\x02\x02\x02\\X\x03\x02\x02\x02]`\x03\x02\x02\x02^\\\x03\x02\x02\x02^"+
+		"_\x03\x02\x02\x02_a\x03\x02\x02\x02`^\x03\x02\x02\x02ab\x07\x10\x02\x02"+
+		"b\v\x03\x02\x02\x02cd\x07\x11\x02\x02de\x05\n\x06\x02ef\x07\x12\x02\x02"+
+		"fg\x07$\x02\x02g\r\x03\x02\x02\x02hi\x07\x13\x02\x02ij\x07$\x02\x02jk"+
+		"\x07\x14\x02\x02kl\x07$\x02\x02lm\x07\x15\x02\x02ms\x05\b\x05\x02no\x07"+
+		"\x13\x02\x02op\x07$\x02\x02pq\x07\x15\x02\x02qs\x05\b\x05\x02rh\x03\x02"+
+		"\x02\x02rn\x03\x02\x02\x02s\x0F\x03\x02\x02\x02tu\x07\x16\x02\x02uv\x07"+
+		"$\x02\x02vw\x07\x17\x02\x02wx\x05\x06\x04\x02xy\x07\x18\x02\x02y\x86\x03"+
+		"\x02\x02\x02z{\x07\x16\x02\x02{|\x07$\x02\x02|~\x07\x0E\x02\x02}\x7F\x05"+
+		"\x18\r\x02~}\x03\x02\x02\x02~\x7F\x03\x02\x02\x02\x7F\x80\x03\x02\x02"+
+		"\x02\x80\x81\x07\x10\x02\x02\x81\x82\x07\x17\x02\x02\x82\x83\x05\x06\x04"+
+		"\x02\x83\x84\x07\x18\x02\x02\x84\x86\x03\x02\x02\x02\x85t\x03\x02\x02"+
+		"\x02\x85z\x03\x02\x02\x02\x86\x11\x03\x02\x02\x02\x87\x89\x07\x0E\x02"+
+		"\x02\x88\x8A\x05\x18\r\x02\x89\x88\x03\x02\x02\x02\x89\x8A\x03\x02\x02"+
+		"\x02\x8A\x8B\x03\x02\x02\x02\x8B\x8C\x07\x10\x02\x02\x8C\x8D\x07\x19\x02"+
+		"\x02\x8D\x8E\x05\b\x05\x02\x8E\x13\x03\x02\x02\x02\x8F\x90\x07$\x02\x02"+
+		"\x90\x91\x07\x1A\x02\x02\x91\x98\x07\x0E\x02\x02\x92\x94\x05\b\x05\x02"+
+		"\x93\x95\x07\x0F\x02\x02\x94\x93\x03\x02\x02\x02\x94\x95\x03\x02\x02\x02"+
+		"\x95\x97\x03\x02\x02\x02\x96\x92\x03\x02\x02\x02\x97\x9A\x03\x02\x02\x02"+
+		"\x98\x96\x03\x02\x02\x02\x98\x99\x03\x02\x02\x02\x99\x9B\x03\x02\x02\x02"+
+		"\x9A\x98\x03\x02\x02\x02\x9B\x9C\x07\x10\x02\x02\x9C\x15\x03\x02\x02\x02"+
+		"\x9D\x9E\x07$\x02\x02\x9E\xA5\x07\x0E\x02\x02\x9F\xA1\x05\b\x05\x02\xA0"+
+		"\xA2\x07\x0F\x02\x02\xA1\xA0\x03\x02\x02\x02\xA1\xA2\x03\x02\x02\x02\xA2"+
+		"\xA4\x03\x02\x02\x02\xA3\x9F\x03\x02\x02\x02\xA4\xA7\x03\x02\x02\x02\xA5"+
+		"\xA3\x03\x02\x02\x02\xA5\xA6\x03\x02\x02\x02\xA6\xA8\x03\x02\x02\x02\xA7"+
+		"\xA5\x03\x02\x02\x02\xA8\xB7\x07\x10\x02\x02\xA9\xAA\x05\x1A\x0E\x02\xAA"+
+		"\xB1\x07\x0E\x02\x02\xAB\xAD\x05\b\x05\x02\xAC\xAE\x07\x0F\x02\x02\xAD"+
+		"\xAC\x03\x02\x02\x02\xAD\xAE\x03\x02\x02\x02\xAE\xB0\x03\x02\x02\x02\xAF"+
+		"\xAB\x03\x02\x02\x02\xB0\xB3\x03\x02\x02\x02\xB1\xAF\x03\x02\x02\x02\xB1"+
+		"\xB2\x03\x02\x02\x02\xB2\xB4\x03\x02\x02\x02\xB3\xB1\x03\x02\x02\x02\xB4"+
+		"\xB5\x07\x10\x02\x02\xB5\xB7\x03\x02\x02\x02\xB6\x9D\x03\x02\x02\x02\xB6"+
+		"\xA9\x03\x02\x02\x02\xB7\x17\x03\x02\x02\x02\xB8\xB9\b\r\x01\x02\xB9\xBA"+
+		"\x07$\x02\x02\xBA\xC0\x03\x02\x02\x02\xBB\xBC\f\x03\x02\x02\xBC\xBD\x07"+
+		"\x0F\x02\x02\xBD\xBF\x07$\x02\x02\xBE\xBB\x03\x02\x02\x02\xBF\xC2\x03"+
+		"\x02\x02\x02\xC0\xBE\x03\x02\x02\x02\xC0\xC1\x03\x02\x02\x02\xC1\x19\x03"+
+		"\x02\x02\x02\xC2\xC0\x03\x02\x02\x02\xC3\xC4\b\x0E\x01\x02\xC4\xC5\x07"+
+		"$\x02\x02\xC5\xC6\x07\x1A\x02\x02\xC6\xC7\x07$\x02\x02\xC7\xCD\x03\x02"+
+		"\x02\x02\xC8\xC9\f\x03\x02\x02\xC9\xCA\x07\x1A\x02\x02\xCA\xCC\x07$\x02"+
+		"\x02\xCB\xC8\x03\x02\x02\x02\xCC\xCF\x03\x02\x02\x02\xCD\xCB\x03\x02\x02"+
+		"\x02\xCD\xCE\x03\x02\x02\x02\xCE\x1B\x03\x02\x02\x02\xCF\xCD\x03\x02\x02"+
+		"\x02\xD0\xD7\x07\x1B\x02\x02\xD1\xD3\x05\b\x05\x02\xD2\xD4\x07\x0F\x02"+
+		"\x02\xD3\xD2\x03\x02\x02\x02\xD3\xD4\x03\x02\x02\x02\xD4\xD6\x03\x02\x02"+
+		"\x02\xD5\xD1\x03\x02\x02\x02\xD6\xD9\x03\x02\x02\x02\xD7\xD5\x03\x02\x02"+
+		"\x02\xD7\xD8\x03\x02\x02\x02\xD8\xDA\x03\x02\x02\x02\xD9\xD7\x03\x02\x02"+
+		"\x02\xDA\xDB\x07\x1C\x02\x02\xDB\x1D\x03\x02\x02\x02\xDC\xE3\x07\x1D\x02"+
+		"\x02\xDD\xDF\x05 \x11\x02\xDE\xE0\x07\x0F\x02\x02\xDF\xDE\x03\x02\x02"+
+		"\x02\xDF\xE0\x03\x02\x02\x02\xE0\xE2\x03\x02\x02\x02\xE1\xDD\x03\x02\x02"+
+		"\x02\xE2\xE5\x03\x02\x02\x02\xE3\xE1\x03\x02\x02\x02\xE3\xE4\x03\x02\x02"+
+		"\x02\xE4\xE6\x03\x02\x02\x02\xE5\xE3\x03\x02\x02\x02\xE6\xE7\x07\x1E\x02"+
+		"\x02\xE7\x1F\x03\x02\x02\x02\xE8\xE9\x07$\x02\x02\xE9\xEA\x07\x15\x02"+
+		"\x02\xEA\xEB\x05\b\x05\x02\xEB!\x03\x02\x02\x02\xEC\xED\x07\x1F\x02\x02"+
+		"\xED\xF7\x07$\x02\x02\xEE\xEF\x07\x1F\x02\x02\xEF\xF0\x07$\x02\x02\xF0"+
+		"\xF1\x07 \x02\x02\xF1\xF7\x07$\x02\x02\xF2\xF3\x07\x1F\x02\x02\xF3\xF4"+
+		"\x07\"\x02\x02\xF4\xF5\x07 \x02\x02\xF5\xF7\x07$\x02\x02\xF6\xEC\x03\x02"+
+		"\x02\x02\xF6\xEE\x03\x02\x02\x02\xF6\xF2\x03\x02\x02\x02\xF7#\x03\x02"+
+		"\x02\x02\x1D\'057DRTZ^r~\x85\x89\x94\x98\xA1\xA5\xAD\xB1\xB6\xC0\xCD\xD3"+
+		"\xD7\xDF\xE3\xF6";
 	public static __ATN: ATN;
 	public static get _ATN(): ATN {
 		if (!RedshiftParser.__ATN) {
@@ -1360,8 +1459,8 @@ export class ProgramContext extends ParserRuleContext {
 
 
 export class StatementContext extends ParserRuleContext {
-	public expression(): ExpressionContext | undefined {
-		return this.tryGetRuleContext(0, ExpressionContext);
+	public expose(): ExposeContext | undefined {
+		return this.tryGetRuleContext(0, ExposeContext);
 	}
 	public constDeclaration(): ConstDeclarationContext | undefined {
 		return this.tryGetRuleContext(0, ConstDeclarationContext);
@@ -1387,13 +1486,13 @@ export class StatementContext extends ParserRuleContext {
 
 
 export class BlockContext extends ParserRuleContext {
-	public expression(): ExpressionContext[];
-	public expression(i: number): ExpressionContext;
-	public expression(i?: number): ExpressionContext | ExpressionContext[] {
+	public expose(): ExposeContext[];
+	public expose(i: number): ExposeContext;
+	public expose(i?: number): ExposeContext | ExposeContext[] {
 		if (i === undefined) {
-			return this.getRuleContexts(ExpressionContext);
+			return this.getRuleContexts(ExposeContext);
 		} else {
-			return this.getRuleContext(i, ExpressionContext);
+			return this.getRuleContext(i, ExposeContext);
 		}
 	}
 	public constDeclaration(): ConstDeclarationContext[];
@@ -1403,6 +1502,15 @@ export class BlockContext extends ParserRuleContext {
 			return this.getRuleContexts(ConstDeclarationContext);
 		} else {
 			return this.getRuleContext(i, ConstDeclarationContext);
+		}
+	}
+	public expression(): ExpressionContext[];
+	public expression(i: number): ExpressionContext;
+	public expression(i?: number): ExpressionContext | ExpressionContext[] {
+		if (i === undefined) {
+			return this.getRuleContexts(ExpressionContext);
+		} else {
+			return this.getRuleContext(i, ExpressionContext);
 		}
 	}
 	constructor(parent: ParserRuleContext, invokingState: number);
@@ -1549,6 +1657,50 @@ export class ListExprContext extends ExpressionContext {
 	@Override
 	public accept<Result>(visitor: RedshiftVisitor<Result>): Result {
 		if (visitor.visitListExpr) return visitor.visitListExpr(this);
+		else return visitor.visitChildren(this);
+	}
+}
+
+
+export class AliasedContext extends ParserRuleContext {
+	public IDENTIFIER(): TerminalNode[];
+	public IDENTIFIER(i: number): TerminalNode;
+	public IDENTIFIER(i?: number): TerminalNode | TerminalNode[] {
+		if (i === undefined) {
+			return this.getTokens(RedshiftParser.IDENTIFIER);
+		} else {
+			return this.getToken(RedshiftParser.IDENTIFIER, i);
+		}
+	}
+	constructor(parent: ParserRuleContext, invokingState: number);
+	constructor(parent: ParserRuleContext, invokingState: number) {
+		super(parent, invokingState);
+
+	}
+	@Override public get ruleIndex(): number { return RedshiftParser.RULE_aliased; }
+	@Override
+	public accept<Result>(visitor: RedshiftVisitor<Result>): Result {
+		if (visitor.visitAliased) return visitor.visitAliased(this);
+		else return visitor.visitChildren(this);
+	}
+}
+
+
+export class ExposeContext extends ParserRuleContext {
+	public _module: Token;
+	public aliased(): AliasedContext {
+		return this.getRuleContext(0, AliasedContext);
+	}
+	public IDENTIFIER(): TerminalNode { return this.getToken(RedshiftParser.IDENTIFIER, 0); }
+	constructor(parent: ParserRuleContext, invokingState: number);
+	constructor(parent: ParserRuleContext, invokingState: number) {
+		super(parent, invokingState);
+
+	}
+	@Override public get ruleIndex(): number { return RedshiftParser.RULE_expose; }
+	@Override
+	public accept<Result>(visitor: RedshiftVisitor<Result>): Result {
+		if (visitor.visitExpose) return visitor.visitExpose(this);
 		else return visitor.visitChildren(this);
 	}
 }

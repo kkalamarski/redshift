@@ -1,4 +1,4 @@
-import { compile, evaluate } from "../redshift"
+import { compile, evaluate } from "../../index"
 
 describe.skip("Declaring modules", () => {
   it("should be possible to declare new module", () => {

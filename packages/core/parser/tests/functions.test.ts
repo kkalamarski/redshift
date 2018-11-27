@@ -1,4 +1,4 @@
-import { evaluate, compile } from "./../redshift"
+import { evaluate, compile } from "./../../index"
 
 describe("Functions", () => {
   it("should declare and execute a function", () => {
@@ -82,15 +82,15 @@ describe("Functions", () => {
 
   it("should be possible to return function call", () => {
     const code = `
-      def test() do
-        test(5)
+      def foo() do
+        bar(5)
       end
 
-      def test(a) do
+      def bar(a) do
         a * a
       end
 
-      test()
+      foo()
     `
     const result = evaluate(code)
     expect(result).toBe(25)
@@ -102,7 +102,7 @@ describe("Functions", () => {
     `
     const result = compile(code)
     expect(result).toContain("Math.double")
-    expect(result).toContain('IO.puts_1("test")')
+    expect(result).toContain('IO.puts("test")')
   })
 
   it("should be possible to pass anonymous functions directly in parameters", () => {

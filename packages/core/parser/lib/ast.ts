@@ -245,6 +245,12 @@ export class ArrayPattern {
   constructor(public elements: Identifier[]) {}
 }
 
+export class ObjectPattern {
+  public type: string = "ObjectPattern"
+
+  constructor(public properties: Property[]) {}
+}
+
 export class ArrayExpression {
   public type: string = "ArrayExpression"
 

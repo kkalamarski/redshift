@@ -1,4 +1,4 @@
-import { evaluate, compile } from "../redshift"
+import { evaluate, compile } from "../../index"
 
 describe("Anonymous functions", () => {
   it("should be possible to declare annonymous function", () => {

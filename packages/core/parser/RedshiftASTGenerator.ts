@@ -19,8 +19,9 @@ import {
   ArrayExpression,
   ObjectExpression,
   Property,
-  File
-} from "./lib/parser/ast"
+  File,
+  ObjectPattern
+} from "./lib/ast"
 
 import {
   ProgramContext,
@@ -43,7 +44,9 @@ import {
   RecordExprContext,
   RecordContext,
   KeyValueContext,
-  StatementContext
+  StatementContext,
+  ExposeContext,
+  AliasedContext
 } from "./RedshiftParser"
 
 const typed: { [x: string]: any } = {}
@@ -77,6 +80,24 @@ export default class RedshiftASTGenerator extends AbstractParseTreeVisitor<void>
 
   public visitBlock(ctx: BlockContext) {
     return ctx.children.map(expr => this.visit(expr))
+  }
+
+  public visitExpose(ctx: ExposeContext) {
+    const module = ctx._module
+
+    const funs = this.visit<Property[]>(ctx.aliased())
+
+    return new VariableDeclaration(
+      new ObjectPattern(funs),
+      new Identifier(module.text)
+    )
+  }
+
+  public visitAliased(ctx: AliasedContext): Property[] {
+    return ctx
+      .IDENTIFIER()
+      .map(id => this.visit<Identifier>(id))
+      .map(id => new Property(id, id))
   }
 
   public visitExpression(ctx: ExpressionContext) {
@@ -158,7 +179,7 @@ export default class RedshiftASTGenerator extends AbstractParseTreeVisitor<void>
 
     return new ExportNamedDeclaration(
       new FunctionDeclaration(
-        new Identifier(`${name.text}_${params.length}`),
+        new Identifier(name.text),
         params,
         new Block([].concat(expressions, returning))
       )
@@ -171,13 +192,9 @@ export default class RedshiftASTGenerator extends AbstractParseTreeVisitor<void>
     const member = ctx._member
 
     if (name) {
-      return new CallExpression(
-        new Identifier(`${name.text}_${params.length}`),
-        params || []
-      )
+      return new CallExpression(new Identifier(name.text), params || [])
     } else if (member) {
       const m = this.visit<any>(ctx.memberExpression())
-      m.property.name = `${m.property.name}_${params.length}`
       return new CallExpression(m, params || [])
     }
   }

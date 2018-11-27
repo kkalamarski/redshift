@@ -1,4 +1,4 @@
-import { compile, evaluate } from "./../redshift"
+import { compile, evaluate } from "./../../index"
 
 describe("Maps", () => {
   it("should be possible to assign map to a constant", () => {

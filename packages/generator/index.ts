@@ -3,10 +3,14 @@ import path from "path"
 
 const main = target => `import "@redshift/dom" as RedshiftDOM
 
+let update = (state, action) -> state
+
+let view = (state) -> RedshiftDOM.h1({ style = "text-align: center;" }, ["Hello world!"])
+
 RedshiftDOM.render("root", {
   model = 1,
-  view = (state) -> RedshiftDOM.h1({ style = "text-align: center;" }, ["Hello world!"]),
-  update = (state, action) -> state 
+  view = view,
+  update = update 
 })
 `
 

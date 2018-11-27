@@ -69,44 +69,6 @@ def sum(a, b) do
 end
 ```
 
-Redshift takes note of the arity of the function (number of arguments), so it is possible to declare functions with same name, but different arity.
-For example following code is valid
-
-```elixir
-def sum(a) do
-  a + a
-end
-
-def sum(a, b) do
-  a + b
-end
-```
-
-### Pattern matching
-
-Redshift lets you use pattern matching in function declarations.
-
-```elixir
-def error("syntax") do
-  IO.puts("You used wrong syntax!")
-end
-
-def error("type") do
-  IO.puts("Trying to assign different type")
-end
-
-def error("range") do
-  IO.puts("Given value is out of range")
-end
-
-def error(type) do
-  IO.puts(type <> " error occured!")
-end
-
-error("syntax") # You used wrong syntax!
-error("Unknown") # Unknown error occured!
-```
-
 ### Function expressions
 
 Redshift lets you define function expressions by using `->` syntax.
@@ -118,15 +80,9 @@ To call anonymous function, dot syntax is used. This indicates that called funct
 let double = (a) -> a * 2
 
 double.(2) # 4
-```
 
-Function expressions **do not** support pattern matching.
-To pass them as an argument to another function, they must be first stored in a variable. This is by design and improves code readability.
+let greeted = List.map(names, (name) -> "Hello " <> name <> "!")
 
-```elixir
-let say_hello = (name) -> "Hello " <> name
-
-List.map(names, say_hello)
 ```
 
 ### Constants
@@ -142,12 +98,16 @@ let result = 2 * 3
 Constants can also be used inside functions
 
 ```elixir
+let a = 5
+
 def func() do
   let a = 40
   let b = 100
 
   a + b
 end
+
+a # 5
 ```
 
 ### Imports
@@ -230,29 +190,3 @@ let doubled = List.map(numbers, double)
 let head = List.head(numbers) # 1
 let tail = List.tail(numbers) # [2, 3]
 ```
-
-### Modules
-
-Module is a namespace for the functions serving similiar purpose.
-Examples of built-in modules are:
-
-`Math` - contianing functions for arythmetic operations
-
-`IO` - containig functions for managind input and output
-
-To decalre custom module `defmodule / end` notation is used.
-
-```elixir
-defmodule User do
-
-  def get_user() do
-    # some logic
-  end
-
-  def delete_user() do
-    # some logic
-  end
-end
-```
-
-Module is always 'default' exported. That is why it is only possible to have one module per file.

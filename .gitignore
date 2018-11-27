@@ -5,3 +5,9 @@ node_modules
 */**/dist
 lerna-debug.log
 examples
+
+packages/core/parser/Redshift.tokens
+packages/core/parser/RedshiftLexer.tokens
+packages/core/parser/RedshiftLexer.ts
+packages/core/parser/RedshiftParser.ts
+packages/core/parser/RedshiftVisitor.ts

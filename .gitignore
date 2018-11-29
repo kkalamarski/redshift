@@ -11,3 +11,5 @@ packages/core/parser/RedshiftLexer.tokens
 packages/core/parser/RedshiftLexer.ts
 packages/core/parser/RedshiftParser.ts
 packages/core/parser/RedshiftVisitor.ts
+
+node_modules
